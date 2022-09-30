@@ -1,9 +1,9 @@
 <script type="ts">
-  import { Map as MaplibreMap, Marker } from "maplibre-gl";
+  import maplibregl from "maplibre-gl";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SuggestionIcon from "./SuggestionIcon.svelte";
 
-  export let map: MaplibreMap;
+  export let map: maplibregl.Map;
 
   export let apiKey: string;
 
@@ -29,7 +29,7 @@
 
   let picked: Feature | undefined;
 
-  let selectedMarker: Marker;
+  let selectedMarker: maplibregl.Marker;
 
   $: if (picked) {
     map.fitBounds(picked.bbox);
@@ -49,7 +49,7 @@
 
       markers.set(
         feature.id,
-        new Marker({ element }).setLngLat(feature.center).addTo(map)
+        new maplibregl.Marker({ element }).setLngLat(feature.center).addTo(map)
       );
     }
   }
@@ -60,7 +60,7 @@
     features = [];
   }
 
-  const markers = new Map<string, Marker>();
+  const markers = new Map<string, maplibregl.Marker>();
 
   async function handleOnSubmit() {
     if (selected) {
@@ -99,7 +99,7 @@
 
       markers.set(
         feature.id,
-        new Marker({ element }).setLngLat(feature.center).addTo(map)
+        new maplibregl.Marker({ element }).setLngLat(feature.center).addTo(map)
       );
     }
 

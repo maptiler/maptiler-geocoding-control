@@ -8,7 +8,18 @@ export default defineConfig({
     lib: {
       fileName: "maptiler-geocoding",
       entry: "src/lib/index.ts",
-      formats: ["es", "cjs"]
+      name: "maptilerGeocoding",
+      formats: ["es", "cjs", "iife"],
+    },
+    rollupOptions: {
+      external: ["maplibre-gl"],
+      output: {
+        // Provide global variables to use in the UMD build
+        // for externalized deps
+        globals: {
+          maplibregl: "maplibregl",
+        },
+      },
     },
   },
 });
