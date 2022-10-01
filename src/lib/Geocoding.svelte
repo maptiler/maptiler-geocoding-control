@@ -36,7 +36,9 @@
   }
 
   $: {
-    for (const marker of markers.values()) {
+    for (const [id, marker] of markers.entries()) {
+      console.log("DEL", id);
+
       marker.remove();
     }
 
@@ -46,6 +48,8 @@
       const element = document.createElement("div");
 
       new MarkerIcon({ target: element });
+
+      console.log("ADD", feature.id);
 
       markers.set(
         feature.id,
@@ -96,11 +100,6 @@
       bbox[1] = Math.min(bbox[1], feature.bbox[1]);
       bbox[2] = Math.max(bbox[2], feature.bbox[2]);
       bbox[3] = Math.max(bbox[3], feature.bbox[3]);
-
-      markers.set(
-        feature.id,
-        new maplibregl.Marker({ element }).setLngLat(feature.center).addTo(map)
-      );
     }
 
     if (fc.features.length > 0) {
@@ -149,6 +148,8 @@
       e.preventDefault();
     }
   }
+
+  $: searchValue, (selected = undefined, index = -1);
 </script>
 
 <form on:submit|preventDefault={handleOnSubmit}>
