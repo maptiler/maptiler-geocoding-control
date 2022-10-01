@@ -33,12 +33,13 @@
 
   $: if (picked) {
     map.fitBounds(picked.bbox);
+    features = [];
+    selected = undefined;
+    index = -1;
   }
 
   $: {
     for (const [id, marker] of markers.entries()) {
-      console.log("DEL", id);
-
       marker.remove();
     }
 
@@ -48,8 +49,6 @@
       const element = document.createElement("div");
 
       new MarkerIcon({ target: element });
-
-      console.log("ADD", feature.id);
 
       markers.set(
         feature.id,
@@ -109,6 +108,7 @@
     features = fc.features;
   }
 
+  // highlight selected marker
   $: {
     if (selectedMarker) {
       selectedMarker.getElement().classList.toggle("marker-selected", false);
@@ -121,6 +121,7 @@
 
   let focusedDelayed: boolean;
 
+  // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
     focusedDelayed = focused;
   });
@@ -149,6 +150,7 @@
     }
   }
 
+  // clear selecion on edit
   $: searchValue, (selected = undefined, index = -1);
 </script>
 
