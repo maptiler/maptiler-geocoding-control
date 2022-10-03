@@ -1,6 +1,8 @@
 <script type="ts">
   import type maplibregl1 from "maplibre-gl";
   import { onMount } from "svelte";
+  import ClearIcon from "./ClearIcon.svelte";
+  import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SuggestionIcon from "./SuggestionIcon.svelte";
 
@@ -148,6 +150,8 @@
     }
   }
 
+  let loading = false;
+
   async function search(searchValue: string) {
     const sp = new URLSearchParams();
 
@@ -167,12 +171,16 @@
       sp.set("proximity", proximity.join(","));
     }
 
+    loading = true;
+
     const res = await fetch(
       "https://api.maptiler.com/geocoding/" +
         encodeURIComponent(searchValue) +
         ".json?" +
         sp.toString()
-    );
+    ).finally(() => {
+      loading = false;
+    });
 
     const fc: FeatureCollection = await res.json();
 
@@ -265,18 +273,31 @@
 </script>
 
 <form on:submit|preventDefault={handleOnSubmit}>
-  <SuggestionIcon />
+  <div>
+    <SuggestionIcon />
 
-  <input
-    bind:value={searchValue}
-    on:focus={() => (focused = true)}
-    on:blur={() => (focused = false)}
-    on:keydown={handleKeyDown}
-    on:input={handleInput}
-    type="search"
-    {placeholder}
-    aria-label={placeholder}
-  />
+    <input
+      bind:value={searchValue}
+      on:focus={() => (focused = true)}
+      on:blur={() => (focused = false)}
+      on:keydown={handleKeyDown}
+      on:input={handleInput}
+      {placeholder}
+      aria-label={placeholder}
+    />
+
+    <button
+      type="button"
+      on:click={() => (searchValue = "")}
+      class:displayable={searchValue !== ""}
+    >
+      <ClearIcon />
+    </button>
+
+    {#if loading}
+      <LoadingIcon />
+    {/if}
+  </div>
 
   {#if focusedDelayed && listFeatures.length > 0}
     <ul>
@@ -336,7 +357,7 @@
     margin: 0;
     height: 36px;
     color: rgba(0, 0, 0, 0.75);
-    padding: 6px 10px 6px 35px;
+    padding: 6px 35px 6px 35px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
@@ -389,5 +410,20 @@
   li:hover,
   li:focus {
     background-color: #f3f3f3;
+  }
+
+  button {
+    display: none;
+    position: absolute;
+    right: 7px;
+    top: 10px;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: transparent;
+  }
+
+  div:hover button.displayable {
+    display: block;
   }
 </style>
