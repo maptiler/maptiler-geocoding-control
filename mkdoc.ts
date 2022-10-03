@@ -54,9 +54,9 @@ for (const s of x.statements) {
           });
 
           console.log(
-            `- \`${item.name}\`${item.optional ? "" : "<sup>*</sup>"} (\`${
+            `- \`${item.name}\`${item.optional ? "" : "<sup>*</sup>"}: \`${
               item.type
-            }\`) - ${item.desc?.replace(/\n/g, " ")}${
+            }\` - ${item.desc?.replace(/\n/g, " ")}${
               item.default ? " Default `" + item.default + "`." : ""
             }`
           );

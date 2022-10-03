@@ -4,6 +4,8 @@ import type { Map, IControl, MarkerOptions } from "maplibre-gl";
 import Geocoding from "./Geocoding.svelte";
 import type maplibregl1 from "maplibre-gl";
 
+type MapLibreGL = typeof maplibregl1;
+
 type Options = {
   /**
    * Maptiler API key
@@ -11,10 +13,10 @@ type Options = {
   apiKey: string;
 
   /**
-   * A maplibre-gl instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker).
+   * A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker).
    * Required if `options.marker` is `true`.
    */
-  maplibregl?: typeof maplibregl1;
+  maplibregl?: MapLibreGL;
 
   /**
    * Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box.
