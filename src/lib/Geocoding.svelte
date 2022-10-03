@@ -284,7 +284,10 @@
         <li
           tabindex="0"
           class:selected={feature === selected}
-          on:mouseover={() => (selected = feature)}
+          on:mouseover={() => {
+            selected = feature;
+            debugger;
+          }}
           on:focus={() => {
             picked = feature;
             searchValue = feature.text;
@@ -371,11 +374,11 @@
 
   li {
     cursor: default;
-    padding: 4px 8px;
     display: grid;
     grid-template-columns: auto 1fr;
     white-space: pre;
     color: #404040;
+    padding: 4px 0px;
   }
 
   li span:nth-of-type(1) {

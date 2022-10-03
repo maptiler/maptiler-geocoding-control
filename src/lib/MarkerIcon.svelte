@@ -15,7 +15,7 @@
   svg {
     grid-row: 1/3;
     align-self: center;
-    margin: 4px;
+    margin: 8px;
   }
 
   :global(.marker-selected) {
