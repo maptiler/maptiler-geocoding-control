@@ -1,11 +1,51 @@
 <script type="ts">
-  import maplibregl from "maplibre-gl";
+  import type maplibregl1 from "maplibre-gl";
+  import { onMount } from "svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SuggestionIcon from "./SuggestionIcon.svelte";
+
+  export let maplibregl: typeof maplibregl1 = undefined;
 
   export let map: maplibregl.Map;
 
   export let apiKey: string;
+
+  export let debounceSearch = 200;
+
+  export let placeholder = "Search";
+
+  export let proximity: [number, number] = undefined;
+
+  export let bbox: [number, number, number, number] = undefined;
+
+  export let trackProximity = true;
+
+  export let minLength = 2;
+
+  export let limit = 5;
+
+  export let language = navigator.language.replace(/-.*/, "");
+
+  onMount(() => {
+    if (!trackProximity) {
+      return;
+    }
+
+    function handleMoveEnd() {
+      let c: maplibregl.LngLat;
+
+      proximity =
+        map.getZoom() > 9
+          ? [(c = map.getCenter().wrap()).lng, c.lat]
+          : undefined;
+    }
+
+    map.on("moveend", handleMoveEnd);
+
+    return () => {
+      map.off("moveend", handleMoveEnd);
+    };
+  });
 
   let focused = false;
 
@@ -21,9 +61,11 @@
     bbox: [number, number, number, number];
   };
 
-  let searchValue: string;
+  let searchValue = "";
 
-  let features: Feature[] = [];
+  let listFeatures: Feature[] = [];
+
+  let markedFeatures: Feature[] = [];
 
   let selected: Feature | undefined;
 
@@ -33,19 +75,26 @@
 
   $: if (picked) {
     map.fitBounds(picked.bbox);
-    features = [];
+    listFeatures = [];
+    markedFeatures = [];
     selected = undefined;
     index = -1;
   }
 
-  $: {
-    for (const [id, marker] of markers.entries()) {
+  $: markers: {
+    if (!maplibregl) {
+      break markers;
+    }
+
+    for (const marker of markers.values()) {
       marker.remove();
     }
 
     markers.clear();
 
-    for (const feature of picked ? [...features, picked] : features) {
+    for (const feature of picked
+      ? [...markedFeatures, picked]
+      : markedFeatures) {
       const element = document.createElement("div");
 
       new MarkerIcon({ target: element });
@@ -60,52 +109,77 @@
   $: if (!searchValue) {
     picked = undefined;
     selected = undefined;
-    features = [];
+    listFeatures = [];
+    markedFeatures = listFeatures;
   }
 
   const markers = new Map<string, maplibregl.Marker>();
 
-  async function handleOnSubmit() {
+  function handleOnSubmit() {
     if (selected) {
       searchValue = selected.text;
       picked = selected;
       selected = undefined;
-      features = [];
+      listFeatures = [];
+      markedFeatures = [];
       index = -1;
-      return;
+    } else if (searchValue) {
+      search(searchValue).then(() => {
+        markedFeatures = listFeatures;
+
+        zoomToResults();
+      }); // TODO handle async error
+    }
+  }
+
+  async function search(searchValue: string) {
+    const sp = new URLSearchParams();
+
+    sp.set("key", apiKey);
+
+    sp.set("limit", String(limit));
+
+    if (language) {
+      sp.set("language", String(language));
     }
 
-    if (!searchValue) {
-      return;
+    if (bbox) {
+      sp.set("bbox", bbox.join(","));
+    }
+
+    if (proximity) {
+      sp.set("proximity", proximity.join(","));
     }
 
     const res = await fetch(
       "https://api.maptiler.com/geocoding/" +
         encodeURIComponent(searchValue) +
-        ".json?key=" +
-        apiKey
+        ".json?" +
+        sp.toString()
     );
 
     const fc: FeatureCollection = await res.json();
 
+    listFeatures = fc.features;
+  }
+
+  function zoomToResults() {
+    if (!markedFeatures.length) {
+      return;
+    }
+
     const bbox: [number, number, number, number] = [180, 90, -180, -90];
 
-    for (const feature of fc.features) {
-      const element = document.createElement("div");
-
-      new MarkerIcon({ target: element });
-
+    for (const feature of markedFeatures) {
       bbox[0] = Math.min(bbox[0], feature.bbox[0]);
       bbox[1] = Math.min(bbox[1], feature.bbox[1]);
       bbox[2] = Math.max(bbox[2], feature.bbox[2]);
       bbox[3] = Math.max(bbox[3], feature.bbox[3]);
     }
 
-    if (fc.features.length > 0) {
+    if (markedFeatures.length > 0) {
       map.fitBounds(bbox, { padding: 50 });
     }
-
-    features = fc.features;
   }
 
   // highlight selected marker
@@ -136,22 +210,42 @@
         index = 0;
       }
 
-      if (features.length > 0) {
-        index = (index + dir) % features.length;
+      if (listFeatures.length > 0) {
+        index = (index + dir) % listFeatures.length;
 
         if (index < 0) {
-          index += features.length;
+          index += listFeatures.length;
         }
 
-        selected = features[index];
+        selected = listFeatures[index];
       }
 
       e.preventDefault();
     }
   }
 
-  // clear selecion on edit
-  $: searchValue, (selected = undefined, index = -1);
+  $: {
+    searchValue; // clear selection on edit
+
+    selected = undefined;
+    index = -1;
+  }
+
+  let searchTimeoutRef: number;
+
+  function handleInput() {
+    if (searchValue.length > minLength) {
+      if (searchTimeoutRef) {
+        clearTimeout(searchTimeoutRef);
+      }
+
+      searchTimeoutRef = window.setTimeout(() => {
+        search(searchValue); // TODO handle async error
+      }, debounceSearch);
+    } else {
+      listFeatures = [];
+    }
+  }
 </script>
 
 <form on:submit|preventDefault={handleOnSubmit}>
@@ -162,14 +256,15 @@
     on:focus={() => (focused = true)}
     on:blur={() => (focused = false)}
     on:keydown={handleKeyDown}
+    on:input={handleInput}
     type="search"
-    placeholder="Search"
-    aria-label="Search"
+    {placeholder}
+    aria-label={placeholder}
   />
 
-  {#if focusedDelayed && features.length > 0}
+  {#if focusedDelayed && listFeatures.length > 0}
     <ul>
-      {#each features as feature}
+      {#each listFeatures as feature}
         <li
           tabindex="0"
           class:selected={feature === selected}
@@ -178,7 +273,7 @@
             picked = feature;
             searchValue = feature.text;
             selected = undefined;
-            features = [];
+            listFeatures = [];
             index = -1;
           }}
         >

@@ -13,7 +13,7 @@
 
 <style>
   svg {
-		grid-row: 1/3;
+    grid-row: 1/3;
     align-self: center;
     margin: 4px;
   }
@@ -23,6 +23,6 @@
   }
 
   :global(.marker-selected) svg path {
-		fill: red;
-	}
+    fill: red;
+  }
 </style>
