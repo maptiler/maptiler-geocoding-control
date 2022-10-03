@@ -30,7 +30,7 @@ const gc = new maptilerGeocoding.GeocodingControl({
 });
 ```
 
-### API Documentation
+## API Documentation
 
 Options:
 
@@ -46,3 +46,17 @@ Options:
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
 - `marker`: `boolean | MarkerOptions` - If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+
+## Building
+
+```bash
+npm install && npm run build
+```
+
+You will find compilation result in `dist` directory.
+
+## Running in dev mode
+
+```bash
+npm install && npm run dev
+```

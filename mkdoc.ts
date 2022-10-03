@@ -1,7 +1,7 @@
-// run as `npx tsc mkdoc.ts; node mkdoc.js`
+// run as `npx tsc -m es2022 --moduleResolution node --allowSyntheticDefaultImports mkdoc.ts && node mkdoc.js && rm mkdoc.js`
 
 import { readFileSync } from "fs";
-import * as ts from "typescript";
+import ts from "typescript";
 
 const text = readFileSync("src/lib/index.ts", { encoding: "utf8" });
 
