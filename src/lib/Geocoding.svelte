@@ -26,6 +26,12 @@
 
   export let language = navigator.language.replace(/-.*/, "");
 
+  export let showResultsWhileTyping = true;
+
+  export let marker: boolean | maplibregl.MarkerOptions = true;
+
+  export let showResultMarkers: boolean | maplibregl.MarkerOptions = true;
+
   onMount(() => {
     if (!trackProximity) {
       return;
@@ -95,14 +101,21 @@
     for (const feature of picked
       ? [...markedFeatures, picked]
       : markedFeatures) {
-      const element = document.createElement("div");
+      let m: maplibregl.Marker;
 
-      new MarkerIcon({ target: element });
+      if (feature === picked && typeof marker === "object") {
+        m = new maplibregl.Marker(marker);
+      } else if (feature !== picked && typeof showResultMarkers === "object") {
+        m = new maplibregl.Marker(showResultMarkers);
+      } else {
+        const element = document.createElement("div");
 
-      markers.set(
-        feature.id,
-        new maplibregl.Marker({ element }).setLngLat(feature.center).addTo(map)
-      );
+        new MarkerIcon({ target: element });
+
+        m = new maplibregl.Marker({ element });
+      }
+
+      markers.set(feature.id, m.setLngLat(feature.center).addTo(map));
     }
   }
 
@@ -110,7 +123,10 @@
     picked = undefined;
     selected = undefined;
     listFeatures = [];
-    markedFeatures = listFeatures;
+
+    if (showResultMarkers) {
+      markedFeatures = listFeatures;
+    }
   }
 
   const markers = new Map<string, maplibregl.Marker>();
@@ -234,7 +250,7 @@
   let searchTimeoutRef: number;
 
   function handleInput() {
-    if (searchValue.length > minLength) {
+    if (showResultsWhileTyping && searchValue.length > minLength) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);
       }
