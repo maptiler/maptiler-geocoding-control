@@ -1,48 +1,49 @@
-# Svelte + TS + Vite
+# MapTiler Geocoder control for Maplibre GL JS
 
-This template should help get you started developing with Svelte and TypeScript in Vite.
+A geocoder control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js).
 
-## Recommended IDE Setup
+## Usage
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode).
+### Usage with a module bundler
 
-## Need an official Svelte framework?
-
-Check out [SvelteKit](https://github.com/sveltejs/kit#readme), which is also powered by Vite. Deploy anywhere with its serverless-first approach and adapt to various platforms, with out of the box support for TypeScript, SCSS, and Less, and easily-added support for mdsvex, GraphQL, PostCSS, Tailwind CSS, and more.
-
-## Technical considerations
-
-**Why use this over SvelteKit?**
-
-- It brings its own routing solution which might not be preferable for some users.
-- It is first and foremost a framework that just happens to use Vite under the hood, not a Vite app.
-  `vite dev` and `vite build` wouldn't work in a SvelteKit environment, for example.
-
-This template contains as little as possible to get started with Vite + TypeScript + Svelte, while taking into account the developer experience with regards to HMR and intellisense. It demonstrates capabilities on par with the other `create-vite` templates and is a good starting point for beginners dipping their toes into a Vite + Svelte project.
-
-Should you later need the extended capabilities and extensibility provided by SvelteKit, the template has been structured similarly to SvelteKit so that it is easy to migrate.
-
-**Why `global.d.ts` instead of `compilerOptions.types` inside `jsconfig.json` or `tsconfig.json`?**
-
-Setting `compilerOptions.types` shuts out all other types not explicitly listed in the configuration. Using triple-slash references keeps the default TypeScript setting of accepting type information from the entire workspace, while also adding `svelte` and `vite/client` type information.
-
-**Why include `.vscode/extensions.json`?**
-
-Other templates indirectly recommend extensions via the README, but this file allows VS Code to prompt the user to install the recommended extension upon opening the project.
-
-**Why enable `allowJs` in the TS template?**
-
-While `allowJs: false` would indeed prevent the use of `.js` files in the project, it does not prevent the use of JavaScript syntax in `.svelte` files. In addition, it would force `checkJs: false`, bringing the worst of both worlds: not being able to guarantee the entire codebase is TypeScript, and also having worse typechecking for the existing JavaScript. In addition, there are valid use cases in which a mixed codebase may be relevant.
-
-**Why is HMR not preserving my local component state?**
-
-HMR state preservation comes with a number of gotchas! It has been disabled by default in both `svelte-hmr` and `@sveltejs/vite-plugin-svelte` due to its often surprising behavior. You can read the details [here](https://github.com/rixo/svelte-hmr#svelte-hmr).
-
-If you have state that's important to retain within a component, consider creating an external store which would not be replaced by HMR.
-
-```ts
-// store.ts
-// An extremely simple external store
-import { writable } from 'svelte/store'
-export default writable(0)
+```bash
+npm install --save @maptiler/maplibre-gl-maptiler-geocoder maplibre-gl
 ```
+
+```js
+import maplibregl from "maplibre-gl";
+import MaplibreGeocoder from "@maptiler/maplibre-gl-maptiler-geocoder";
+import "@maptiler/maplibre-gl-maptiler-geocoder/dist/style.css";
+
+const API_KEY = "your API key";
+
+const map = new maplibregl.Map({
+  container: "map", // id of HTML container element
+  style: "https://api.maptiler.com/maps/streets/style.json?key=" + API_KEY,
+  center: [16.3, 49.2],
+  zoom: 7,
+});
+
+const gc = new maptilerGeocoding.GeocodingControl({
+  apiKey: API_KEY,
+  maplibregl,
+});
+```
+
+### API Documentation
+
+Options:
+
+- `apiKey`<sup>\*</sup> (`string`) - Maptiler API key
+- `maplibregl` (`typeof maplibregl1`) - A maplibre-gl instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Required if `options.marker` is `true`.
+- `debounceSearch` (`number`) - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
+- `proximity` (`[number, number]`) - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
+- `placeholder` (`string`) - Override the default placeholder attribute value. Default `Search`.
+- `trackProximity` (`boolean`) - If true, the geocoder proximity will automatically update based on the map view. Default `true`.
+- `minLength` (`number`) - Minimum number of characters to enter before results are shown. Default `2`.
+- `bbox` (`number`) - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
+- `limit` (`number`) - Maximum number of results to show. Default `5`.
+- `language` (`string`) - Specify the language to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Defaults to the browser's language settings.
+- `showResultsWhileTyping` (`boolean`) - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
+- `marker` (`boolean | MarkerOptions`) - If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+- `showResultMarkers` (`boolean | MarkerOptions`) - If `true`, [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.

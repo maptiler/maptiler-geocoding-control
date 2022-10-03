@@ -5,6 +5,9 @@ import Geocoding from "./Geocoding.svelte";
 import type maplibregl1 from "maplibre-gl";
 
 type Options = {
+  /**
+   * Maptiler API key
+   */
   apiKey: string;
 
   /**
@@ -17,7 +20,7 @@ type Options = {
    * Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box.
    * This parameter may be useful for reducing the total number of API calls made for a single query.
    *
-   * (optional, default `200`)
+   * @default 200
    */
   debounceSearch?: number;
 
@@ -30,21 +33,21 @@ type Options = {
   /**
    * Override the default placeholder attribute value.
    *
-   * (optional, default `Search`)
+   * @default Search
    */
   placeholder?: string;
 
   /**
    * If true, the geocoder proximity will automatically update based on the map view.
    *
-   * (optional, default `true`)
+   * @default true
    */
   trackProximity?: boolean;
 
   /**
    * Minimum number of characters to enter before results are shown.
    *
-   * (optional, default `2`)
+   * @default 2
    */
   minLength?: number;
 
@@ -57,7 +60,7 @@ type Options = {
   /**
    * Maximum number of results to show.
    *
-   * (optional, default `5`)
+   * @default 5
    */
   limit?: number;
 
@@ -73,7 +76,7 @@ type Options = {
    * If `false`, indicates that search will only occur on enter key press.
    * If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option.
    *
-   * (optional, default `false`)
+   * @default false
    */
   showResultsWhileTyping?: boolean;
 
@@ -83,7 +86,7 @@ type Options = {
    * If `false`, no marker will be added to the map.
    * Requires that `options.maplibregl` also be set.
    *
-   * (optional, default `true`)
+   * @default true
    */
   marker?: boolean | MarkerOptions;
 
@@ -93,7 +96,7 @@ type Options = {
    * If `false`, no marker will be added to the map.
    * Requires that `options.maplibregl` also be set.
    *
-   * (optional, default `true`)
+   * @default true
    */
   showResultMarkers?: boolean | MarkerOptions;
 
