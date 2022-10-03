@@ -305,10 +305,7 @@
         <li
           tabindex="0"
           class:selected={feature === selected}
-          on:mouseover={() => {
-            selected = feature;
-            debugger;
-          }}
+          on:mouseover={() => (selected = feature)}
           on:focus={() => {
             picked = feature;
             searchValue = feature.text;
