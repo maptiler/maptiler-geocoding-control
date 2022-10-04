@@ -45,6 +45,8 @@
 
   export let clearOnBlur = false;
 
+  export let filter: (feature: Feature) => boolean = () => true;
+
   onMount(() => {
     if (!trackProximity) {
       return;
@@ -67,18 +69,6 @@
   });
 
   let focused = false;
-
-  type FeatureCollection = {
-    features: Feature[];
-  };
-
-  type Feature = {
-    id: string;
-    text: string;
-    place_name: string;
-    center: [number, number];
-    bbox: [number, number, number, number];
-  };
 
   let searchValue = "";
 
@@ -224,7 +214,7 @@
 
     const fc: FeatureCollection = await res.json();
 
-    listFeatures = fc.features;
+    listFeatures = fc.features.filter(filter);
 
     cachedFeatures = listFeatures;
   }

@@ -153,8 +153,13 @@ type Options = {
    */
   clearOnBlur?: boolean;
 
-  // TODO - missing and useful from maplibre-gl-geocoder
-  // filter // A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
+  /**
+   * A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list.
+   * Return true to keep the item, false otherwise.
+   */
+  filter?: (feature: Feature) => boolean;
+
+  // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)
   // render // A function that specifies how the results should be rendered in the dropdown menu. This function should accepts a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
   // popupRender // A function that specifies how the results should be rendered in the popup menu. This function should accept a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
