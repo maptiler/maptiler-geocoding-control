@@ -148,6 +148,7 @@
     picked = undefined;
     selected = undefined;
     listFeatures = [];
+    error = undefined;
 
     if (showResultMarkers) {
       markedFeatures = listFeatures;
@@ -161,7 +162,7 @@
       searchValue = selected.text;
       picked = selected;
       selected = undefined;
-      listFeatures = [];
+      error = undefined;
       markedFeatures = [];
       index = -1;
     } else if (searchValue) {
@@ -177,7 +178,7 @@
 
   let cachedFeatures: Feature[] = [];
 
-  let promise: Promise<Response>;
+  let abortController: AbortController;
 
   async function search(searchValue: string) {
     error = undefined;
@@ -214,11 +215,15 @@
 
     lastSearchUrl = url;
 
-    promise ||= fetch(url);
+    abortController?.abort();
 
-    const res = await promise.finally(() => {
-      promise = undefined;
-    });
+    abortController = new AbortController();
+
+    const res = await fetch(url, { signal: abortController.signal }).finally(
+      () => {
+        abortController = undefined;
+      }
+    );
 
     const fc: FeatureCollection = await res.json();
 
@@ -311,11 +316,14 @@
         clearTimeout(searchTimeoutRef);
       }
 
+      const sv = searchValue;
+
       searchTimeoutRef = window.setTimeout(() => {
-        search(searchValue).catch((err) => (error = err));
+        search(sv).catch((err) => (error = err));
       }, debounceSearch);
     } else {
       listFeatures = [];
+      error = undefined;
     }
   }
 </script>
@@ -352,7 +360,7 @@
       <ClearIcon />
     </button>
 
-    {#if promise}
+    {#if abortController}
       <LoadingIcon />
     {/if}
   </div>
