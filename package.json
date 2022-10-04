@@ -1,14 +1,26 @@
 {
-  "name": "myapp",
+  "name": "maplibre-gl-maptiler-geocoding",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && tsc --outDir dist --declaration --emitDeclarationOnly && mkdir foo && cp ",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/maptiler-geocoding.cjs",
+  "module": "./dist/maptiler-geocoding.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/maptiler-geocoding.mjs",
+      "require": "./dist/maptiler-geocoding.cjs"
+    }
+  },
+  "types": "./dist/lib/index.d.ts",
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.0.2",
     "@tsconfig/svelte": "^3.0.0",

@@ -1,5 +1,3 @@
-// Reexport your entry components here
-
 import type {
   Map,
   IControl,
@@ -7,10 +5,13 @@ import type {
   FlyToOptions,
   FitBoundsOptions,
 } from "maplibre-gl";
+import type maplibregl from "maplibre-gl";
 import Geocoding from "./Geocoding.svelte";
-import type maplibregl1 from "maplibre-gl";
+import type { Feature } from "./types";
 
-type MapLibreGL = typeof maplibregl1;
+export type { Feature } from "./types";
+
+type MapLibreGL = typeof maplibregl;
 
 type Options = {
   /**

@@ -1,13 +1,14 @@
 <script type="ts">
   import type { FitBoundsOptions, FlyToOptions } from "maplibre-gl";
-  import type maplibregl1 from "maplibre-gl";
+  import type MapLibreGL from "maplibre-gl";
   import { onMount } from "svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
+  import type { Feature } from "./types";
 
-  export let maplibregl: typeof maplibregl1 = undefined;
+  export let maplibregl: typeof MapLibreGL = undefined;
 
   export let map: maplibregl.Map;
 
@@ -67,6 +68,10 @@
       map.off("moveend", handleMoveEnd);
     };
   });
+
+  type FeatureCollection = {
+    features: Feature[];
+  };
 
   let focused = false;
 

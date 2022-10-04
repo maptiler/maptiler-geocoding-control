@@ -1,8 +1,4 @@
-type FeatureCollection = {
-  features: Feature[];
-};
-
-type Feature = {
+export type Feature = {
   id: string;
   text: string;
   place_name: string;
