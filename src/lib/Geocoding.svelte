@@ -16,6 +16,8 @@
 
   export let placeholder = "Search";
 
+  export let errorMessage = "Searching failed";
+
   export let proximity: [number, number] = undefined;
 
   export let bbox: [number, number, number, number] = undefined;
@@ -133,6 +135,8 @@
     }
   }
 
+  let error: unknown;
+
   const markers = new Map<string, maplibregl.Marker>();
 
   function handleOnSubmit() {
@@ -144,19 +148,23 @@
       markedFeatures = [];
       index = -1;
     } else if (searchValue) {
-      search(searchValue).then(() => {
-        markedFeatures = listFeatures;
+      search(searchValue)
+        .then(() => {
+          markedFeatures = listFeatures;
 
-        zoomToResults();
-      }); // TODO handle async error
+          zoomToResults();
+        })
+        .catch((err) => (error = err));
     }
   }
 
-  let loading = false;
-
   let cachedFeatures: Feature[] = [];
 
+  let promise: Promise<Response>;
+
   async function search(searchValue: string) {
+    error = undefined;
+
     const sp = new URLSearchParams();
 
     sp.set("key", apiKey);
@@ -189,10 +197,10 @@
 
     lastSearchUrl = url;
 
-    loading = true;
+    promise ||= fetch(url);
 
-    const res = await fetch(url).finally(() => {
-      loading = false;
+    const res = await promise.finally(() => {
+      promise = undefined;
     });
 
     const fc: FeatureCollection = await res.json();
@@ -279,7 +287,7 @@
       }
 
       searchTimeoutRef = window.setTimeout(() => {
-        search(searchValue); // TODO handle async error
+        search(searchValue).catch((err) => (error = err));
       }, debounceSearch);
     } else {
       listFeatures = [];
@@ -288,7 +296,7 @@
 </script>
 
 <form on:submit|preventDefault={handleOnSubmit}>
-  <div>
+  <div class="inputGroup">
     <SuggestionIcon />
 
     <input
@@ -309,12 +317,14 @@
       <ClearIcon />
     </button>
 
-    {#if loading}
+    {#if promise}
       <LoadingIcon />
     {/if}
   </div>
 
-  {#if focusedDelayed && listFeatures.length > 0}
+  {#if error}
+    <div class="error">{errorMessage}</div>
+  {:else if focusedDelayed && listFeatures.length > 0}
     <ul>
       {#each listFeatures as feature}
         <li
@@ -382,7 +392,8 @@
     outline: thin dotted;
   }
 
-  ul {
+  ul,
+  div.error {
     background-color: #fff;
     border-radius: 4px;
     left: 0;
@@ -435,7 +446,14 @@
     background-color: transparent;
   }
 
-  div:hover button.displayable {
+  div.inputGroup:hover button.displayable {
     display: block;
+  }
+
+  div.error {
+    font: inherit;
+    font-size: 15px;
+    color: red;
+    padding: 6px 10px;
   }
 </style>
