@@ -81,6 +81,8 @@
 
   let selectedMarker: maplibregl.Marker;
 
+  let lastSearchUrl = "";
+
   $: if (picked) {
     map.fitBounds(picked.bbox);
     listFeatures = [];
@@ -152,6 +154,8 @@
 
   let loading = false;
 
+  let cachedFeatures: Feature[] = [];
+
   async function search(searchValue: string) {
     const sp = new URLSearchParams();
 
@@ -171,20 +175,31 @@
       sp.set("proximity", proximity.join(","));
     }
 
+    const url =
+      "https://api.maptiler.com/geocoding/" +
+      encodeURIComponent(searchValue) +
+      ".json?" +
+      sp.toString();
+
+    if (url === lastSearchUrl) {
+      listFeatures = cachedFeatures;
+
+      return;
+    }
+
+    lastSearchUrl = url;
+
     loading = true;
 
-    const res = await fetch(
-      "https://api.maptiler.com/geocoding/" +
-        encodeURIComponent(searchValue) +
-        ".json?" +
-        sp.toString()
-    ).finally(() => {
+    const res = await fetch(url).finally(() => {
       loading = false;
     });
 
     const fc: FeatureCollection = await res.json();
 
     listFeatures = fc.features;
+
+    cachedFeatures = listFeatures;
   }
 
   function zoomToResults() {
