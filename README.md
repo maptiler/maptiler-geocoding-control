@@ -42,7 +42,7 @@ Options:
 - `errorMessage`: `string` - Override the default error message. Default `"Searching failed"`.
 - `trackProximity`: `boolean` - If true, the geocoder proximity will automatically update based on the map view. Default `true`.
 - `minLength`: `number` - Minimum number of characters to enter before results are shown. Default `2`.
-- `bbox`: `number` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
+- `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
 - `limit`: `number` - Maximum number of results to show. Default `5`.
 - `language`: `string` - Specify the language to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Defaults to the browser's language settings.
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
@@ -51,6 +51,8 @@ Options:
 - `zoom`: `number` - On geocoded result what zoom level should the map animate to when a bbox isn't found in the response. If a bbox is found the map will fit to the bbox. Default `16`.
 - `flyTo`: `boolean | (FlyToOptions & FitBoundsOptions)` - If `false`, animating the map to a selected result is disabled. If `true`, animating the map will use the default animation parameters. If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition. Default `true`.
 - `collapsed`: `boolean` - If `true`, the geocoder control will collapse until hovered or in focus. Default `false`.
+- `clearOnBlur`: `boolean` - If true, the geocoder control will clear its value when the input blurs. Default `false`.
+- `filter`: `(feature: Feature) => boolean` - A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
 
 ## Building
 
