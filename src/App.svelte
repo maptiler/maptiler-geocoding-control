@@ -16,7 +16,9 @@
       container: containerElement,
     });
 
-    map.addControl(new GeocodingControl({ apiKey, maplibregl }));
+    map.addControl(
+      new GeocodingControl({ apiKey, maplibregl, collapsed: true })
+    );
   });
 </script>
 

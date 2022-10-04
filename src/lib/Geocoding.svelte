@@ -1,10 +1,11 @@
 <script type="ts">
+  import type { FitBoundsOptions, FlyToOptions } from "maplibre-gl";
   import type maplibregl1 from "maplibre-gl";
   import { onMount } from "svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
-  import SuggestionIcon from "./SuggestionIcon.svelte";
+  import SearchIcon from "./SearchIcon.svelte";
 
   export let maplibregl: typeof maplibregl1 = undefined;
 
@@ -35,6 +36,12 @@
   export let marker: boolean | maplibregl.MarkerOptions = true;
 
   export let showResultMarkers: boolean | maplibregl.MarkerOptions = true;
+
+  export let zoom = 16;
+
+  export let flyTo: boolean | (FlyToOptions & FitBoundsOptions) = true;
+
+  export let collapsed = false;
 
   onMount(() => {
     if (!trackProximity) {
@@ -85,13 +92,25 @@
 
   let lastSearchUrl = "";
 
-  $: if (picked) {
-    map.fitBounds(picked.bbox);
+  let input: HTMLInputElement;
+
+  $: if (picked && flyTo) {
+    if (
+      !picked.bbox ||
+      (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
+    ) {
+      map.flyTo({ center: picked.center, zoom });
+    } else {
+      map.fitBounds(picked.bbox, flyTo === true ? {} : flyTo);
+    }
+
     listFeatures = [];
     markedFeatures = [];
     selected = undefined;
     index = -1;
   }
+
+  const markers = new Map<string, maplibregl.Marker>();
 
   $: markers: {
     if (!maplibregl) {
@@ -136,8 +155,6 @@
   }
 
   let error: unknown;
-
-  const markers = new Map<string, maplibregl.Marker>();
 
   function handleOnSubmit() {
     if (selected) {
@@ -211,21 +228,29 @@
   }
 
   function zoomToResults() {
-    if (!markedFeatures.length) {
+    if (!markedFeatures.length || !flyTo) {
       return;
     }
 
     const bbox: [number, number, number, number] = [180, 90, -180, -90];
 
     for (const feature of markedFeatures) {
-      bbox[0] = Math.min(bbox[0], feature.bbox[0]);
-      bbox[1] = Math.min(bbox[1], feature.bbox[1]);
-      bbox[2] = Math.max(bbox[2], feature.bbox[2]);
-      bbox[3] = Math.max(bbox[3], feature.bbox[3]);
+      bbox[0] = Math.min(bbox[0], feature.bbox?.[0] ?? feature.center[0]);
+      bbox[1] = Math.min(bbox[1], feature.bbox?.[1] ?? feature.center[1]);
+      bbox[2] = Math.max(bbox[2], feature.bbox?.[2] ?? feature.center[0]);
+      bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
     }
 
     if (markedFeatures.length > 0) {
-      map.fitBounds(bbox, { padding: 50 });
+      if (bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
+        map.flyTo({
+          ...(flyTo === true ? {} : flyTo),
+          center: picked.center,
+          zoom,
+        });
+      } else {
+        map.fitBounds(bbox, { ...(flyTo === true ? {} : flyTo), padding: 50 });
+      }
     }
   }
 
@@ -295,11 +320,17 @@
   }
 </script>
 
-<form on:submit|preventDefault={handleOnSubmit}>
+<form
+  on:submit|preventDefault={handleOnSubmit}
+  class:can-collapse={collapsed && searchValue === ""}
+>
   <div class="inputGroup">
-    <SuggestionIcon />
+    <button class="search" type="button" on:click={() => input.focus()}>
+      <SearchIcon />
+    </button>
 
     <input
+      bind:this={input}
       bind:value={searchValue}
       on:focus={() => (focused = true)}
       on:blur={() => (focused = false)}
@@ -311,7 +342,11 @@
 
     <button
       type="button"
-      on:click={() => (searchValue = "")}
+      class="clear"
+      on:click={() => {
+        searchValue = "";
+        input.focus();
+      }}
       class:displayable={searchValue !== ""}
     >
       <ClearIcon />
@@ -363,11 +398,20 @@
     position: relative;
     background-color: #fff;
     width: 100%;
-    min-width: 240px;
+    max-width: 240px;
     z-index: 1;
     border-radius: 4px;
-    transition: width 0.25s, min-width 0.25s;
+    transition: max-width 0.25s;
     box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+  }
+
+  form.can-collapse {
+    max-width: 35px;
+  }
+
+  form:focus-within,
+  form:hover {
+    max-width: 240px;
   }
 
   input {
@@ -435,15 +479,36 @@
     background-color: #f3f3f3;
   }
 
+  button:hover {
+    background-color: transparent;
+  }
+
+  button:hover :global(svg) {
+    fill: black;
+  }
+
   button {
-    display: none;
-    position: absolute;
-    right: 7px;
-    top: 10px;
     padding: 0;
     margin: 0;
     border: 0;
     background-color: transparent;
+  }
+
+  button.search {
+    position: absolute;
+    left: 7px;
+    top: 8px;
+  }
+
+  button.clear {
+    display: none;
+    position: absolute;
+    right: 7px;
+    top: 10px;
+  }
+
+  div.inputGroup {
+    overflow: hidden;
   }
 
   div.inputGroup:hover button.displayable {

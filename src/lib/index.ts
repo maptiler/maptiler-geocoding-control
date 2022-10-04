@@ -1,6 +1,12 @@
 // Reexport your entry components here
 
-import type { Map, IControl, MarkerOptions } from "maplibre-gl";
+import type {
+  Map,
+  IControl,
+  MarkerOptions,
+  FlyToOptions,
+  FitBoundsOptions,
+} from "maplibre-gl";
 import Geocoding from "./Geocoding.svelte";
 import type maplibregl1 from "maplibre-gl";
 
@@ -35,9 +41,16 @@ type Options = {
   /**
    * Override the default placeholder attribute value.
    *
-   * @default Search
+   * @default "Search"
    */
   placeholder?: string;
+
+  /**
+   * Override the default error message.
+   *
+   * @default "Searching failed"
+   */
+  errorMessage?: string;
 
   /**
    * If true, the geocoder proximity will automatically update based on the map view.
@@ -102,10 +115,31 @@ type Options = {
    */
   showResultMarkers?: boolean | MarkerOptions;
 
+  /**
+   * On geocoded result what zoom level should the map animate to when a bbox isn't found in the response.
+   * If a bbox is found the map will fit to the bbox.
+   *
+   * @default 16
+   */
+  zoom?: number;
+
+  /**
+   * If `false`, animating the map to a selected result is disabled.
+   * If `true`, animating the map will use the default animation parameters.
+   * If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition.
+   *
+   * @default true
+   */
+  flyTo?: boolean | (FlyToOptions & FitBoundsOptions);
+
+  /**
+   * If `true`, the geocoder control will collapse until hovered or in focus.
+   *
+   * @default false
+   */
+  collapsed?: boolean;
+
   // TODO - missing and useful from maplibre-gl-geocoder
-  // zoom // On geocoded result what zoom level should the map animate to when a bbox isn't found in the response. If a bbox is found the map will fit to the bbox. (optional, default 16)
-  // flyTo // (Boolean | Object) If false, animating the map to a selected result is disabled. If true, animating the map will use the default animation parameters. If an object, it will be passed as options to the map flyTo or fitBounds method providing control over the animation of the transition. (optional, default true)
-  // collapsed // If true, the geocoder control will collapse until hovered or in focus. (optional, default false)
   // clearAndBlurOnEsc // If true, the geocoder control will clear it's contents and blur when user presses the escape key. (optional, default false)
   // clearOnBlur // If true, the geocoder control will clear its value when the input blurs. (optional, default false)
   // filter // A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
