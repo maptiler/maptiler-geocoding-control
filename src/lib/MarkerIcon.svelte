@@ -19,7 +19,7 @@
   }
 
   :global(.marker-selected) {
-    z-index: 10;
+    z-index: 1;
   }
 
   :global(.marker-selected) svg path {

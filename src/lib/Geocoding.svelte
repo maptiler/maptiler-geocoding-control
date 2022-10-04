@@ -43,6 +43,8 @@
 
   export let collapsed = false;
 
+  export let clearOnBlur = false;
+
   onMount(() => {
     if (!trackProximity) {
       return;
@@ -84,8 +86,6 @@
 
   let markedFeatures: Feature[] = [];
 
-  let selected: Feature | undefined;
-
   let picked: Feature | undefined;
 
   let selectedMarker: maplibregl.Marker;
@@ -106,22 +106,21 @@
 
     listFeatures = [];
     markedFeatures = [];
-    selected = undefined;
     index = -1;
   }
 
-  const markers = new Map<string, maplibregl.Marker>();
+  const markers: maplibregl.Marker[] = [];
 
-  $: markers: {
+  $: markersBlock: {
     if (!maplibregl) {
-      break markers;
+      break markersBlock;
     }
 
-    for (const marker of markers.values()) {
+    for (const marker of markers) {
       marker.remove();
     }
 
-    markers.clear();
+    markers.length = 0;
 
     for (const feature of picked
       ? [...markedFeatures, picked]
@@ -140,13 +139,12 @@
         m = new maplibregl.Marker({ element });
       }
 
-      markers.set(feature.id, m.setLngLat(feature.center).addTo(map));
+      markers.push(m.setLngLat(feature.center).addTo(map));
     }
   }
 
   $: if (!searchValue) {
     picked = undefined;
-    selected = undefined;
     listFeatures = [];
     error = undefined;
 
@@ -158,10 +156,9 @@
   let error: unknown;
 
   function handleOnSubmit() {
-    if (selected) {
-      searchValue = selected.text;
-      picked = selected;
-      selected = undefined;
+    if (index > -1) {
+      picked = listFeatures[index];
+      searchValue = picked.place_name.replace(/,.*/, "");
       error = undefined;
       markedFeatures = [];
       index = -1;
@@ -265,7 +262,7 @@
       selectedMarker.getElement().classList.toggle("marker-selected", false);
     }
 
-    selectedMarker = selected && markers.get(selected.id);
+    selectedMarker = index > -1 ? markers[index] : undefined;
 
     selectedMarker?.getElement().classList.toggle("marker-selected", true);
   }
@@ -275,6 +272,10 @@
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
     focusedDelayed = focused;
+
+    if (clearOnBlur && !focused) {
+      searchValue = "";
+    }
   });
 
   let index = -1;
@@ -284,27 +285,24 @@
 
     if (dir) {
       if (index === -1 && dir === -1) {
-        index = 0;
+        index = listFeatures.length;
       }
 
-      if (listFeatures.length > 0) {
-        index = (index + dir) % listFeatures.length;
+      index += dir;
 
-        if (index < 0) {
-          index += listFeatures.length;
-        }
-
-        selected = listFeatures[index];
+      if (index >= listFeatures.length) {
+        index = -1;
       }
 
       e.preventDefault();
+    } else if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
+      index = -1;
     }
   }
 
   $: {
     searchValue; // clear selection on edit
 
-    selected = undefined;
     index = -1;
   }
 
@@ -329,7 +327,9 @@
 </script>
 
 <form
+  tabindex="0"
   on:submit|preventDefault={handleOnSubmit}
+  on:focus={() => console.log("FOCUS")}
   class:can-collapse={collapsed && searchValue === ""}
 >
   <div class="inputGroup">
@@ -368,23 +368,22 @@
   {#if error}
     <div class="error">{errorMessage}</div>
   {:else if focusedDelayed && listFeatures.length > 0}
-    <ul>
-      {#each listFeatures as feature}
+    <ul on:mouseout={() => (index = -1)} on:blur={() => undefined}>
+      {#each listFeatures as feature, i}
         <li
           tabindex="0"
-          class:selected={feature === selected}
-          on:mouseover={() => (selected = feature)}
+          class:selected={index === i}
+          on:mouseover={() => (index = i)}
           on:focus={() => {
             picked = feature;
-            searchValue = feature.text;
-            selected = undefined;
+            searchValue = feature.place_name.replace(/,.*/, "");
             listFeatures = [];
             index = -1;
           }}
         >
           <MarkerIcon />
-          <span>{feature.text}</span>
-          <span>{feature.place_name}</span>
+          <span>{feature.place_name.replace(/,.*/, "")}</span>
+          <span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span>
         </li>
       {/each}
     </ul>
@@ -407,7 +406,7 @@
     background-color: #fff;
     width: 100%;
     max-width: 240px;
-    z-index: 1;
+    z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
     box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
@@ -455,7 +454,6 @@
     position: absolute;
     width: 100%;
     top: calc(100% + 6px);
-    z-index: 1000;
     overflow: hidden;
     font-size: 13px;
     box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
@@ -481,9 +479,7 @@
     font-weight: bold;
   }
 
-  li.selected,
-  li:hover,
-  li:focus {
+  li.selected {
     background-color: #f3f3f3;
   }
 
