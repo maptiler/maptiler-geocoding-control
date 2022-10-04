@@ -70,7 +70,7 @@ type Options = {
    * A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY].
    * Search results will be limited to the bounding box.
    */
-  bbox?: number;
+  bbox?: [number, number, number, number];
 
   /**
    * Maximum number of results to show.
