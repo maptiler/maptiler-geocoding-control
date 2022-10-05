@@ -13,11 +13,15 @@
     "dist"
   ],
   "main": "./dist/maptiler-geocoding.cjs",
-  "module": "./dist/maptiler-geocoding.mjs",
+  "module": "./dist/maptiler-geocoding.js",
   "exports": {
     ".": {
-      "import": "./dist/maptiler-geocoding.mjs",
+      "import": "./dist/maptiler-geocoding.js",
       "require": "./dist/maptiler-geocoding.cjs"
+    },
+    "./dist/style.css": {
+      "import": "./dist/style.css",
+      "require": "./dist/style.css"
     }
   },
   "types": "./dist/lib/index.d.ts",
