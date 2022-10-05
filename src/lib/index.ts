@@ -1,9 +1,10 @@
-import type {
-  Map,
-  IControl,
-  MarkerOptions,
-  FlyToOptions,
-  FitBoundsOptions,
+import {
+  type Map,
+  type IControl,
+  type MarkerOptions,
+  type FlyToOptions,
+  type FitBoundsOptions,
+  Evented,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
 import Geocoding from "./Geocoding.svelte";
@@ -160,6 +161,21 @@ type Options = {
    */
   filter?: (feature: Feature) => boolean;
 
+  /**
+   * Class of the root element.
+   */
+  class?: string;
+
+  // /**
+  //  * Callback called if search result is selected.
+  //  */
+  // onSelect?: (feature?: Feature) => void;
+
+  // /**
+  //  * Callback called if search result is picked.
+  //  */
+  // onPick?: (feature?: Feature) => void;
+
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)
   // render // A function that specifies how the results should be rendered in the dropdown menu. This function should accepts a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
@@ -167,12 +183,14 @@ type Options = {
   // getItemValue // A function that specifies how the selected result should be rendered in the search bar. This function should accept a single Carmen GeoJSON object as input and return a string. HTML tags in the output string will not be rendered. Defaults to (item) => item.place_name.
 };
 
-export class GeocodingControl implements IControl {
+export class GeocodingControl extends Evented implements IControl {
   #gc?: Geocoding;
 
   #options: Options;
 
   constructor(options: Options) {
+    super();
+
     this.#options = options;
   }
 
@@ -186,6 +204,14 @@ export class GeocodingControl implements IControl {
       target: div,
       props: { map, ...this.#options },
     });
+
+    this.#gc.$on("select", (event) => this.fire("select", event.detail));
+
+    this.#gc.$on("pick", (event) => this.fire("pick", event.detail));
+
+    this.#gc.$on("optionsVisibilityChange", (event) =>
+      this.fire("optionsvisibilitychange", event.detail)
+    );
 
     return div;
   }

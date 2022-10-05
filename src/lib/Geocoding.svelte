@@ -1,12 +1,16 @@
 <script type="ts">
   import type { FitBoundsOptions, FlyToOptions } from "maplibre-gl";
   import type MapLibreGL from "maplibre-gl";
-  import { onMount } from "svelte";
+  import { createEventDispatcher, onMount } from "svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
   import type { Feature } from "./types";
+
+  let className: string | undefined;
+
+  export { className as class };
 
   export let maplibregl: typeof MapLibreGL = undefined;
 
@@ -211,11 +215,21 @@
 
     abortController = new AbortController();
 
-    const res = await fetch(url, { signal: abortController.signal }).finally(
-      () => {
+    let res: Response;
+
+    try {
+      res = await fetch(url, { signal: abortController.signal }).finally(() => {
         abortController = undefined;
+      });
+    } catch (e) {
+      if (typeof e === "object" && e.name === "AbortError") {
+        return;
       }
-    );
+    }
+
+    if (!res.ok) {
+      throw new Error();
+    }
 
     const fc: FeatureCollection = await res.json();
 
@@ -319,6 +333,22 @@
       error = undefined;
     }
   }
+
+  const dispatch = createEventDispatcher<{
+    select: Feature;
+    pick: Feature;
+    optionsVisibilityChange: boolean;
+  }>();
+
+  $: showList = focusedDelayed && listFeatures.length > 0;
+
+  $: selected = listFeatures[index];
+
+  $: dispatch("select", selected);
+
+  $: dispatch("pick", picked);
+
+  $: dispatch("optionsVisibilityChange", showList);
 </script>
 
 <form
@@ -326,6 +356,7 @@
   on:submit|preventDefault={handleOnSubmit}
   on:focus={() => console.log("FOCUS")}
   class:can-collapse={collapsed && searchValue === ""}
+  class={className}
 >
   <div class="inputGroup">
     <button class="search" type="button" on:click={() => input.focus()}>
@@ -362,7 +393,7 @@
 
   {#if error}
     <div class="error">{errorMessage}</div>
-  {:else if focusedDelayed && listFeatures.length > 0}
+  {:else if showList}
     <ul on:mouseout={() => (index = -1)} on:blur={() => undefined}>
       {#each listFeatures as feature, i}
         <li
