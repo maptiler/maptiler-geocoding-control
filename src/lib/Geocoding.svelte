@@ -407,7 +407,7 @@
         <li
           tabindex="0"
           class:selected={index === i}
-          on:mouseover={() => (index = i)}
+          on:mousemove={() => (index = i)}
           on:focus={() => {
             picked = feature;
             searchValue = feature.place_name.replace(/,.*/, "");
