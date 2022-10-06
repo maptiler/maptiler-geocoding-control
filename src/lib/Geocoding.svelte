@@ -539,6 +539,7 @@
 
   div.inputGroup {
     overflow: hidden;
+    position: relative;
   }
 
   div.inputGroup:hover button.displayable {
