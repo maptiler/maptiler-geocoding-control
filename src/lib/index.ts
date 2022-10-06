@@ -98,6 +98,20 @@ type Options = {
   showResultsWhileTyping?: boolean;
 
   /**
+   * Set to `false` to disable autocomplete.
+   *
+   * @default true
+   */
+  autocomplete?: boolean;
+
+  /**
+   * Set to `false` to disable fuzzy search.
+   *
+   * @default true
+   */
+  fuzzy?: boolean;
+
+  /**
    * If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options.
    * If the value is an object, the marker will be constructed using these options.
    * If `false`, no marker will be added to the map.

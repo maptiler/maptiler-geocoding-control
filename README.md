@@ -46,6 +46,8 @@ Options:
 - `limit`: `number` - Maximum number of results to show. Default `5`.
 - `language`: `string` - Specify the language to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Defaults to the browser's language settings.
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
+- `autocomplete`: `boolean` - Set to `false` to disable autocomplete. Default `true`.
+- `fuzzy`: `boolean` - Set to `false` to disable fuzzy search. Default `true`.
 - `marker`: `boolean | MarkerOptions` - If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `zoom`: `number` - On geocoded result what zoom level should the map animate to when a bbox isn't found in the response. If a bbox is found the map will fit to the bbox. Default `16`.
@@ -53,6 +55,13 @@ Options:
 - `collapsed`: `boolean` - If `true`, the geocoder control will collapse until hovered or in focus. Default `false`.
 - `clearOnBlur`: `boolean` - If true, the geocoder control will clear its value when the input blurs. Default `false`.
 - `filter`: `(feature: Feature) => boolean` - A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
+- `class`: `string` - Class of the root element.
+
+Events:
+
+- `select` - Fired on highlighting search result in the dropdown by hovering it or by keyboard selection. Event value will be set to the highlighted `Feature` or to `undefined` if nothing is highlighted.
+- `pick` - Fired on picking the result from the dropdown. Event value will be set to the picked `Feature` or to `undefined` if nothing is picked (eg. search input is cleared).
+- `optionsVisibilityChange` - Fired with `true` value if dropdown list appears, `false` if it disappears
 
 ## Building
 

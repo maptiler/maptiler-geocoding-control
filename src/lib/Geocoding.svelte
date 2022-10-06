@@ -52,6 +52,10 @@
 
   export let filter: (feature: Feature) => boolean = () => true;
 
+  export let autocomplete = true;
+
+  export let fuzzy = true;
+
   onMount(() => {
     if (!trackProximity) {
       return;
@@ -196,6 +200,10 @@
     if (proximity) {
       sp.set("proximity", proximity.join(","));
     }
+
+    sp.set("autocomplete", String(autocomplete));
+
+    sp.set("fuzzy", String(fuzzy));
 
     const url =
       "https://api.maptiler.com/geocoding/" +
