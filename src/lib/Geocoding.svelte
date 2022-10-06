@@ -357,6 +357,14 @@
   $: dispatch("pick", picked);
 
   $: dispatch("optionsVisibilityChange", showList);
+
+  export function focus() {
+    input.focus();
+  }
+
+  export function blur() {
+    input.blur();
+  }
 </script>
 
 <form
@@ -366,8 +374,8 @@
   class:can-collapse={collapsed && searchValue === ""}
   class={className}
 >
-  <div class="inputGroup">
-    <button class="search" type="button" on:click={() => input.focus()}>
+  <div class="input-group">
+    <button type="button" on:click={() => input.focus()}>
       <SearchIcon />
     </button>
 
@@ -382,21 +390,24 @@
       aria-label={placeholder}
     />
 
-    <button
-      type="button"
-      class="clear"
-      on:click={() => {
-        searchValue = "";
-        input.focus();
-      }}
-      class:displayable={searchValue !== ""}
-    >
-      <ClearIcon />
-    </button>
+    <div class="clear-button-container">
+      <button
+        type="button"
+        on:click={() => {
+          searchValue = "";
+          input.focus();
+        }}
+        class:displayable={searchValue !== ""}
+      >
+        <ClearIcon />
+      </button>
 
-    {#if abortController}
-      <LoadingIcon />
-    {/if}
+      {#if abortController}
+        <LoadingIcon />
+      {/if}
+    </div>
+
+    <slot />
   </div>
 
   {#if error}
@@ -406,6 +417,7 @@
       {#each listFeatures as feature, i}
         <li
           tabindex="0"
+          data-selected={index === i}
           class:selected={index === i}
           on:mousemove={() => (index = i)}
           on:focus={() => {
@@ -464,17 +476,17 @@
     margin: 0;
     height: 36px;
     color: rgba(0, 0, 0, 0.75);
-    padding: 6px 35px 6px 35px;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
+    padding: 0;
   }
 
   input:focus {
     color: rgba(0, 0, 0, 0.75);
     outline: 0;
     box-shadow: none;
-    outline: thin dotted;
+    outline: none;
   }
 
   ul,
@@ -532,26 +544,21 @@
     background-color: transparent;
   }
 
-  button.search {
-    position: absolute;
-    left: 7px;
-    top: 8px;
+  .input-group {
+    display: flex;
+    align-items: stretch;
+    gap: 7px;
+    padding-inline: 8px;
   }
 
-  button.clear {
-    display: none;
-    position: absolute;
-    right: 7px;
-    top: 10px;
+  .input-group:hover .displayable {
+    visibility: visible;
   }
 
-  div.inputGroup {
-    overflow: hidden;
-    position: relative;
-  }
-
-  div.inputGroup:hover button.displayable {
-    display: block;
+  .input-group:focus-within {
+    outline-offset: 2px;
+    outline: thin dotted;
+    border-radius: 4px;
   }
 
   div.error {
@@ -559,5 +566,15 @@
     font-size: 15px;
     color: red;
     padding: 6px 10px;
+  }
+
+  .clear-button-container {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+  }
+
+  .clear-button-container button {
+    visibility: hidden;
   }
 </style>
