@@ -203,7 +203,7 @@
 
     sp.set("autocomplete", String(autocomplete));
 
-    sp.set("fuzzy", String(fuzzy));
+    sp.set("fuzzyMatch", String(fuzzy));
 
     const url =
       "https://api.maptiler.com/geocoding/" +
