@@ -5,3 +5,7 @@ export type Feature = {
   center: [number, number];
   bbox: [number, number, number, number];
 };
+
+export type FeatureCollection = {
+  features: Feature[];
+};

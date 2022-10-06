@@ -6,7 +6,7 @@
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
-  import type { Feature } from "./types";
+  import type { Feature, FeatureCollection } from "./types";
 
   let className: string | undefined;
 
@@ -76,10 +76,6 @@
       map.off("moveend", handleMoveEnd);
     };
   });
-
-  type FeatureCollection = {
-    features: Feature[];
-  };
 
   let focused = false;
 
@@ -176,6 +172,15 @@
     }
   }
 
+  const dispatch = createEventDispatcher<{
+    select: Feature;
+    pick: Feature;
+    optionsVisibilityChange: boolean;
+    featuresListed: Feature[];
+    featuresMarked: Feature[];
+    response: { url: string; featureCollection: FeatureCollection };
+  }>();
+
   let cachedFeatures: Feature[] = [];
 
   let abortController: AbortController;
@@ -239,9 +244,11 @@
       throw new Error();
     }
 
-    const fc: FeatureCollection = await res.json();
+    const featureCollection: FeatureCollection = await res.json();
 
-    listFeatures = fc.features.filter(filter);
+    dispatch("response", { url, featureCollection });
+
+    listFeatures = featureCollection.features.filter(filter);
 
     cachedFeatures = listFeatures;
   }
@@ -341,14 +348,6 @@
       error = undefined;
     }
   }
-
-  const dispatch = createEventDispatcher<{
-    select: Feature;
-    pick: Feature;
-    optionsVisibilityChange: boolean;
-    featuresListed: Feature[];
-    featuresMarked: Feature[];
-  }>();
 
   $: showList = focusedDelayed && listFeatures.length > 0;
 

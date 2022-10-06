@@ -61,6 +61,7 @@ Events:
 - `optionsVisibilityChange` - Fired with `true` value if dropdown list appears, `false` if it disappears
 - `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or empty array.
 - `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or empty array.
+- `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
 
 ## Building
 

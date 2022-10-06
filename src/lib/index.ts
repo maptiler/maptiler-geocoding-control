@@ -231,6 +231,8 @@ export class GeocodingControl extends Evented implements IControl {
       this.fire("featuresmarked", event.detail)
     );
 
+    this.#gc.$on("response", (event) => this.fire("response", event.detail));
+
     this.#gc.$on("optionsVisibilityChange", (event) =>
       this.fire("optionsvisibilitychange", event.detail)
     );
