@@ -346,6 +346,8 @@
     select: Feature;
     pick: Feature;
     optionsVisibilityChange: boolean;
+    featuresListed: Feature[];
+    featuresMarked: Feature[];
   }>();
 
   $: showList = focusedDelayed && listFeatures.length > 0;
@@ -357,6 +359,10 @@
   $: dispatch("pick", picked);
 
   $: dispatch("optionsVisibilityChange", showList);
+
+  $: dispatch("featuresListed", listFeatures);
+
+  $: dispatch("featuresMarked", markedFeatures);
 
   export function focus() {
     input.focus();

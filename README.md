@@ -59,6 +59,8 @@ Events:
 - `select` - Fired on highlighting search result in the dropdown by hovering it or by keyboard selection. Event value will be set to the highlighted `Feature` or to `undefined` if nothing is highlighted.
 - `pick` - Fired on picking the result from the dropdown. Event value will be set to the picked `Feature` or to `undefined` if nothing is picked (eg. search input is cleared).
 - `optionsVisibilityChange` - Fired with `true` value if dropdown list appears, `false` if it disappears
+- `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or empty array.
+- `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or empty array.
 
 ## Building
 
