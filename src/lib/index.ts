@@ -74,12 +74,12 @@ type Options = {
    */
   bbox?: [number, number, number, number];
 
-  /**
-   * Maximum number of results to show.
-   *
-   * @default 5
-   */
-  limit?: number;
+  // /**
+  //  * Maximum number of results to show.
+  //  *
+  //  * @default 5
+  //  */
+  // limit?: number;
 
   /**
    * Specify the language to use for response text and query result weighting.
@@ -97,19 +97,19 @@ type Options = {
    */
   showResultsWhileTyping?: boolean;
 
-  /**
-   * Set to `false` to disable autocomplete.
-   *
-   * @default true
-   */
-  autocomplete?: boolean;
+  // /**
+  //  * Set to `false` to disable autocomplete.
+  //  *
+  //  * @default true
+  //  */
+  // autocomplete?: boolean;
 
-  /**
-   * Set to `false` to disable fuzzy search.
-   *
-   * @default true
-   */
-  fuzzy?: boolean;
+  // /**
+  //  * Set to `false` to disable fuzzy search.
+  //  *
+  //  * @default true
+  //  */
+  // fuzzy?: boolean;
 
   /**
    * If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options.

@@ -32,8 +32,6 @@
 
   export let minLength = 2;
 
-  export let limit = 5;
-
   export let language = navigator.language.replace(/-.*/, "");
 
   export let showResultsWhileTyping = true;
@@ -52,9 +50,11 @@
 
   export let filter: (feature: Feature) => boolean = () => true;
 
-  export let autocomplete = true;
+  // export let limit = 5;
 
-  export let fuzzy = true;
+  // export let autocomplete = true;
+
+  // export let fuzzy = true;
 
   onMount(() => {
     if (!trackProximity) {
@@ -187,8 +187,6 @@
 
     sp.set("key", apiKey);
 
-    sp.set("limit", String(limit));
-
     if (language) {
       sp.set("language", String(language));
     }
@@ -201,9 +199,11 @@
       sp.set("proximity", proximity.join(","));
     }
 
-    sp.set("autocomplete", String(autocomplete));
+    // sp.set("limit", String(limit));
 
-    sp.set("fuzzyMatch", String(fuzzy));
+    // sp.set("autocomplete", String(autocomplete));
+
+    // sp.set("fuzzyMatch", String(fuzzy));
 
     const url =
       "https://api.maptiler.com/geocoding/" +
