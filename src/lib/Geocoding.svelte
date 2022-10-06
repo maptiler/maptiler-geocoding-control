@@ -137,7 +137,7 @@
       } else {
         const element = document.createElement("div");
 
-        new MarkerIcon({ target: element });
+        new MarkerIcon({ props: { inMap: true }, target: element });
 
         m = new maplibregl.Marker({ element });
       }
