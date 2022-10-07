@@ -54,6 +54,13 @@ Options:
 - `filter`: `(feature: Feature) => boolean` - A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
 - `class`: `string` - Class of the root element.
 
+Methods:
+
+- `setQuery(value: string, submit = true): void` - set the query and optionally submit it
+- `focus(): void` - focus the query input box
+- `blur(): void` - blur the query input box
+- `setReverseMode(value: boolean): void` - set reverse mode
+
 Events:
 
 - `select` - Fired on highlighting search result in the dropdown by hovering it or by keyboard selection. Event value will be set to the highlighted `Feature` or to `undefined` if nothing is highlighted.
@@ -62,6 +69,7 @@ Events:
 - `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or empty array.
 - `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or empty array.
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
+- `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
 
 ## Building
 

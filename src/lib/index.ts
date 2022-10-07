@@ -180,15 +180,12 @@ type Options = {
    */
   class?: string;
 
-  // /**
-  //  * Callback called if search result is selected.
-  //  */
-  // onSelect?: (feature?: Feature) => void;
-
-  // /**
-  //  * Callback called if search result is picked.
-  //  */
-  // onPick?: (feature?: Feature) => void;
+  /**
+   * Set to `true` to enable reverse geocoding button with title _toggle reverse geocoding_ or set the button title directly.
+   *
+   * @default false
+   */
+  enableReverse?: boolean | string;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)
@@ -237,7 +234,33 @@ export class GeocodingControl extends Evented implements IControl {
       this.fire("optionsvisibilitychange", event.detail)
     );
 
+    this.#gc.$on("reverseToggle", (event) =>
+      this.fire("reversetoggle", event.detail)
+    );
+
     return div;
+  }
+
+  setOptions(options: Options) {
+    this.#options = options;
+
+    this.#gc.$set(options);
+  }
+
+  setQuery(value: string, submit = true) {
+    this.#gc.setQuery(value, submit);
+  }
+
+  setReverseMode(value: boolean) {
+    this.#gc.$set({ reverseActive: true });
+  }
+
+  focus() {
+    this.#gc.focus();
+  }
+
+  blur() {
+    this.#gc.blur();
   }
 
   onRemove() {

@@ -1,14 +1,19 @@
 <script type="ts">
-  import type { FitBoundsOptions, FlyToOptions } from "maplibre-gl";
+  import type {
+    FitBoundsOptions,
+    FlyToOptions,
+    MapMouseEvent,
+  } from "maplibre-gl";
   import type MapLibreGL from "maplibre-gl";
   import { createEventDispatcher, onMount } from "svelte";
+  import BullseyeIcon from "./BullseyeIcon.svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
   import type { Feature, FeatureCollection } from "./types";
 
-  let className: string | undefined;
+  let className: string = undefined;
 
   export { className as class };
 
@@ -47,6 +52,8 @@
   export let collapsed = false;
 
   export let clearOnBlur = false;
+
+  export let enableReverse: boolean | string = false;
 
   export let filter: (feature: Feature) => boolean = () => true;
 
@@ -179,6 +186,7 @@
     featuresListed: Feature[];
     featuresMarked: Feature[];
     response: { url: string; featureCollection: FeatureCollection };
+    reverseToggle: boolean;
   }>();
 
   let cachedFeatures: Feature[] = [];
@@ -188,6 +196,8 @@
   async function search(searchValue: string) {
     error = undefined;
 
+    const isReverse = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
+
     const sp = new URLSearchParams();
 
     sp.set("key", apiKey);
@@ -196,19 +206,21 @@
       sp.set("language", String(language));
     }
 
-    if (bbox) {
-      sp.set("bbox", bbox.join(","));
-    }
+    if (!isReverse) {
+      if (bbox) {
+        sp.set("bbox", bbox.join(","));
+      }
 
-    if (proximity) {
-      sp.set("proximity", proximity.join(","));
+      if (proximity) {
+        sp.set("proximity", proximity.join(","));
+      }
+
+      // sp.set("autocomplete", String(autocomplete));
+
+      // sp.set("fuzzyMatch", String(fuzzy));
     }
 
     // sp.set("limit", String(limit));
-
-    // sp.set("autocomplete", String(autocomplete));
-
-    // sp.set("fuzzyMatch", String(fuzzy));
 
     const url =
       "https://api.maptiler.com/geocoding/" +
@@ -251,6 +263,10 @@
     listFeatures = featureCollection.features.filter(filter);
 
     cachedFeatures = listFeatures;
+
+    if (isReverse) {
+      input.focus();
+    }
   }
 
   function zoomToResults() {
@@ -363,12 +379,44 @@
 
   $: dispatch("featuresMarked", markedFeatures);
 
+  $: dispatch("reverseToggle", reverseActive);
+
   export function focus() {
     input.focus();
   }
 
   export function blur() {
     input.blur();
+  }
+
+  export function setQuery(value: string, submit = true) {
+    searchValue = value;
+
+    if (submit) {
+      index = -1;
+
+      handleOnSubmit();
+    }
+  }
+
+  $: if (map) {
+    map.getCanvas().style.cursor = reverseActive ? "crosshair" : "";
+  }
+
+  function handleReverse(e: MapMouseEvent) {
+    reverseActive = false;
+
+    setQuery(e.lngLat.lng.toFixed(6) + "," + e.lngLat.lat.toFixed(6));
+  }
+
+  export let reverseActive = false;
+
+  $: if (map) {
+    if (reverseActive) {
+      map.on("click", handleReverse);
+    } else {
+      map.off("click", handleReverse);
+    }
   }
 </script>
 
@@ -411,6 +459,19 @@
         <LoadingIcon />
       {/if}
     </div>
+
+    {#if enableReverse}
+      <button
+        type="button"
+        class:active={reverseActive}
+        title={enableReverse === true
+          ? "toggle reverse geocoding"
+          : enableReverse}
+        on:click={() => (reverseActive = !reverseActive)}
+      >
+        <BullseyeIcon />
+      </button>
+    {/if}
 
     <slot />
   </div>
@@ -539,6 +600,10 @@
   }
 
   button:hover :global(svg) {
+    fill: black;
+  }
+
+  button.active :global(svg) {
     fill: black;
   }
 
