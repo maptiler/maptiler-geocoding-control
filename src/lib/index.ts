@@ -216,27 +216,20 @@ export class GeocodingControl extends Evented implements IControl {
       props: { map, ...this.#options },
     });
 
-    this.#gc.$on("select", (event) => this.fire("select", event.detail));
-
-    this.#gc.$on("pick", (event) => this.fire("pick", event.detail));
-
-    this.#gc.$on("featuresListed", (event) =>
-      this.fire("featureslisted", event.detail)
-    );
-
-    this.#gc.$on("featuresMarked", (event) =>
-      this.fire("featuresmarked", event.detail)
-    );
-
-    this.#gc.$on("response", (event) => this.fire("response", event.detail));
-
-    this.#gc.$on("optionsVisibilityChange", (event) =>
-      this.fire("optionsvisibilitychange", event.detail)
-    );
-
-    this.#gc.$on("reverseToggle", (event) =>
-      this.fire("reversetoggle", event.detail)
-    );
+    for (const eventName of [
+      "select",
+      "pick",
+      "featuresListed",
+      "featuresMarked",
+      "response",
+      "optionsVisibilityChange",
+      "reverseToggle",
+      "queryChange",
+    ]) {
+      this.#gc.$on(eventName, (event) =>
+        this.fire(eventName.toLowerCase(), event.detail)
+      );
+    }
 
     return div;
   }

@@ -70,6 +70,7 @@ Events:
 - `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or empty array.
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
 - `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
+- `querychange` - Fired if query was changed. Event value is the query string.
 
 ## Building
 

@@ -86,7 +86,7 @@
 
   let focused = false;
 
-  let searchValue = "";
+  export let searchValue = "";
 
   let listFeatures: Feature[] = [];
 
@@ -187,6 +187,7 @@
     featuresMarked: Feature[];
     response: { url: string; featureCollection: FeatureCollection };
     reverseToggle: boolean;
+    queryChange: string;
   }>();
 
   let cachedFeatures: Feature[] = [];
@@ -380,6 +381,8 @@
   $: dispatch("featuresMarked", markedFeatures);
 
   $: dispatch("reverseToggle", reverseActive);
+
+  $: dispatch("queryChange", searchValue);
 
   export function focus() {
     input.focus();
