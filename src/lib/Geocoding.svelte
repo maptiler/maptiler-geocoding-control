@@ -349,15 +349,29 @@
     }
   }
 
+  // clear selection on edit
   $: {
-    searchValue; // clear selection on edit
+    searchValue;
 
     index = -1;
   }
 
   let searchTimeoutRef: number;
 
-  function handleInput() {
+  $: hasListFeatures = !!listFeatures;
+
+  // re-read list on parameters change
+  $: {
+    proximity;
+    bbox;
+    language;
+
+    if (hasListFeatures) {
+      handleInput();
+    }
+  }
+
+  function handleInput(debounce = true) {
     if (showResultsWhileTyping && searchValue.length > minLength) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);
@@ -365,9 +379,12 @@
 
       const sv = searchValue;
 
-      searchTimeoutRef = window.setTimeout(() => {
-        search(sv).catch((err) => (error = err));
-      }, debounceSearch);
+      searchTimeoutRef = window.setTimeout(
+        () => {
+          search(sv).catch((err) => (error = err));
+        },
+        debounce ? debounceSearch : 0
+      );
     } else {
       listFeatures = undefined;
       error = undefined;
