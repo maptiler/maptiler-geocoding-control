@@ -65,26 +65,20 @@
 
   // export let fuzzy = true;
 
-  onMount(() => {
-    if (!trackProximity) {
-      return;
+  function handleMoveEnd() {
+    let c: maplibregl.LngLat;
+
+    proximity =
+      map.getZoom() > 9 ? [(c = map.getCenter().wrap()).lng, c.lat] : undefined;
+  }
+
+  $: {
+    map.off("moveend", handleMoveEnd);
+
+    if (map && trackProximity) {
+      map.on("moveend", handleMoveEnd);
     }
-
-    function handleMoveEnd() {
-      let c: maplibregl.LngLat;
-
-      proximity =
-        map.getZoom() > 9
-          ? [(c = map.getCenter().wrap()).lng, c.lat]
-          : undefined;
-    }
-
-    map.on("moveend", handleMoveEnd);
-
-    return () => {
-      map.off("moveend", handleMoveEnd);
-    };
-  });
+  }
 
   let focused = false;
 
