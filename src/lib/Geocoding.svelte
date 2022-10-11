@@ -73,11 +73,15 @@
       map.getZoom() > 9 ? [(c = map.getCenter().wrap()).lng, c.lat] : undefined;
   }
 
-  $: {
+  $: if (map) {
     map.off("moveend", handleMoveEnd);
 
-    if (map && trackProximity) {
+    console.log({ trackProximity });
+
+    if (trackProximity) {
       map.on("moveend", handleMoveEnd);
+
+      handleMoveEnd();
     }
   }
 
