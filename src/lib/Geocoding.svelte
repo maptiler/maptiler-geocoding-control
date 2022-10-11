@@ -130,13 +130,9 @@
 
     markers.length = 0;
 
-    if (!markedFeatures) {
-      break markersBlock;
-    }
-
     for (const feature of picked
-      ? [...markedFeatures, picked]
-      : markedFeatures) {
+      ? [...(markedFeatures ?? []), picked]
+      : markedFeatures ?? []) {
       let m: maplibregl.Marker;
 
       if (feature === picked && typeof marker === "object") {
@@ -506,7 +502,6 @@
           on:focus={() => {
             picked = feature;
             searchValue = feature.place_name.replace(/,.*/, "");
-            listFeatures = undefined;
             index = -1;
           }}
         >
