@@ -13,11 +13,11 @@
   import SearchIcon from "./SearchIcon.svelte";
   import type { Feature, FeatureCollection } from "./types";
 
-  let className: string = undefined;
+  let className: string | undefined;
 
   export { className as class };
 
-  export let maplibregl: typeof MapLibreGL = undefined;
+  export let maplibregl: typeof MapLibreGL | undefined;
 
   export let map: maplibregl.Map;
 
@@ -29,9 +29,11 @@
 
   export let errorMessage = "Searching failed";
 
-  export let proximity: [number, number] = undefined;
+  export let noResultsMessage = "No results found";
 
-  export let bbox: [number, number, number, number] = undefined;
+  export let proximity: [number, number] | undefined;
+
+  export let bbox: [number, number, number, number] | undefined;
 
   export let trackProximity = true;
 
@@ -88,13 +90,13 @@
 
   export let searchValue = "";
 
-  let listFeatures: Feature[] = [];
+  let listFeatures: Feature[] | undefined;
 
-  let markedFeatures: Feature[] = [];
+  let markedFeatures: Feature[] | undefined;
 
   let picked: Feature | undefined;
 
-  let selectedMarker: maplibregl.Marker;
+  let selectedMarker: maplibregl.Marker | undefined;
 
   let lastSearchUrl = "";
 
@@ -110,8 +112,8 @@
       map.fitBounds(picked.bbox, flyTo === true ? {} : flyTo);
     }
 
-    listFeatures = [];
-    markedFeatures = [];
+    listFeatures = undefined;
+    markedFeatures = undefined;
     index = -1;
   }
 
@@ -127,6 +129,10 @@
     }
 
     markers.length = 0;
+
+    if (!markedFeatures) {
+      break markersBlock;
+    }
 
     for (const feature of picked
       ? [...markedFeatures, picked]
@@ -151,7 +157,7 @@
 
   $: if (!searchValue) {
     picked = undefined;
-    listFeatures = [];
+    listFeatures = undefined;
     error = undefined;
 
     if (showResultMarkers) {
@@ -162,11 +168,11 @@
   let error: unknown;
 
   function handleOnSubmit() {
-    if (index > -1) {
+    if (index > -1 && listFeatures) {
       picked = listFeatures[index];
       searchValue = picked.place_name.replace(/,.*/, "");
       error = undefined;
-      markedFeatures = [];
+      markedFeatures = undefined;
       index = -1;
     } else if (searchValue) {
       search(searchValue)
@@ -192,7 +198,7 @@
 
   let cachedFeatures: Feature[] = [];
 
-  let abortController: AbortController;
+  let abortController: AbortController | undefined;
 
   async function search(searchValue: string) {
     error = undefined;
@@ -248,9 +254,11 @@
         abortController = undefined;
       });
     } catch (e) {
-      if (typeof e === "object" && e.name === "AbortError") {
+      if (e && typeof e === "object" && (e as any).name === "AbortError") {
         return;
       }
+
+      throw new Error();
     }
 
     if (!res.ok) {
@@ -271,7 +279,7 @@
   }
 
   function zoomToResults() {
-    if (!markedFeatures.length || !flyTo) {
+    if (!markedFeatures?.length || !flyTo) {
       return;
     }
 
@@ -285,7 +293,7 @@
     }
 
     if (markedFeatures.length > 0) {
-      if (bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
+      if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
         map.flyTo({
           ...(flyTo === true ? {} : flyTo),
           center: picked.center,
@@ -322,6 +330,10 @@
   let index = -1;
 
   function handleKeyDown(e: KeyboardEvent) {
+    if (!listFeatures) {
+      return;
+    }
+
     let dir = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
 
     if (dir) {
@@ -361,20 +373,18 @@
         search(sv).catch((err) => (error = err));
       }, debounceSearch);
     } else {
-      listFeatures = [];
+      listFeatures = undefined;
       error = undefined;
     }
   }
 
-  $: showList = focusedDelayed && listFeatures.length > 0;
-
-  $: selected = listFeatures[index];
+  $: selected = listFeatures?.[index];
 
   $: dispatch("select", selected);
 
   $: dispatch("pick", picked);
 
-  $: dispatch("optionsVisibilityChange", showList);
+  $: dispatch("optionsVisibilityChange", focusedDelayed && !!listFeatures);
 
   $: dispatch("featuresListed", listFeatures);
 
@@ -479,9 +489,13 @@
     <slot />
   </div>
 
-  {#if error}
+  {#if !focusedDelayed}
+    {""}
+  {:else if error}
     <div class="error">{errorMessage}</div>
-  {:else if showList}
+  {:else if listFeatures?.length === 0}
+    <div class="no-results">{noResultsMessage}</div>
+  {:else if focusedDelayed && listFeatures?.length}
     <ul on:mouseout={() => (index = -1)} on:blur={() => undefined}>
       {#each listFeatures as feature, i}
         <li
@@ -492,7 +506,7 @@
           on:focus={() => {
             picked = feature;
             searchValue = feature.place_name.replace(/,.*/, "");
-            listFeatures = [];
+            listFeatures = undefined;
             index = -1;
           }}
         >
@@ -559,7 +573,8 @@
   }
 
   ul,
-  div.error {
+  div.error,
+  div.no-results {
     background-color: #fff;
     border-radius: 4px;
     left: 0;
@@ -634,11 +649,19 @@
     border-radius: 4px;
   }
 
-  div.error {
+  div.error,
+  div.no-results {
     font: inherit;
     font-size: 15px;
-    color: red;
     padding: 6px 10px;
+  }
+
+  div.error {
+    color: red;
+  }
+
+  div.no-results {
+    color: #404040;
   }
 
   .clear-button-container {

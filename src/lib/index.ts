@@ -55,6 +55,13 @@ type Options = {
   errorMessage?: string;
 
   /**
+   * Override the default message if no results are found.
+   *
+   * @default "No results found"
+   */
+  noResultsMessage?: string;
+
+  /**
    * If true, the geocoder proximity will automatically update based on the map view.
    *
    * @default true
@@ -237,26 +244,26 @@ export class GeocodingControl extends Evented implements IControl {
   setOptions(options: Options) {
     this.#options = options;
 
-    this.#gc.$set(options);
+    this.#gc?.$set(options);
   }
 
   setQuery(value: string, submit = true) {
-    this.#gc.setQuery(value, submit);
+    (this.#gc as any)?.setQuery(value, submit);
   }
 
   setReverseMode(value: boolean) {
-    this.#gc.$set({ reverseActive: true });
+    this.#gc?.$set({ reverseActive: value });
   }
 
   focus() {
-    this.#gc.focus();
+    (this.#gc as any)?.focus();
   }
 
   blur() {
-    this.#gc.blur();
+    (this.#gc as any)?.blur();
   }
 
   onRemove() {
-    this.#gc?.$destroy();
+    (this.#gc as any)?.$destroy();
   }
 }

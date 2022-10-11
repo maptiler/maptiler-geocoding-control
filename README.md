@@ -40,6 +40,7 @@ Options:
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.
 - `errorMessage`: `string` - Override the default error message. Default `"Searching failed"`.
+- `noResultsMessage`: `string` - Override the default message if no results are found. Default `"No results found"`.
 - `trackProximity`: `boolean` - If true, the geocoder proximity will automatically update based on the map view. Default `true`.
 - `minLength`: `number` - Minimum number of characters to enter before results are shown. Default `2`.
 - `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
@@ -53,6 +54,7 @@ Options:
 - `clearOnBlur`: `boolean` - If true, the geocoder control will clear its value when the input blurs. Default `false`.
 - `filter`: `(feature: Feature) => boolean` - A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
 - `class`: `string` - Class of the root element.
+- `enableReverse`: `boolean | string` - Set to `true` to enable reverse geocoding button with title _toggle reverse geocoding_ or set the button title directly. Default `false`.
 
 Methods:
 
@@ -66,8 +68,8 @@ Events:
 - `select` - Fired on highlighting search result in the dropdown by hovering it or by keyboard selection. Event value will be set to the highlighted `Feature` or to `undefined` if nothing is highlighted.
 - `pick` - Fired on picking the result from the dropdown. Event value will be set to the picked `Feature` or to `undefined` if nothing is picked (eg. search input is cleared).
 - `optionsVisibilityChange` - Fired with `true` value if dropdown list appears, `false` if it disappears
-- `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or empty array.
-- `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or empty array.
+- `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or `undefined`.
+- `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or `undefined`.
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
 - `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
 - `querychange` - Fired if query was changed. Event value is the query string.
