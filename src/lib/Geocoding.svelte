@@ -5,7 +5,8 @@
     MapMouseEvent,
   } from "maplibre-gl";
   import type MapLibreGL from "maplibre-gl";
-  import { createEventDispatcher, onMount } from "svelte";
+  import { createEventDispatcher } from "svelte";
+  import { onDestroy } from "svelte/internal";
   import BullseyeIcon from "./BullseyeIcon.svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
@@ -438,6 +439,11 @@
       map.off("click", handleReverse);
     }
   }
+
+  onDestroy(() => {
+    map.off("moveend", handleMoveEnd);
+    map.off("click", handleReverse);
+  });
 </script>
 
 <form
