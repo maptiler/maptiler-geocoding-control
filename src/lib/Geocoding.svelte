@@ -174,6 +174,8 @@
         .then(() => {
           markedFeatures = listFeatures;
 
+          picked = undefined;
+
           zoomToResults();
         })
         .catch((err) => (error = err));
