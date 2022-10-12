@@ -76,8 +76,6 @@
   $: if (map) {
     map.off("moveend", handleMoveEnd);
 
-    console.log({ trackProximity });
-
     if (trackProximity) {
       map.on("moveend", handleMoveEnd);
 
@@ -455,7 +453,6 @@
 <form
   tabindex="0"
   on:submit|preventDefault={handleOnSubmit}
-  on:focus={() => console.log("FOCUS")}
   class:can-collapse={collapsed && searchValue === ""}
   class={className}
 >
@@ -470,7 +467,7 @@
       on:focus={() => (focused = true)}
       on:blur={() => (focused = false)}
       on:keydown={handleKeyDown}
-      on:input={handleInput}
+      on:input={() => handleInput()}
       {placeholder}
       aria-label={placeholder}
     />
