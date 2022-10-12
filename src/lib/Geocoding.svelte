@@ -602,6 +602,7 @@
     font-size: 14px;
     box-shadow: 0px 2px 8px rgba(51, 51, 89, 0.15);
     line-height: 16px;
+    overflow: hidden;
   }
 
   :global(.maplibregl-ctrl-bottom-left) ul,
