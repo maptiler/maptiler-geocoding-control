@@ -2,6 +2,8 @@
 
 A geocoder control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js).
 
+Component can be used as ES module or commonjs module.
+
 ## Usage
 
 ### Usage with a module bundler
@@ -73,6 +75,45 @@ Events:
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
 - `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
 - `querychange` - Fired if query was changed. Event value is the query string.
+
+## Svelte component
+
+In addition to using the component as MapLibre GL Control it is alto possible to use it stand-alone in Svelte projects.
+Component API matches API described above and options are exposed as component properties.
+
+```svelte
+<script lang="ts">
+  import Geocoding from "maplibre-gl-maptiler-geocoding/src/lib/Geocoding.svelte";
+  import maplibregl from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
+
+  const apiKey = "your API key";
+
+  let map: maplibregl.Map;
+
+  let container: HTMLElement;
+
+  onMount(() => {
+    map = new maplibregl.Map({
+      style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
+      container,
+    });
+  }
+</script>
+
+<div class="map" bind:this={container} />
+
+{#if map}
+  <Geocoding {map} {apiKey} {maplibregl} />
+{/if}
+
+<style>
+  .map {
+    position: absolute;
+    inset: 0;
+  }
+</style>
+```
 
 ## Building
 
