@@ -543,9 +543,8 @@
   }
 
   form {
-    font-size: 18px;
-    line-height: 24px;
-    font-family: "Open Sans", "Helvetica Neue", Arial, Helvetica, sans-serif;
+    font-family: "Ubuntu", "Open Sans", "Helvetica Neue", Arial, Helvetica,
+      sans-serif;
     position: relative;
     background-color: #fff;
     width: 100%;
@@ -553,7 +552,9 @@
     z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
-    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
+    box-shadow: 0px 2px 8px rgba(51, 51, 89, 0.15);
+    --color-text: #333359;
+    --color-icon-button: #333359;
   }
 
   form.can-collapse {
@@ -567,14 +568,13 @@
 
   input {
     font: inherit;
-    font-size: 15px;
+    font-size: 14px;
     width: 100%;
     border: 0;
     background-color: transparent;
     margin: 0;
     height: 36px;
     color: rgba(0, 0, 0, 0.75);
-    text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
     padding: 0;
@@ -583,8 +583,8 @@
   input:focus {
     color: rgba(0, 0, 0, 0.75);
     outline: 0;
-    box-shadow: none;
     outline: none;
+    box-shadow: none;
   }
 
   ul,
@@ -599,10 +599,9 @@
     position: absolute;
     width: 100%;
     top: calc(100% + 6px);
-    overflow: hidden;
-    font-size: 13px;
-    box-shadow: 0 0 10px 2px rgba(0, 0, 0, 0.1);
-    line-height: 1.5;
+    font-size: 14px;
+    box-shadow: 0px 2px 8px rgba(51, 51, 89, 0.15);
+    line-height: 16px;
   }
 
   :global(.maplibregl-ctrl-bottom-left) ul,
@@ -615,9 +614,23 @@
     cursor: default;
     display: grid;
     grid-template-columns: auto 1fr;
-    white-space: pre;
-    color: #404040;
+    color: var(--color-text);
     padding: 4px 0px;
+  }
+
+  li:first-child {
+    padding-top: 8px;
+  }
+
+  li:last-child {
+    padding-bottom: 8px;
+  }
+
+  li span {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    padding-right: 8px;
   }
 
   li span:nth-of-type(1) {
@@ -632,12 +645,9 @@
     background-color: transparent;
   }
 
-  button:hover :global(svg) {
-    fill: black;
-  }
-
+  button:hover :global(svg),
   button.active :global(svg) {
-    fill: black;
+    fill: #6b7c92;
   }
 
   button {
@@ -652,6 +662,8 @@
     align-items: stretch;
     gap: 7px;
     padding-inline: 8px;
+    outline: #c1cfe4 solid 2px;
+    border-radius: 4px;
   }
 
   .input-group:hover .displayable {
@@ -659,24 +671,22 @@
   }
 
   .input-group:focus-within {
-    outline-offset: 2px;
-    outline: thin dotted;
-    border-radius: 4px;
+    outline: #3170fe solid 2px;
   }
 
   div.error,
   div.no-results {
     font: inherit;
-    font-size: 15px;
+    font-size: 14px;
     padding: 6px 10px;
   }
 
   div.error {
-    color: red;
+    color: #e25041;
   }
 
   div.no-results {
-    color: #404040;
+    color: var(--color-text);
   }
 
   .clear-button-container {

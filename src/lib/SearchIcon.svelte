@@ -7,6 +7,6 @@
 <style>
   svg {
     display: block;
-    fill: #757575;
+    fill: var(--color-icon-button);
   }
 </style>
