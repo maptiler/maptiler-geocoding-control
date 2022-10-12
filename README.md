@@ -9,13 +9,13 @@ Component can be used as ES module or commonjs module.
 ### Usage with a module bundler
 
 ```bash
-npm install --save @maptiler/maplibre-gl-maptiler-geocoder maplibre-gl
+npm install --save maplibre-gl-maptiler-geocoding maplibre-gl
 ```
 
 ```js
 import maplibregl from "maplibre-gl";
-import maptilerGeocoding from "@maptiler/maplibre-gl-maptiler-geocoder";
-import "@maptiler/maplibre-gl-maptiler-geocoder/dist/style.css";
+import maptilerGeocoding from "maplibre-gl-maptiler-geocoding";
+import "maplibre-gl-maptiler-geocoding/dist/style.css";
 
 const API_KEY = "your API key";
 
