@@ -119,6 +119,8 @@
 
   let searchTimeoutRef: number;
 
+  let focusedDelayed: boolean;
+
   const markers: maplibregl.Marker[] = [];
 
   const dispatch = createEventDispatcher<{
@@ -210,8 +212,6 @@
 
     selectedMarker?.getElement().classList.toggle("marker-selected", true);
   }
-
-  let focusedDelayed: boolean;
 
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
