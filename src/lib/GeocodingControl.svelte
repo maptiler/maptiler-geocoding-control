@@ -60,11 +60,33 @@
 
   export let filter: (feature: Feature) => boolean = () => true;
 
+  export let searchValue = "";
+
+  export let reverseActive = false;
+
   // export let limit = 5;
 
   // export let autocomplete = true;
 
   // export let fuzzy = true;
+
+  export function focus() {
+    input.focus();
+  }
+
+  export function blur() {
+    input.blur();
+  }
+
+  export function setQuery(value: string, submit = true) {
+    searchValue = value;
+
+    if (submit) {
+      selectedItemIndex = -1;
+
+      handleOnSubmit();
+    }
+  }
 
   function handleMoveEnd() {
     let c: maplibregl.LngLat;
@@ -73,19 +95,7 @@
       map.getZoom() > 9 ? [(c = map.getCenter().wrap()).lng, c.lat] : undefined;
   }
 
-  $: if (map) {
-    map.off("moveend", handleMoveEnd);
-
-    if (trackProximity) {
-      map.on("moveend", handleMoveEnd);
-
-      handleMoveEnd();
-    }
-  }
-
   let focused = false;
-
-  export let searchValue = "";
 
   let listFeatures: Feature[] | undefined;
 
@@ -99,6 +109,39 @@
 
   let input: HTMLInputElement;
 
+  let selectedItemIndex = -1;
+
+  let error: unknown;
+
+  let cachedFeatures: Feature[] = [];
+
+  let abortController: AbortController | undefined;
+
+  let searchTimeoutRef: number;
+
+  const markers: maplibregl.Marker[] = [];
+
+  const dispatch = createEventDispatcher<{
+    select: Feature;
+    pick: Feature;
+    optionsVisibilityChange: boolean;
+    featuresListed: Feature[];
+    featuresMarked: Feature[];
+    response: { url: string; featureCollection: FeatureCollection };
+    reverseToggle: boolean;
+    queryChange: string;
+  }>();
+
+  $: if (map) {
+    map.off("moveend", handleMoveEnd);
+
+    if (trackProximity) {
+      map.on("moveend", handleMoveEnd);
+
+      handleMoveEnd();
+    }
+  }
+
   $: if (picked && flyTo) {
     if (
       !picked.bbox ||
@@ -111,10 +154,8 @@
 
     listFeatures = undefined;
     markedFeatures = undefined;
-    index = -1;
+    selectedItemIndex = -1;
   }
-
-  const markers: maplibregl.Marker[] = [];
 
   $: markersBlock: {
     if (!maplibregl) {
@@ -158,15 +199,89 @@
     }
   }
 
-  let error: unknown;
+  // highlight selected marker
+  $: {
+    if (selectedMarker) {
+      selectedMarker.getElement().classList.toggle("marker-selected", false);
+    }
+
+    selectedMarker =
+      selectedItemIndex > -1 ? markers[selectedItemIndex] : undefined;
+
+    selectedMarker?.getElement().classList.toggle("marker-selected", true);
+  }
+
+  let focusedDelayed: boolean;
+
+  // close dropdown in the next cycle so that the selected item event has the chance to fire
+  $: setTimeout(() => {
+    focusedDelayed = focused;
+
+    if (clearOnBlur && !focused) {
+      searchValue = "";
+    }
+  });
+
+  // clear selection on edit
+  $: {
+    searchValue;
+
+    selectedItemIndex = -1;
+  }
+
+  $: hasListFeatures = !!listFeatures;
+
+  // re-read list on parameters change
+  $: {
+    proximity;
+    bbox;
+    language;
+
+    if (hasListFeatures) {
+      handleInput();
+    }
+  }
+
+  $: selected = listFeatures?.[selectedItemIndex];
+
+  $: dispatch("select", selected);
+
+  $: dispatch("pick", picked);
+
+  $: dispatch("optionsVisibilityChange", focusedDelayed && !!listFeatures);
+
+  $: dispatch("featuresListed", listFeatures);
+
+  $: dispatch("featuresMarked", markedFeatures);
+
+  $: dispatch("reverseToggle", reverseActive);
+
+  $: dispatch("queryChange", searchValue);
+
+  $: if (map) {
+    map.getCanvas().style.cursor = reverseActive ? "crosshair" : "";
+  }
+
+  $: if (map) {
+    if (reverseActive) {
+      map.on("click", handleReverse);
+    } else {
+      map.off("click", handleReverse);
+    }
+  }
+
+  onDestroy(() => {
+    map.off("moveend", handleMoveEnd);
+    map.off("click", handleReverse);
+  });
 
   function handleOnSubmit() {
-    if (index > -1 && listFeatures) {
-      picked = listFeatures[index];
+    if (selectedItemIndex > -1 && listFeatures) {
+      picked = listFeatures[selectedItemIndex];
       searchValue = picked.place_name.replace(/,.*/, "");
       error = undefined;
       markedFeatures = undefined;
-      index = -1;
+      selectedItemIndex = -1;
     } else if (searchValue) {
       search(searchValue)
         .then(() => {
@@ -179,21 +294,6 @@
         .catch((err) => (error = err));
     }
   }
-
-  const dispatch = createEventDispatcher<{
-    select: Feature;
-    pick: Feature;
-    optionsVisibilityChange: boolean;
-    featuresListed: Feature[];
-    featuresMarked: Feature[];
-    response: { url: string; featureCollection: FeatureCollection };
-    reverseToggle: boolean;
-    queryChange: string;
-  }>();
-
-  let cachedFeatures: Feature[] = [];
-
-  let abortController: AbortController | undefined;
 
   async function search(searchValue: string) {
     error = undefined;
@@ -300,29 +400,11 @@
     }
   }
 
-  // highlight selected marker
-  $: {
-    if (selectedMarker) {
-      selectedMarker.getElement().classList.toggle("marker-selected", false);
-    }
+  function handleReverse(e: MapMouseEvent) {
+    reverseActive = false;
 
-    selectedMarker = index > -1 ? markers[index] : undefined;
-
-    selectedMarker?.getElement().classList.toggle("marker-selected", true);
+    setQuery(e.lngLat.lng.toFixed(6) + "," + e.lngLat.lat.toFixed(6));
   }
-
-  let focusedDelayed: boolean;
-
-  // close dropdown in the next cycle so that the selected item event has the chance to fire
-  $: setTimeout(() => {
-    focusedDelayed = focused;
-
-    if (clearOnBlur && !focused) {
-      searchValue = "";
-    }
-  });
-
-  let index = -1;
 
   function handleKeyDown(e: KeyboardEvent) {
     if (!listFeatures) {
@@ -332,41 +414,19 @@
     let dir = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
 
     if (dir) {
-      if (index === -1 && dir === -1) {
-        index = listFeatures.length;
+      if (selectedItemIndex === -1 && dir === -1) {
+        selectedItemIndex = listFeatures.length;
       }
 
-      index += dir;
+      selectedItemIndex += dir;
 
-      if (index >= listFeatures.length) {
-        index = -1;
+      if (selectedItemIndex >= listFeatures.length) {
+        selectedItemIndex = -1;
       }
 
       e.preventDefault();
     } else if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
-      index = -1;
-    }
-  }
-
-  // clear selection on edit
-  $: {
-    searchValue;
-
-    index = -1;
-  }
-
-  let searchTimeoutRef: number;
-
-  $: hasListFeatures = !!listFeatures;
-
-  // re-read list on parameters change
-  $: {
-    proximity;
-    bbox;
-    language;
-
-    if (hasListFeatures) {
-      handleInput();
+      selectedItemIndex = -1;
     }
   }
 
@@ -389,65 +449,6 @@
       error = undefined;
     }
   }
-
-  $: selected = listFeatures?.[index];
-
-  $: dispatch("select", selected);
-
-  $: dispatch("pick", picked);
-
-  $: dispatch("optionsVisibilityChange", focusedDelayed && !!listFeatures);
-
-  $: dispatch("featuresListed", listFeatures);
-
-  $: dispatch("featuresMarked", markedFeatures);
-
-  $: dispatch("reverseToggle", reverseActive);
-
-  $: dispatch("queryChange", searchValue);
-
-  export function focus() {
-    input.focus();
-  }
-
-  export function blur() {
-    input.blur();
-  }
-
-  export function setQuery(value: string, submit = true) {
-    searchValue = value;
-
-    if (submit) {
-      index = -1;
-
-      handleOnSubmit();
-    }
-  }
-
-  $: if (map) {
-    map.getCanvas().style.cursor = reverseActive ? "crosshair" : "";
-  }
-
-  function handleReverse(e: MapMouseEvent) {
-    reverseActive = false;
-
-    setQuery(e.lngLat.lng.toFixed(6) + "," + e.lngLat.lat.toFixed(6));
-  }
-
-  export let reverseActive = false;
-
-  $: if (map) {
-    if (reverseActive) {
-      map.on("click", handleReverse);
-    } else {
-      map.off("click", handleReverse);
-    }
-  }
-
-  onDestroy(() => {
-    map.off("moveend", handleMoveEnd);
-    map.off("click", handleReverse);
-  });
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
@@ -513,18 +514,18 @@
   {:else if listFeatures?.length === 0}
     <div class="no-results">{noResultsMessage}</div>
   {:else if focusedDelayed && listFeatures?.length}
-    <ul on:mouseout={() => (index = -1)} on:blur={() => undefined}>
+    <ul on:mouseout={() => (selectedItemIndex = -1)} on:blur={() => undefined}>
       {#each listFeatures as feature, i}
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <li
           tabindex="0"
-          data-selected={index === i}
-          class:selected={index === i}
-          on:mousemove={() => (index = i)}
+          data-selected={selectedItemIndex === i}
+          class:selected={selectedItemIndex === i}
+          on:mousemove={() => (selectedItemIndex = i)}
           on:focus={() => {
             picked = feature;
             searchValue = feature.place_name.replace(/,.*/, "");
-            index = -1;
+            selectedItemIndex = -1;
           }}
         >
           <MarkerIcon />
