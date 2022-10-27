@@ -9,13 +9,13 @@ Component can be used as ES module or commonjs module.
 ### Usage with a module bundler
 
 ```bash
-npm install --save maplibre-gl-maptiler-geocoding maplibre-gl
+npm install --save maplibre-gl-maptiler-geocoder maplibre-gl
 ```
 
 ```js
 import maplibregl from "maplibre-gl";
-import maptilerGeocoding from "maplibre-gl-maptiler-geocoding";
-import "maplibre-gl-maptiler-geocoding/dist/style.css";
+import { GeocodingControl } from "maplibre-gl-maptiler-geocoder";
+import "maplibre-gl-maptiler-geocoder/dist/style.css";
 
 const API_KEY = "your API key";
 
@@ -26,7 +26,7 @@ const map = new maplibregl.Map({
   zoom: 7,
 });
 
-const gc = new maptilerGeocoding.GeocodingControl({
+const gc = new GeocodingControl({
   apiKey: API_KEY,
   maplibregl,
 });
@@ -85,7 +85,7 @@ Component API matches API described above and options are exposed as component p
 
 ```svelte
 <script lang="ts">
-  import Geocoding from "maplibre-gl-maptiler-geocoding/src/lib/Geocoding.svelte";
+  import GeocodingControl from "maplibre-gl-maptiler-geocoder/src/lib/GeocodingControl.svelte";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -106,7 +106,7 @@ Component API matches API described above and options are exposed as component p
 <div class="map" bind:this={container} />
 
 {#if map}
-  <Geocoding {map} {apiKey} {maplibregl} />
+  <GeocodingControl {map} {apiKey} {maplibregl} />
 {/if}
 
 <style>

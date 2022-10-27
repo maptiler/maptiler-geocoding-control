@@ -7,7 +7,7 @@ import {
   Evented,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
-import Geocoding from "./Geocoding.svelte";
+import GeocodingControlComponent from "./GeocodingControl.svelte";
 import type { Feature } from "./types";
 
 export type { Feature } from "./types";
@@ -202,7 +202,7 @@ type Options = {
 };
 
 export class GeocodingControl extends Evented implements IControl {
-  #gc?: Geocoding;
+  #gc?: GeocodingControlComponent;
 
   #options: Options;
 
@@ -218,7 +218,7 @@ export class GeocodingControl extends Evented implements IControl {
     div.className =
       "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl";
 
-    this.#gc = new Geocoding({
+    this.#gc = new GeocodingControlComponent({
       target: div,
       props: { map, ...this.#options },
     });

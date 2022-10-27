@@ -1,7 +1,7 @@
 {
-  "name": "maplibre-gl-maptiler-geocoding",
+  "name": "maplibre-gl-maptiler-geocoder",
   "private": true,
-  "version": "0.0.29",
+  "version": "0.0.30",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -13,20 +13,20 @@
     "dist",
     "src/lib"
   ],
-  "main": "./dist/maptiler-geocoding.cjs",
-  "module": "./dist/maptiler-geocoding.js",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "exports": {
     ".": {
-      "import": "./dist/maptiler-geocoding.js",
-      "require": "./dist/maptiler-geocoding.cjs"
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
       "require": "./dist/style.css"
     },
-    "./src/lib/Geocoding.svelte": {
-      "import": "./src/lib/Geocoding.svelte",
-      "require": "./src/lib/Geocoding.svelte"
+    "./src/lib/Geocoder.svelte": {
+      "import": "./src/lib/Geocoder.svelte",
+      "require": "./src/lib/Geocoder.svelte"
     }
   },
   "types": "./dist/lib/index.d.ts",

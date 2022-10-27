@@ -3,7 +3,7 @@
 
   import { Map } from "maplibre-gl";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/index";
+  import GeocodingControl from "./lib/index";
   import maplibregl from "maplibre-gl";
 
   let containerElement: HTMLElement;

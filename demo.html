@@ -8,7 +8,7 @@
       rel="stylesheet"
     />
 
-    <script src="dist/maptiler-geocoding.iife.js"></script>
+    <script src="dist/index.iife.js"></script>
 
     <link href="dist/style.css" rel="stylesheet" />
 
@@ -41,7 +41,10 @@
         zoom: 7,
       });
 
-      const gc = new maptilerGeocoding.GeocodingControl({ apiKey, maplibregl });
+      const gc = new maplibreglMaptilerGeocoder.GeocodingControl({
+        apiKey,
+        maplibregl,
+      });
 
       map.addControl(gc);
     </script>

@@ -6,9 +6,9 @@ export default defineConfig({
   plugins: [svelte()],
   build: {
     lib: {
-      fileName: "maptiler-geocoding",
+      fileName: "index",
       entry: "src/lib/index.ts",
-      name: "maptilerGeocoding",
+      name: "maplibreglMaptilerGeocoder",
       formats: ["es", "cjs", "iife"],
     },
     rollupOptions: {
@@ -17,7 +17,7 @@ export default defineConfig({
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
-          maplibregl: "maplibregl",
+          "maplibre-gl": "maplibregl",
         },
       },
     },

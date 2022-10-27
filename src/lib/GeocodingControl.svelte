@@ -450,6 +450,7 @@
   });
 </script>
 
+<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <form
   tabindex="0"
   on:submit|preventDefault={handleOnSubmit}
@@ -514,6 +515,7 @@
   {:else if focusedDelayed && listFeatures?.length}
     <ul on:mouseout={() => (index = -1)} on:blur={() => undefined}>
       {#each listFeatures as feature, i}
+        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <li
           tabindex="0"
           data-selected={index === i}
