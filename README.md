@@ -32,6 +32,8 @@ const gc = new maptilerGeocoding.GeocodingControl({
 });
 ```
 
+See [demo.html](./demo.html) - after building this library (`npm install && npm run build`) open it in your browser with URL `file:///path_to_this_repository/demo.html#key=your_api_key`.
+
 ## API Documentation
 
 Options:
@@ -126,5 +128,5 @@ You will find compilation result in `dist` directory.
 ## Running in dev mode
 
 ```bash
-npm install && npm run dev
+npm install && VITE_API_KEY=your_api_key npm run dev
 ```

@@ -8,7 +8,15 @@
 
   let containerElement: HTMLElement;
 
-  const apiKey = "0iOk4fgsz9fOXyDYCirE";
+  const apiKey = import.meta.env.VITE_API_KEY;
+
+  if (!apiKey) {
+    const errMsg = "missing VITE_API_KEY environment variable";
+
+    window.alert(errMsg);
+
+    throw new Error(errMsg);
+  }
 
   onMount(() => {
     const map = new Map({
