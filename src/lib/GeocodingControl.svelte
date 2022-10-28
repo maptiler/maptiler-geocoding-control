@@ -40,7 +40,7 @@
 
   export let minLength = 2;
 
-  export let language = navigator.language.replace(/-.*/, "");
+  export let language: string | undefined;
 
   export let showResultsWhileTyping = true;
 
@@ -159,11 +159,11 @@
     selectedItemIndex = -1;
   }
 
-  $: markersBlock: {
-    if (!maplibregl) {
-      break markersBlock;
-    }
+  $: if (markedFeatures !== listFeatures) {
+    markedFeatures = undefined;
+  }
 
+  $: if (maplibregl) {
     for (const marker of markers) {
       marker.remove();
     }
@@ -227,19 +227,6 @@
     searchValue;
 
     selectedItemIndex = -1;
-  }
-
-  $: hasListFeatures = !!listFeatures;
-
-  // re-read list on parameters change
-  $: {
-    proximity;
-    bbox;
-    language;
-
-    if (hasListFeatures) {
-      handleInput();
-    }
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
@@ -325,7 +312,7 @@
     // sp.set("limit", String(limit));
 
     const url =
-      "https://api.maptiler.com/geocoding/" +
+      import.meta.env.VITE_API_URL +
       encodeURIComponent(searchValue) +
       ".json?" +
       sp.toString();
