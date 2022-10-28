@@ -64,6 +64,8 @@
 
   export let reverseActive = false;
 
+  export let showPlaceType = false;
+
   // export let limit = 5;
 
   // export let autocomplete = true;
@@ -517,10 +519,17 @@
           }}
         >
           <MarkerIcon />
-          <span><span>{feature.place_name.replace(/,.*/, "")}</span></span>
-          <span
-            ><span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span></span
-          >
+          <span>
+            <span>
+              <span>{feature.place_name.replace(/,.*/, "")}</span>
+              {#if showPlaceType}
+                <span>{feature.place_type}</span>
+              {/if}
+            </span>
+          </span>
+          <span>
+            <span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span>
+          </span>
         </li>
       {/each}
     </ul>
@@ -636,8 +645,14 @@
     animation: backAndForth 5s linear infinite;
   }
 
-  li > span:nth-of-type(1) > span {
+  li > span:nth-of-type(1) > span > span:nth-of-type(1) {
     font-weight: bold;
+  }
+
+  li > span:nth-of-type(1) > span > span:nth-of-type(2) {
+    color: #aeb6c7;
+    font-size: 12px;
+    padding-left: 4px;
   }
 
   li.selected {
