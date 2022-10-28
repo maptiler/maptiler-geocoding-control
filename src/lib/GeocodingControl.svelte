@@ -509,7 +509,7 @@
           tabindex="0"
           data-selected={selectedItemIndex === i}
           class:selected={selectedItemIndex === i}
-          on:mousemove={() => (selectedItemIndex = i)}
+          on:mouseover={() => (selectedItemIndex = i)}
           on:focus={() => {
             picked = feature;
             searchValue = feature.place_name.replace(/,.*/, "");
@@ -517,8 +517,10 @@
           }}
         >
           <MarkerIcon />
-          <span>{feature.place_name.replace(/,.*/, "")}</span>
-          <span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span>
+          <span><span>{feature.place_name.replace(/,.*/, "")}</span></span>
+          <span
+            ><span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span></span
+          >
         </li>
       {/each}
     </ul>
@@ -618,14 +620,23 @@
     padding-bottom: 8px;
   }
 
-  li span {
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  li > span {
+    /* text-overflow: ellipsis; */
     overflow: hidden;
     padding-right: 8px;
   }
 
-  li span:nth-of-type(1) {
+  li > span > span {
+    white-space: nowrap;
+    display: block;
+    min-width: fit-content;
+  }
+
+  li.selected > span > span {
+    animation: backAndForth 5s linear infinite;
+  }
+
+  li > span:nth-of-type(1) > span {
     font-weight: bold;
   }
 
@@ -689,5 +700,26 @@
 
   .clear-button-container button {
     visibility: hidden;
+  }
+
+  @keyframes backAndForth {
+    0% {
+      transform: translateX(0);
+    }
+    10% {
+      transform: translateX(0);
+    }
+    45% {
+      transform: translateX(calc(-100% + 196px));
+    }
+    55% {
+      transform: translateX(calc(-100% + 196px));
+    }
+    90% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(0);
+    }
   }
 </style>
