@@ -14,13 +14,13 @@
   import SearchIcon from "./SearchIcon.svelte";
   import type { Feature, FeatureCollection } from "./types";
 
-  let className: string | undefined;
+  let className: string | undefined = undefined;
 
   export { className as class };
 
-  export let maplibregl: typeof MapLibreGL | undefined;
+  export let maplibregl: typeof MapLibreGL | undefined = undefined;
 
-  export let map: maplibregl.Map;
+  export let map: maplibregl.Map | undefined;
 
   export let apiKey: string;
 
@@ -32,15 +32,15 @@
 
   export let noResultsMessage = "No results found";
 
-  export let proximity: [number, number] | undefined;
+  export let proximity: [number, number] | undefined = undefined;
 
-  export let bbox: [number, number, number, number] | undefined;
+  export let bbox: [number, number, number, number] | undefined = undefined;
 
   export let trackProximity = true;
 
   export let minLength = 2;
 
-  export let language: string | undefined;
+  export let language: string | undefined = undefined;
 
   export let showResultsWhileTyping = true;
 
@@ -91,6 +91,10 @@
   }
 
   function handleMoveEnd() {
+    if (!map) {
+      return;
+    }
+
     let c: maplibregl.LngLat;
 
     proximity =
@@ -146,7 +150,7 @@
     }
   }
 
-  $: if (picked && flyTo) {
+  $: if (map && picked && flyTo) {
     if (
       !picked.bbox ||
       (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
@@ -165,7 +169,7 @@
     markedFeatures = undefined;
   }
 
-  $: if (maplibregl) {
+  $: if (map && maplibregl) {
     for (const marker of markers) {
       marker.remove();
     }
@@ -260,8 +264,10 @@
   }
 
   onDestroy(() => {
-    map.off("moveend", handleMoveEnd);
-    map.off("click", handleReverse);
+    if (map) {
+      map.off("moveend", handleMoveEnd);
+      map.off("click", handleReverse);
+    }
   });
 
   function handleOnSubmit() {
@@ -377,7 +383,7 @@
       bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
     }
 
-    if (markedFeatures.length > 0) {
+    if (map && markedFeatures.length > 0) {
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
         map.flyTo({
           ...(flyTo === true ? {} : flyTo),
