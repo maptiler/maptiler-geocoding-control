@@ -1,21 +1,21 @@
-# MapTiler Geocoder control for MapLibre GL JS
+# MapTiler Geocoder control for MapLibre GL JS and Leaflet
 
-A geocoder control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js).
+A geocoder control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
 
-Component can be used as ES module or commonjs module.
+Component can be used as ES module or UMD module.
 
 ## Usage
 
 ### Usage with a module bundler
 
 ```bash
-npm install --save maplibre-gl-maptiler-geocoder maplibre-gl
+npm install --save maptiler-geocoding-control maplibre-gl
 ```
 
 ```js
 import maplibregl from "maplibre-gl";
-import { GeocodingControl } from "maplibre-gl-maptiler-geocoder";
-import "maplibre-gl-maptiler-geocoder/dist/style.css";
+import { GeocodingControl } from "maptiler-geocoding-control/maplibre";
+import "maptiler-geocoding-control/dist/style.css";
 
 const API_KEY = "your API key";
 
@@ -85,7 +85,7 @@ Component API matches API described above and options are exposed as component p
 
 ```svelte
 <script lang="ts">
-  import GeocodingControl from "maplibre-gl-maptiler-geocoder/src/lib/GeocodingControl.svelte";
+  import GeocodingControl from "maptiler-geocoding-control/src/lib/GeocodingControl.svelte";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 

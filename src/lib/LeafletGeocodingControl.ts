@@ -35,7 +35,7 @@ type LeafletControlOptions = ControlOptions &
     flyTo?: boolean | (L.ZoomPanOptions & L.FitBoundsOptions);
   };
 
-export class LeafletGeocodingControl extends L.Control {
+export class GeocodingControl extends L.Control {
   #gc?: GeocodingControlComponent;
 
   #options: LeafletControlOptions;
@@ -65,7 +65,11 @@ export class LeafletGeocodingControl extends L.Control {
 
     this.#gc = new GeocodingControlComponent({
       target: div,
-      props: { mapController, flyTo: !!flyTo, ...restOptions },
+      props: {
+        mapController,
+        flyTo: flyTo === undefined ? true : !!flyTo,
+        ...restOptions,
+      },
     });
 
     for (const eventName of [

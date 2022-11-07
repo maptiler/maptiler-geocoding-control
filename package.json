@@ -1,11 +1,11 @@
 {
-  "name": "maplibre-gl-maptiler-geocoder",
+  "name": "maptiler-geocoding-control",
   "private": true,
-  "version": "0.0.30",
+  "version": "0.0.31",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsc --outDir dist --declaration --emitDeclarationOnly",
+    "build": "vite build && FLAVOUR=leaflet vite build && tsc --outDir dist --declaration --emitDeclarationOnly",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -13,12 +13,14 @@
     "dist",
     "src/lib"
   ],
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
   "exports": {
-    ".": {
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+    "./leaflet": {
+      "import": "./dist/leaflet.js",
+      "require": "./dist/leaflet.umd.cjs"
+    },
+    "./maplibregl": {
+      "import": "./dist/maplibregl.js",
+      "require": "./dist/maplibregl.umd.cjs"
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
@@ -45,5 +47,13 @@
   "peerDependencies": {
     "leaflet": "^1.9.2",
     "maplibre-gl": "> 1.14.0"
+  },
+  "peerDependenciesMeta": {
+    "leaflet": {
+      "optional": true
+    },
+    "maplibre-gl": {
+      "optional": true
+    }
   }
 }

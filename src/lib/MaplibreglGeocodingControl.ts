@@ -52,7 +52,7 @@ type MapLibreControlOptions = ControlOptions & {
   flyTo?: boolean | (FlyToOptions & FitBoundsOptions);
 };
 
-export class MaplibreglGeocodingControl extends Evented implements IControl {
+export class GeocodingControl extends Evented implements IControl {
   #gc?: GeocodingControlComponent;
 
   #options: MapLibreControlOptions;
@@ -85,7 +85,11 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
 
     this.#gc = new GeocodingControlComponent({
       target: div,
-      props: { mapController, flyTo: !!flyTo, ...restOptions },
+      props: {
+        mapController,
+        flyTo: flyTo === undefined ? true : !!flyTo,
+        ...restOptions,
+      },
     });
 
     for (const eventName of [

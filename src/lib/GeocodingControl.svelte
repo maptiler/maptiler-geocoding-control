@@ -1,9 +1,4 @@
 <script type="ts">
-  import type {
-    FitBoundsOptions,
-    FlyToOptions,
-    MapMouseEvent,
-  } from "maplibre-gl";
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
   import BullseyeIcon from "./BullseyeIcon.svelte";
@@ -45,10 +40,6 @@
   export let language: string | undefined = undefined;
 
   export let showResultsWhileTyping = true;
-
-  // export let marker: boolean | maplibregl.MarkerOptions = true;
-
-  // export let showResultMarkers: boolean | maplibregl.MarkerOptions = true;
 
   export let zoom = 16;
 
@@ -170,7 +161,7 @@
     listFeatures = undefined;
     error = undefined;
 
-    // if (showResultMarkers) {
+    // TODO: if (showResultMarkers) {
     markedFeatures = listFeatures;
     // }
   }
