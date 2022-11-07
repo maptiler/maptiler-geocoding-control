@@ -1,12 +1,15 @@
 <script type="ts">
-  export let inMap = false;
+  export let displayIn: "list" | "leaflet" | "maplibre";
 </script>
 
 <svg
-  width={inMap ? "70" : "20px"}
+  width={displayIn !== "list" ? undefined : "20"}
   viewBox="0 0 70 85"
   fill="none"
-  class:geocoding-marker={inMap}
+  class:in-map={displayIn !== "list"}
+  class:for-maplibre={displayIn === "maplibre"}
+  class:for-leaflet={displayIn === "leaflet"}
+  class:list-icon={displayIn === "list"}
 >
   <path
     stroke-width="4"
@@ -18,24 +21,37 @@
 
 <style>
   svg {
-    grid-row: 1/3;
-    align-self: center;
-    margin: 8px;
     fill: #6b7c93;
     stroke: #6b7c93;
   }
 
-  .geocoding-marker {
+  .list-icon {
+    grid-row: 1/3;
+    align-self: center;
+    margin: 8px;
+  }
+
+  .in-map {
+    height: 30px;
+  }
+
+  .for-maplibre {
     position: relative;
     top: -10px;
-    height: 30px;
+  }
+
+  .for-leaflet {
+    position: relative;
+    top: -23px;
+    left: -50%;
   }
 
   :global(.maplibregl-canvas-container .marker-selected) {
     z-index: 1;
   }
 
-  :global(.maplibregl-canvas-container) svg path {
+  :global(.maplibregl-canvas-container) svg path,
+  :global(.leaflet-map-pane) svg path {
     fill: #3170fe;
     stroke: #3170fe;
   }

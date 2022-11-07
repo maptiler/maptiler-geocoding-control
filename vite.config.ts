@@ -12,12 +12,13 @@ export default defineConfig({
       formats: ["es", "cjs", "iife"],
     },
     rollupOptions: {
-      external: ["maplibre-gl"],
+      external: ["maplibre-gl", "leaflet"],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
           "maplibre-gl": "maplibregl",
+          leaflet: "leaflet",
         },
       },
     },

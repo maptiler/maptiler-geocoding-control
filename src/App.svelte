@@ -3,7 +3,7 @@
 
   import { Map } from "maplibre-gl";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/index";
+  import { MaplibreglGeocodingControl } from "./lib/MaplibreglGeocodingControl";
   import maplibregl from "maplibre-gl";
 
   let containerElement: HTMLElement;
@@ -25,7 +25,7 @@
     });
 
     map.addControl(
-      new GeocodingControl({
+      new MaplibreglGeocodingControl({
         apiKey,
         maplibregl,
         enableReverse: true,
