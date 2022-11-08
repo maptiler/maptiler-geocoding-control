@@ -40,25 +40,39 @@ export function createLeafletMapController(
     }
   };
 
-  map.on("moveend", handleMoveEnd);
-
-  handleMoveEnd();
-
-  map.on("click", (e) => {
+  const handleMapClick = (e: L.LeafletMouseEvent) => {
     mapClickHandler?.([e.latlng.lng, e.latlng.lat]);
-  });
+  };
 
   const ctrl: MapController = {
     setProximityChangeHandler(
       _proximityChangeHandler: ((proximity: Proximity) => void) | undefined
     ): void {
-      proximityChangeHandler = _proximityChangeHandler;
+      if (_proximityChangeHandler) {
+        proximityChangeHandler = _proximityChangeHandler;
+
+        map.on("moveend", handleMoveEnd);
+
+        handleMoveEnd();
+      } else {
+        map.off("moveend", handleMoveEnd);
+
+        proximityChangeHandler?.(undefined);
+
+        proximityChangeHandler = undefined;
+      }
     },
 
     setMapClickHandler(
       _mapClickHandler: ((coordinates: [number, number]) => void) | undefined
     ): void {
       mapClickHandler = _mapClickHandler;
+
+      if (mapClickHandler) {
+        map.on("click", handleMapClick);
+      } else {
+        map.off("click", handleMapClick);
+      }
     },
 
     flyTo(center: [number, number], zoom: number) {

@@ -32,7 +32,7 @@ export function createMaplibreMapController(
     mapClickHandler?.([e.lngLat.lng, e.lngLat.lat]);
   };
 
-  const handleMapMoveEnd = () => {
+  const handleMoveEnd = () => {
     let c: LngLat;
 
     const proximity =
@@ -54,11 +54,11 @@ export function createMaplibreMapController(
       if (_proximityChangeHandler) {
         proximityChangeHandler = _proximityChangeHandler;
 
-        map.on("moveend", handleMapMoveEnd);
+        map.on("moveend", handleMoveEnd);
 
-        handleMapMoveEnd();
+        handleMoveEnd();
       } else {
-        map.off("moveend", handleMapMoveEnd);
+        map.off("moveend", handleMoveEnd);
 
         proximityChangeHandler?.(undefined);
 

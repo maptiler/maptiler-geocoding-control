@@ -118,7 +118,6 @@
     queryChange: string;
   }>();
 
-  // TODO unsubscribe from old mapController
   $: if (mapController) {
     mapController.setProximityChangeHandler(
       trackProximity
@@ -160,10 +159,7 @@
     picked = undefined;
     listFeatures = undefined;
     error = undefined;
-
-    // TODO: if (showResultMarkers) {
     markedFeatures = listFeatures;
-    // }
   }
 
   // highlight selected marker
@@ -213,6 +209,9 @@
     if (mapController) {
       mapController.setProximityChangeHandler(undefined);
       mapController.setMapClickHandler(undefined);
+      mapController.indicateReverse(false);
+      mapController.setSelectedMarker(-1);
+      mapController.setMarkers(undefined, undefined);
     }
   });
 
