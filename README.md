@@ -32,6 +32,8 @@ const gc = new GeocodingControl({
   apiKey: API_KEY,
   maplibregl,
 });
+
+map.addControl(gc);
 ```
 
 Example for [Leaflet](https://leafletjs.com):
@@ -54,7 +56,7 @@ L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
     '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
 }).addTo(map);
 
-const gc = new GeocodingControl({ apiKey: API_KEY }).addTo(map);
+new GeocodingControl({ apiKey: API_KEY }).addTo(map);
 ```
 
 See [demo-maplibregl.html](./demo-maplibregl.html) or [demo-leaflet.html](./demo-leaflet.html) - after building this library (`npm install && npm run build`) open it in your browser with URL `file:///path_to_this_repository/demo.html#key=your_api_key`.
