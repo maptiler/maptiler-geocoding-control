@@ -1,12 +1,14 @@
-# MapTiler Geocoder control for MapLibre GL JS and Leaflet
+# MapTiler Geocoding control for MapLibre GL JS and Leaflet
 
-A geocoder control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
+A geocoding control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
 
 Component can be used as ES module or UMD module.
 
 ## Usage
 
 ### Usage with a module bundler
+
+Example for [Maplibre GL](https://maplibre.org/maplibre-gl-js-docs/api/):
 
 ```bash
 npm install --save maptiler-geocoding-control maplibre-gl
@@ -32,14 +34,37 @@ const gc = new GeocodingControl({
 });
 ```
 
-See [demo.html](./demo.html) - after building this library (`npm install && npm run build`) open it in your browser with URL `file:///path_to_this_repository/demo.html#key=your_api_key`.
+Example for [Leaflet](https://leafletjs.com):
+
+```bash
+npm install --save maptiler-geocoding-control leaflet
+```
+
+```js
+import * as L from "leaflet";
+import { GeocodingControl } from "maptiler-geocoding-control/leaflet";
+import "maptiler-geocoding-control/dist/style.css";
+
+const API_KEY = "your API key";
+
+const map = L.map(document.getElementById("map")).setView([49.2, 16.3], 6);
+
+L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+  attribution:
+    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+}).addTo(map);
+
+const gc = new GeocodingControl({ apiKey: API_KEY }).addTo(map);
+```
+
+See [demo-maplibregl.html](./demo-maplibregl.html) or [demo-leaflet.html](./demo-leaflet.html) - after building this library (`npm install && npm run build`) open it in your browser with URL `file:///path_to_this_repository/demo.html#key=your_api_key`.
 
 ## API Documentation
 
 Options:
 
 - `apiKey`<sup>\*</sup>: `string` - Maptiler API key
-- `maplibregl`: `MapLibreGL` - A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Required if `options.marker` is `true`.
+- `maplibregl`: `MapLibreGL` - A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Required if `options.marker` is `true`. Used only with Maplibre GL library.
 - `debounceSearch`: `number` - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.
@@ -50,8 +75,8 @@ Options:
 - `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
 - `language`: `string` - Specify the language to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Set to empty string for forcing no language preference.
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
-- `marker`: `boolean | MarkerOptions` - If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
-- `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+- `marker`: `boolean | MarkerOptions` - If `true`, a [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+- `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `zoom`: `number` - On geocoded result what zoom level should the map animate to when a bbox isn't found in the response. If a bbox is found the map will fit to the bbox. Default `16`.
 - `flyTo`: `boolean | (FlyToOptions & FitBoundsOptions)` - If `false`, animating the map to a selected result is disabled. If `true`, animating the map will use the default animation parameters. If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition. Default `true`.
 - `collapsed`: `boolean` - If `true`, the geocoder control will collapse until hovered or in focus. Default `false`.
@@ -86,27 +111,33 @@ Component API matches API described above and options are exposed as component p
 ```svelte
 <script lang="ts">
   import GeocodingControl from "maptiler-geocoding-control/src/lib/GeocodingControl.svelte";
+  import GeocodingControl from "maptiler-geocoding-control/src/lib/GeocodingControl.svelte";
+  import { createMaplibreMapController } from "maptiler-geocoding-control/src/lib/maplibreMapController";
+  import type { MapController } from "maptiler-geocoding-control/src/lib/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
   const apiKey = "your API key";
 
-  let map: maplibregl.Map;
+  let mapController: MapController;
 
   let container: HTMLElement;
 
   onMount(() => {
-    map = new maplibregl.Map({
+
+    const map = new maplibregl.Map({
       style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
       container,
     });
+
+    const mapController = createMaplibreMapController(map, maplibregl);
   }
 </script>
 
 <div class="map" bind:this={container} />
 
-{#if map}
-  <GeocodingControl {map} {apiKey} {maplibregl} />
+{#if mapController}
+  <GeocodingControl {mapController} {apiKey} {maplibregl} />
 {/if}
 
 <style>
