@@ -7,6 +7,7 @@ export default defineConfig({
   build: {
     emptyOutDir: false,
     lib:
+      // simplify after https://github.com/vitejs/vite/pull/10609 is released
       process.env.FLAVOUR === "leaflet"
         ? {
             fileName: "leaflet",

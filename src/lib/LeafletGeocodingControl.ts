@@ -1,6 +1,6 @@
 import * as L from "leaflet";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import { createLeafletMapController } from "./LeafletMapControllerImpl";
+import { createLeafletMapController } from "./leafletMapController";
 import type { ControlOptions, Feature } from "./types";
 
 export type { Feature } from "./types";
@@ -50,6 +50,9 @@ export class GeocodingControl extends L.Control {
     const div = document.createElement("div");
 
     div.className = "leaflet-ctrl-geocoder";
+
+    L.DomEvent.disableClickPropagation(div);
+    L.DomEvent.disableScrollPropagation(div);
 
     const { marker, showResultMarkers, flyTo, ...restOptions } = this.#options;
 

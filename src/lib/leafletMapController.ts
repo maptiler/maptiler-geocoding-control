@@ -76,8 +76,7 @@ export function createLeafletMapController(
     },
 
     indicateReverse(reverse: boolean): void {
-      // TODO
-      // map.getCanvas().style.cursor = reverse ? "crosshair" : "";
+      map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
     setMarkers(

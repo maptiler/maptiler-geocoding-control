@@ -9,7 +9,7 @@ import {
 import type maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import type { ControlOptions, Feature } from "./types";
-import { createMaplibreMapController } from "./MaplibreMapControllerImpl";
+import { createMaplibreMapController } from "./maplibreMapController";
 
 export type { Feature } from "./types";
 
