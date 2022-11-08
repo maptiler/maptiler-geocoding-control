@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+    <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script>
 
     <link
-      href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+      href="https://unpkg.com/leaflet@latest/dist/leaflet.css"
       rel="stylesheet"
     />
 
-    <script src="dist/index.umd.cjs"></script>
+    <script src="dist/leaflet.umd.cjs"></script>
 
     <link href="dist/style.css" rel="stylesheet" />
 
@@ -34,21 +34,21 @@
         throw new Error(errMsg);
       }
 
-      const map = new maplibregl.Map({
-        container: "map",
-        style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
-        center: [16.3, 49.2], // starting position [lng, lat]
-        zoom: 7,
-      });
+      const map = L.map(document.getElementById("map")).setView(
+        [49.2, 16.3],
+        6
+      );
 
-      const gc = new maplibreglMaptilerGeocoder.GeocodingControl({
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution:
+          '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      }).addTo(map);
+
+      new leafletMaptilerGeocoder.GeocodingControl({
         apiKey,
-        maplibregl,
         enableReverse: true,
         showPlaceType: true,
-      });
-
-      map.addControl(gc);
+      }).addTo(map);
     </script>
   </body>
 </html>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.js"></script>
+
+    <link
+      href="https://unpkg.com/maplibre-gl@latest/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+
+    <script src="dist/maplibregl.umd.cjs"></script>
+
+    <link href="dist/style.css" rel="stylesheet" />
+
+    <style>
+      #map {
+        position: absolute;
+        inset: 0;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+
+    <script>
+      const apiKey = new URLSearchParams(location.hash.slice(1)).get("key");
+
+      if (!apiKey) {
+        const errMsg = "Missing #key=your_api_key in URL";
+
+        window.alert(errMsg);
+
+        throw new Error(errMsg);
+      }
+
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
+        center: [16.3, 49.2], // starting position [lng, lat]
+        zoom: 7,
+      });
+
+      const gc = new maplibreglMaptilerGeocoder.GeocodingControl({
+        apiKey,
+        maplibregl,
+        enableReverse: true,
+        showPlaceType: true,
+      });
+
+      map.addControl(gc);
+    </script>
+  </body>
+</html>
