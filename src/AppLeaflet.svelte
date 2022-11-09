@@ -29,6 +29,7 @@
       apiKey,
       enableReverse: true,
       showPlaceType: true,
+      collapsed: true,
     }).addTo(map);
   });
 </script>

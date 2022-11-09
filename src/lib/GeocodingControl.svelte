@@ -629,6 +629,7 @@
     padding-inline: 8px;
     outline: #c1cfe4 solid 2px;
     border-radius: 4px;
+    overflow: hidden;
   }
 
   .input-group:hover .displayable {
@@ -683,5 +684,15 @@
     100% {
       transform: translateX(0);
     }
+  }
+
+  form.can-collapse button:not(:nth-of-type(1)) {
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  form.can-collapse:focus-within :not(:nth-of-type(1)),
+  form.can-collapse:hover :not(:nth-of-type(1)) {
+    opacity: 1;
   }
 </style>
