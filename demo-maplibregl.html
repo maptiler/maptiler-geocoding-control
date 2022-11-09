@@ -12,6 +12,13 @@
 
     <link href="dist/style.css" rel="stylesheet" />
 
+    <!-- <script src="https://unpkg.com/@maptiler/geocoding-control@latest/dist/maplibregl.umd.cjs"></script>
+
+    <link
+      href="https://unpkg.com/@maptiler/geocoding-control@latest/dist/style.css"
+      rel="stylesheet"
+    /> -->
+
     <style>
       #map {
         position: absolute;
@@ -24,6 +31,8 @@
     <div id="map"></div>
 
     <script>
+      addEventListener("hashchange", (event) => location.reload());
+
       const apiKey = new URLSearchParams(location.hash.slice(1)).get("key");
 
       if (!apiKey) {
