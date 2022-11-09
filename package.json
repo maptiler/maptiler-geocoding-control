@@ -1,7 +1,6 @@
 {
-  "name": "maptiler-geocoding-control",
-  "private": true,
-  "version": "0.0.31",
+  "name": "@maptiler/geocoding-control",
+  "version": "0.0.32",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -42,7 +41,7 @@
     "svelte-preprocess": "^4.10.7",
     "tslib": "^2.4.1",
     "typescript": "^4.8.4",
-    "vite": "^3.2.2"
+    "vite": "^3.2.3"
   },
   "peerDependencies": {
     "leaflet": "^1.9.2",

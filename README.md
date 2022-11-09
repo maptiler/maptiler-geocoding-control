@@ -1,6 +1,6 @@
 # MapTiler Geocoding control for MapLibre GL JS and Leaflet
 
-A geocoding control for [maplibre-gl-js](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
+A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
 
 Component can be used as ES module or UMD module.
 
@@ -8,58 +8,70 @@ Component can be used as ES module or UMD module.
 
 ### Usage with a module bundler
 
-Example for [Maplibre GL](https://maplibre.org/maplibre-gl-js-docs/api/):
+Example for Maplibre GL JS:
 
 ```bash
-npm install --save maptiler-geocoding-control maplibre-gl
+npm install --save @maptiler/geocoding-control maplibre-gl
 ```
 
 ```js
 import maplibregl from "maplibre-gl";
-import { GeocodingControl } from "maptiler-geocoding-control/maplibre";
-import "maptiler-geocoding-control/dist/style.css";
+import { GeocodingControl } from "@maptiler/geocoding-control/maplibre";
+import "@maptiler/geocoding-control/dist/style.css";
 
 const API_KEY = "your API key";
 
 const map = new maplibregl.Map({
   container: "map", // id of HTML container element
-  style: "https://api.maptiler.com/maps/streets/style.json?key=" + API_KEY,
+  style:
+    "https://api.maptiler.com/maps/streets/style.json?key=" +
+    YOUR_MAPTILER_API_KEY_HERE,
   center: [16.3, 49.2],
   zoom: 7,
 });
 
 const gc = new GeocodingControl({
-  apiKey: API_KEY,
+  apiKey: YOUR_MAPTILER_API_KEY_HERE,
   maplibregl,
 });
 
 map.addControl(gc);
 ```
 
-Example for [Leaflet](https://leafletjs.com):
+Example for Leaflet:
 
 ```bash
-npm install --save maptiler-geocoding-control leaflet
+npm install --save @maptiler/geocoding-control leaflet
 ```
 
 ```js
 import * as L from "leaflet";
-import { GeocodingControl } from "maptiler-geocoding-control/leaflet";
-import "maptiler-geocoding-control/dist/style.css";
-
-const API_KEY = "your API key";
+import { GeocodingControl } from "@maptiler/geocoding-control/leaflet";
+import "@maptiler/geocoding-control/dist/style.css";
 
 const map = L.map(document.getElementById("map")).setView([49.2, 16.3], 6);
 
-L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-  attribution:
-    '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-}).addTo(map);
+L.tileLayer(
+  "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=" +
+    YOUR_MAPTILER_API_KEY_HERE,
+  {
+    tileSize: 512,
+    zoomOffset: -1,
+    minZoom: 1,
+    attribution:
+      '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>, ' +
+      '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+    crossOrigin: true,
+  }
+).addTo(map);
 
-new GeocodingControl({ apiKey: API_KEY }).addTo(map);
+new GeocodingControl({ apiKey: YOUR_MAPTILER_API_KEY_HERE }).addTo(map);
 ```
 
-See [demo-maplibregl.html](./demo-maplibregl.html) or [demo-leaflet.html](./demo-leaflet.html) - after building this library (`npm install && npm run build`) open it in your browser with URL `file:///path_to_this_repository/demo.html#key=your_api_key`.
+For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:
+
+- Maplibre GL JS: `sensible-browser file://$(pwd)/demo-maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
+- Leaflet: `sensible-browser file://$(pwd)/demo-leaflet.html#key=YOUR_MAPTILER_API_KEY_HERE`
 
 ## API Documentation
 
@@ -112,10 +124,10 @@ Component API matches API described above and options are exposed as component p
 
 ```svelte
 <script lang="ts">
-  import GeocodingControl from "maptiler-geocoding-control/src/lib/GeocodingControl.svelte";
-  import GeocodingControl from "maptiler-geocoding-control/src/lib/GeocodingControl.svelte";
-  import { createMaplibreMapController } from "maptiler-geocoding-control/src/lib/maplibreMapController";
-  import type { MapController } from "maptiler-geocoding-control/src/lib/types";
+  import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
+  import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
+  import { createMaplibreMapController } from "@maptiler/geocoding-control/src/lib/maplibreMapController";
+  import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
@@ -161,5 +173,5 @@ You will find compilation result in `dist` directory.
 ## Running in dev mode
 
 ```bash
-npm install && VITE_API_KEY=your_api_key npm run dev
+npm install && VITE_API_KEY=YOUR_MAPTILER_API_KEY_HERE npm run dev
 ```
