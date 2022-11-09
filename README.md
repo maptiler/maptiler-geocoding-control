@@ -67,7 +67,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-new GeocodingControl({ apiKey: YOUR_MAPTILER_API_KEY_HERE }).addTo(map);
+L.control.maptilerGeocoding({ apiKey: YOUR_MAPTILER_API_KEY_HERE }).addTo(map);
 ```
 
 For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:

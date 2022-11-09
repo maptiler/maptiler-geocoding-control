@@ -8,10 +8,8 @@ import {
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import type { ControlOptions, Feature } from "./types";
+import type { ControlOptions } from "./types";
 import { createMaplibreMapController } from "./maplibreMapController";
-
-export type { Feature } from "./types";
 
 type MapLibreGL = typeof maplibregl;
 

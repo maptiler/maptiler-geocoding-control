@@ -1,9 +1,7 @@
 import * as L from "leaflet";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createLeafletMapController } from "./leafletMapController";
-import type { ControlOptions, Feature } from "./types";
-
-export type { Feature } from "./types";
+import type { ControlOptions } from "./types";
 
 type LeafletControlOptions = ControlOptions &
   L.ControlOptions & {
@@ -120,4 +118,18 @@ export class GeocodingControl extends L.Control {
   onRemove() {
     (this.#gc as any)?.$destroy();
   }
+}
+
+function createControl(
+  ...params: ConstructorParameters<typeof GeocodingControl>
+) {
+  return new GeocodingControl(...params);
+}
+
+if (
+  window.L &&
+  typeof window.L === "object" &&
+  typeof window.L.control === "function"
+) {
+  (window.L.control as any).maptilerGeocoding = createControl;
 }

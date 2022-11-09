@@ -64,11 +64,13 @@
         }
       ).addTo(map);
 
-      new leafletMaptilerGeocoder.GeocodingControl({
-        apiKey,
-        enableReverse: true,
-        showPlaceType: true,
-      }).addTo(map);
+      L.control
+        .maptilerGeocoding({
+          apiKey,
+          enableReverse: true,
+          showPlaceType: true,
+        })
+        .addTo(map);
     </script>
   </body>
 </html>
