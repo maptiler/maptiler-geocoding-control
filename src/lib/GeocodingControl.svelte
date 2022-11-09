@@ -1,10 +1,4 @@
 <script type="ts">
-  import type {
-    FitBoundsOptions,
-    FlyToOptions,
-    MapMouseEvent,
-  } from "maplibre-gl";
-  import type MapLibreGL from "maplibre-gl";
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
   import BullseyeIcon from "./BullseyeIcon.svelte";
@@ -12,15 +6,18 @@
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
-  import type { Feature, FeatureCollection } from "./types";
+  import type {
+    Feature,
+    FeatureCollection,
+    MapController,
+    Proximity,
+  } from "./types";
 
   let className: string | undefined = undefined;
 
   export { className as class };
 
-  export let maplibregl: typeof MapLibreGL | undefined = undefined;
-
-  export let map: maplibregl.Map | undefined;
+  export let mapController: MapController | undefined = undefined;
 
   export let apiKey: string;
 
@@ -32,7 +29,7 @@
 
   export let noResultsMessage = "No results found";
 
-  export let proximity: [number, number] | undefined = undefined;
+  export let proximity: Proximity = undefined;
 
   export let bbox: [number, number, number, number] | undefined = undefined;
 
@@ -44,13 +41,9 @@
 
   export let showResultsWhileTyping = true;
 
-  export let marker: boolean | maplibregl.MarkerOptions = true;
-
-  export let showResultMarkers: boolean | maplibregl.MarkerOptions = true;
-
   export let zoom = 16;
 
-  export let flyTo: boolean | (FlyToOptions & FitBoundsOptions) = true;
+  export let flyTo = true;
 
   export let collapsed = false;
 
@@ -90,17 +83,6 @@
     }
   }
 
-  function handleMoveEnd() {
-    if (!map) {
-      return;
-    }
-
-    let c: maplibregl.LngLat;
-
-    proximity =
-      map.getZoom() > 9 ? [(c = map.getCenter().wrap()).lng, c.lat] : undefined;
-  }
-
   let focused = false;
 
   let listFeatures: Feature[] | undefined;
@@ -108,8 +90,6 @@
   let markedFeatures: Feature[] | undefined;
 
   let picked: Feature | undefined;
-
-  let selectedMarker: maplibregl.Marker | undefined;
 
   let lastSearchUrl = "";
 
@@ -127,8 +107,6 @@
 
   let focusedDelayed: boolean;
 
-  const markers: maplibregl.Marker[] = [];
-
   const dispatch = createEventDispatcher<{
     select: Feature;
     pick: Feature;
@@ -140,24 +118,28 @@
     queryChange: string;
   }>();
 
-  $: if (map) {
-    map.off("moveend", handleMoveEnd);
-
-    if (trackProximity) {
-      map.on("moveend", handleMoveEnd);
-
-      handleMoveEnd();
-    }
+  $: if (mapController) {
+    mapController.setProximityChangeHandler(
+      trackProximity
+        ? (p) => {
+            proximity = p;
+          }
+        : undefined
+    );
   }
 
-  $: if (map && picked && flyTo) {
+  $: if (!trackProximity) {
+    proximity = undefined;
+  }
+
+  $: if (mapController && picked && flyTo) {
     if (
       !picked.bbox ||
       (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
     ) {
-      map.flyTo({ center: picked.center, zoom });
+      mapController.flyTo(picked.center, zoom);
     } else {
-      map.fitBounds(picked.bbox, flyTo === true ? {} : flyTo);
+      mapController.fitBounds(picked.bbox, 0);
     }
 
     listFeatures = undefined;
@@ -169,55 +151,19 @@
     markedFeatures = undefined;
   }
 
-  $: if (map && maplibregl) {
-    for (const marker of markers) {
-      marker.remove();
-    }
-
-    markers.length = 0;
-
-    for (const feature of picked
-      ? [...(markedFeatures ?? []), picked]
-      : markedFeatures ?? []) {
-      let m: maplibregl.Marker;
-
-      if (feature === picked && typeof marker === "object") {
-        m = new maplibregl.Marker(marker);
-      } else if (feature !== picked && typeof showResultMarkers === "object") {
-        m = new maplibregl.Marker(showResultMarkers);
-      } else {
-        const element = document.createElement("div");
-
-        new MarkerIcon({ props: { inMap: true }, target: element });
-
-        m = new maplibregl.Marker({ element });
-      }
-
-      markers.push(m.setLngLat(feature.center).addTo(map));
-    }
+  $: if (mapController) {
+    mapController.setMarkers(markedFeatures, picked);
   }
 
   $: if (!searchValue) {
     picked = undefined;
     listFeatures = undefined;
     error = undefined;
-
-    if (showResultMarkers) {
-      markedFeatures = listFeatures;
-    }
+    markedFeatures = listFeatures;
   }
 
   // highlight selected marker
-  $: {
-    if (selectedMarker) {
-      selectedMarker.getElement().classList.toggle("marker-selected", false);
-    }
-
-    selectedMarker =
-      selectedItemIndex > -1 ? markers[selectedItemIndex] : undefined;
-
-    selectedMarker?.getElement().classList.toggle("marker-selected", true);
-  }
+  $: mapController?.setSelectedMarker(selectedItemIndex);
 
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
@@ -251,22 +197,21 @@
 
   $: dispatch("queryChange", searchValue);
 
-  $: if (map) {
-    map.getCanvas().style.cursor = reverseActive ? "crosshair" : "";
+  $: if (mapController) {
+    mapController.indicateReverse(reverseActive);
   }
 
-  $: if (map) {
-    if (reverseActive) {
-      map.on("click", handleReverse);
-    } else {
-      map.off("click", handleReverse);
-    }
+  $: if (mapController) {
+    mapController.setMapClickHandler(reverseActive ? handleReverse : undefined);
   }
 
   onDestroy(() => {
-    if (map) {
-      map.off("moveend", handleMoveEnd);
-      map.off("click", handleReverse);
+    if (mapController) {
+      mapController.setProximityChangeHandler(undefined);
+      mapController.setMapClickHandler(undefined);
+      mapController.indicateReverse(false);
+      mapController.setSelectedMarker(-1);
+      mapController.setMarkers(undefined, undefined);
     }
   });
 
@@ -383,23 +328,19 @@
       bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
     }
 
-    if (map && markedFeatures.length > 0) {
+    if (mapController && markedFeatures.length > 0) {
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
-        map.flyTo({
-          ...(flyTo === true ? {} : flyTo),
-          center: picked.center,
-          zoom,
-        });
+        mapController.flyTo(picked.center, zoom);
       } else {
-        map.fitBounds(bbox, { ...(flyTo === true ? {} : flyTo), padding: 50 });
+        mapController.fitBounds(bbox, 50);
       }
     }
   }
 
-  function handleReverse(e: MapMouseEvent) {
+  function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = false;
 
-    setQuery(e.lngLat.lng.toFixed(6) + "," + e.lngLat.lat.toFixed(6));
+    setQuery(coordinates[0].toFixed(6) + "," + coordinates[1].toFixed(6));
   }
 
   function handleKeyDown(e: KeyboardEvent) {
@@ -524,7 +465,7 @@
             selectedItemIndex = -1;
           }}
         >
-          <MarkerIcon />
+          <MarkerIcon displayIn="list" />
           <span>
             <span>
               <span>{feature.place_name.replace(/,.*/, "")}</span>
@@ -688,6 +629,7 @@
     padding-inline: 8px;
     outline: #c1cfe4 solid 2px;
     border-radius: 4px;
+    overflow: hidden;
   }
 
   .input-group:hover .displayable {
@@ -742,5 +684,15 @@
     100% {
       transform: translateX(0);
     }
+  }
+
+  form.can-collapse button:not(:nth-of-type(1)) {
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+
+  form.can-collapse:focus-within :not(:nth-of-type(1)),
+  form.can-collapse:hover :not(:nth-of-type(1)) {
+    opacity: 1;
   }
 </style>
