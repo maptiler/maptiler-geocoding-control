@@ -51,8 +51,10 @@ import "@maptiler/geocoding-control/dist/style.css";
 
 const map = L.map(document.getElementById("map")).setView([49.2, 16.3], 6);
 
+const scale = devicePixelRatio > 1.5 ? "@2x" : "";
+
 L.tileLayer(
-  "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=" +
+  `https://api.maptiler.com/maps/streets/{z}/{x}/{y}${scale}.png?key=` +
     YOUR_MAPTILER_API_KEY_HERE,
   {
     tileSize: 512,

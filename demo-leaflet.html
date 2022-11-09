@@ -48,9 +48,11 @@
         6
       );
 
+      const scale = devicePixelRatio > 1.5 ? "@2x" : "";
+
       L.tileLayer(
-        "https://api.maptiler.com/maps/streets/{z}/{x}/{y}.png?key=" +
-          YOUR_MAPTILER_API_KEY_HERE,
+        `https://api.maptiler.com/maps/streets/{z}/{x}/{y}${scale}.png?key=` +
+          apiKey,
         {
           tileSize: 512,
           zoomOffset: -1,
