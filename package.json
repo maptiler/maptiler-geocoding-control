@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -34,6 +34,8 @@
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^1.1.0",
     "@tsconfig/svelte": "^3.0.0",
+    "@turf/mask": "^6.5.0",
+    "@turf/union": "^6.5.0",
     "@types/leaflet": "^1.9.0",
     "prettier-plugin-svelte": "^2.8.0",
     "svelte": "^3.52.0",

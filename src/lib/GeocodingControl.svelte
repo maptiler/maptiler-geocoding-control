@@ -132,6 +132,10 @@
     proximity = undefined;
   }
 
+  $: if (picked && !picked.address && picked.geometry.type === "Point") {
+    search(picked.id, true).catch((err) => (error = err));
+  }
+
   $: if (mapController && picked && flyTo) {
     if (
       !picked.bbox ||
@@ -139,7 +143,7 @@
     ) {
       mapController.flyTo(picked.center, zoom);
     } else {
-      mapController.fitBounds(picked.bbox, 0);
+      mapController.fitBounds(picked.bbox, 50);
     }
 
     listFeatures = undefined;
@@ -235,7 +239,7 @@
     }
   }
 
-  async function search(searchValue: string) {
+  async function search(searchValue: string, byId = false) {
     error = undefined;
 
     const isReverse = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
@@ -272,7 +276,13 @@
       sp.toString();
 
     if (url === lastSearchUrl) {
-      listFeatures = cachedFeatures;
+      if (byId) {
+        listFeatures = undefined;
+
+        picked = cachedFeatures[0];
+      } else {
+        listFeatures = cachedFeatures;
+      }
 
       return;
     }
@@ -305,12 +315,20 @@
 
     dispatch("response", { url, featureCollection });
 
-    listFeatures = featureCollection.features.filter(filter);
+    if (byId) {
+      listFeatures = undefined;
 
-    cachedFeatures = listFeatures;
+      picked = featureCollection.features[0];
 
-    if (isReverse) {
-      input.focus();
+      cachedFeatures = [picked];
+    } else {
+      listFeatures = featureCollection.features.filter(filter);
+
+      cachedFeatures = listFeatures;
+
+      if (isReverse) {
+        input.focus();
+      }
     }
   }
 

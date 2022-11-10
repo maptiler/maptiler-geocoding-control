@@ -1,13 +1,15 @@
-export type Feature = {
+export type Feature = GeoJSON.Feature & {
   id: string;
   text: string;
   place_name: string;
   place_type: string;
   center: [number, number];
   bbox: [number, number, number, number];
+  address?: string;
 };
 
 export type FeatureCollection = {
+  type: "FeatureCollection";
   features: Feature[];
 };
 
