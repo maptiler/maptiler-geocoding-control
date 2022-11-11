@@ -1,7 +1,7 @@
 <script type="ts">
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
-  import BullseyeIcon from "./BullseyeIcon.svelte";
+  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import MarkerIcon from "./MarkerIcon.svelte";
@@ -462,7 +462,7 @@
           : enableReverse}
         on:click={() => (reverseActive = !reverseActive)}
       >
-        <BullseyeIcon />
+        <ReverseGeocodingIcon />
       </button>
     {/if}
 
