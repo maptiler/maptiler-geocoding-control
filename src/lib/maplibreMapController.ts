@@ -224,7 +224,11 @@ export function createMaplibreMapController(
           picked.geometry.type === "MultiLineString"
         ) {
           setData(picked as any);
-        } else if (typeof marker === "object") {
+
+          return;
+        }
+
+        if (typeof marker === "object") {
           m = new maplibregl.Marker(marker);
         } else {
           const element = document.createElement("div");
