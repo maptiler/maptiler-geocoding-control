@@ -2,6 +2,17 @@
   "name": "@maptiler/geocoding-control",
   "version": "0.0.38",
   "type": "module",
+  "author": {
+    "name": "Martin Ždila",
+    "email": "martin.zdila@maptiler.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/maptiler/maptiler-geocoding-control"
+  },
+  "bugs": {
+    "url": "https://github.com/maptiler/maptiler-geocoding-control/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js && tsc --outDir dist --declaration --emitDeclarationOnly",
