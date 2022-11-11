@@ -28,7 +28,7 @@
       new GeocodingControl({
         apiKey,
         maplibregl,
-        enableReverse: true,
+        enableReverse: "always",
         showPlaceType: true,
       })
     );

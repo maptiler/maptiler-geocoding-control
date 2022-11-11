@@ -15,7 +15,21 @@ export function createLeafletMapController(
   marker: boolean | L.MarkerOptions = true,
   showResultMarkers: boolean | L.MarkerOptions = true,
   flyToOptions: L.ZoomPanOptions = {},
-  flyToBounds: L.FitBoundsOptions = {}
+  flyToBounds: L.FitBoundsOptions = {},
+  fullGeometryStyle: L.PathOptions | L.StyleFunction = (feature) => {
+    const type = feature?.geometry?.type;
+
+    const weight = type === "LineString" || type === "MultiLineString" ? 3 : 2;
+
+    return {
+      color: "#3170fe",
+      fillColor: "#000",
+      fillOpacity: 0.1,
+      weight,
+      dashArray: [weight, weight],
+      lineCap: "butt",
+    };
+  }
 ) {
   let proximityChangeHandler: ((proximity: Proximity) => void) | undefined;
 
@@ -28,14 +42,7 @@ export function createLeafletMapController(
   let selectedMarker: L.Marker | undefined;
 
   let resultLayer = L.geoJSON(undefined, {
-    style: {
-      color: "#3170fe",
-      fillColor: "#000",
-      fillOpacity: 0.1,
-      weight: 2,
-      dashArray: [2, 2],
-      lineCap: "butt",
-    },
+    style: fullGeometryStyle,
   }).addTo(map);
 
   const handleMoveEnd = () => {
@@ -121,21 +128,6 @@ export function createLeafletMapController(
 
         if (data) {
           resultLayer.addData(data);
-
-          resultLayer.eachLayer((layer) => {
-            if (layer instanceof L.Polyline) {
-              const type = layer.feature?.geometry?.type;
-
-              const weight =
-                type === "LineString" || type === "MultiLineString" ? 3 : 2;
-
-              layer.setStyle({
-                weight,
-                color: "#3170fe",
-                dashArray: [weight, weight],
-              });
-            }
-          });
         }
       }
 

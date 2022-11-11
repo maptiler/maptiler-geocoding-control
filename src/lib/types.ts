@@ -179,11 +179,25 @@ export type ControlOptions = {
   class?: string;
 
   /**
-   * Set to `true` to enable reverse geocoding button with title _toggle reverse geocoding_ or set the button title directly.
+   * Set to `true` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active.
    *
    * @default false
    */
-  enableReverse?: boolean | string;
+  enableReverse?: boolean | "always";
+
+  /**
+   * Reverse toggle button title.
+   *
+   * @default "toggle reverse geocoding"
+   */
+  reverseButtonTitle?: string;
+
+  /**
+   * Clear button title.
+   *
+   * @default "clear"
+   */
+  clearButtonTitle?: string;
 
   /**
    * Set to `true` to show place type.
@@ -191,6 +205,13 @@ export type ControlOptions = {
    * @default false
    */
   showPlaceType?: boolean;
+
+  /**
+   * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
+   *
+   * @default true
+   */
+  showFullGeometry?: boolean;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

@@ -49,15 +49,21 @@
 
   export let clearOnBlur = false;
 
-  export let enableReverse: boolean | string = false;
+  export let enableReverse: boolean | "always" = false;
+
+  export let reverseButtonTitle = "toggle reverse geocoding";
+
+  export let clearButtonTitle = "clear";
 
   export let filter: (feature: Feature) => boolean = () => true;
 
   export let searchValue = "";
 
-  export let reverseActive = false;
+  export let reverseActive = enableReverse === "always";
 
   export let showPlaceType = false;
+
+  export let showFullGeometry = true;
 
   // export let limit = 5;
 
@@ -139,7 +145,12 @@
     proximity = undefined;
   }
 
-  $: if (picked && !picked.address && picked.geometry.type === "Point") {
+  $: if (
+    showFullGeometry &&
+    picked &&
+    !picked.address &&
+    picked.geometry.type === "Point"
+  ) {
     search(picked.id, true).catch((err) => (error = err));
   }
 
@@ -371,7 +382,7 @@
   }
 
   function handleReverse(coordinates: [lng: number, lat: number]) {
-    reverseActive = false;
+    reverseActive = enableReverse === "always";
 
     setQuery(coordinates[0].toFixed(6) + "," + coordinates[1].toFixed(6));
   }
@@ -452,6 +463,7 @@
           input.focus();
         }}
         class:displayable={searchValue !== ""}
+        title={clearButtonTitle}
       >
         <ClearIcon />
       </button>
@@ -461,13 +473,11 @@
       {/if}
     </div>
 
-    {#if enableReverse}
+    {#if enableReverse === true}
       <button
         type="button"
         class:active={reverseActive}
-        title={enableReverse === true
-          ? "toggle reverse geocoding"
-          : enableReverse}
+        title={reverseButtonTitle}
         on:click={() => (reverseActive = !reverseActive)}
       >
         <ReverseGeocodingIcon />

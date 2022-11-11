@@ -32,6 +32,11 @@ type LeafletControlOptions = ControlOptions &
      * @default true
      */
     flyTo?: boolean | (L.ZoomPanOptions & L.FitBoundsOptions);
+
+    /**
+     * Style for full feature geometry GeoJSON.
+     */
+    fullGeometryStyle?: L.PathOptions | L.StyleFunction;
   };
 
 export class GeocodingControl extends L.Control {
@@ -53,7 +58,13 @@ export class GeocodingControl extends L.Control {
     L.DomEvent.disableClickPropagation(div);
     L.DomEvent.disableScrollPropagation(div);
 
-    const { marker, showResultMarkers, flyTo, ...restOptions } = this.#options;
+    const {
+      marker,
+      showResultMarkers,
+      flyTo,
+      fullGeometryStyle,
+      ...restOptions
+    } = this.#options;
 
     const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
 
@@ -62,7 +73,8 @@ export class GeocodingControl extends L.Control {
       marker,
       showResultMarkers,
       flyToOptions,
-      flyToOptions
+      flyToOptions,
+      fullGeometryStyle
     );
 
     this.#gc = new GeocodingControlComponent({
@@ -95,12 +107,18 @@ export class GeocodingControl extends L.Control {
   setOptions(options: LeafletControlOptions) {
     this.#options = options;
 
-    const { marker, showResultMarkers, flyTo, ...restOptions } = this.#options;
+    const {
+      marker,
+      showResultMarkers,
+      flyTo,
+      fullGeometryStyle,
+      ...restOptions
+    } = this.#options;
 
     this.#gc?.$set(restOptions);
   }
 
-  setQuery(value: string, submit = true) {
+  setQuery(value: string, submit: boolean | "always" = true) {
     (this.#gc as any)?.setQuery(value, submit);
   }
 

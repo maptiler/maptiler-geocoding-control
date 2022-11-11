@@ -5,6 +5,8 @@ import {
   type FlyToOptions,
   type FitBoundsOptions,
   Evented,
+  type FillLayerSpecification,
+  type LineLayerSpecification,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
@@ -49,6 +51,14 @@ type MapLibreControlOptions = ControlOptions & {
    * @default true
    */
   flyTo?: boolean | (FlyToOptions & FitBoundsOptions);
+
+  /**
+   * Style for full feature geometry GeoJSON.
+   */
+  fullGeometryStyle?: {
+    fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
+    line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
+  };
 };
 
 export class GeocodingControl extends Evented implements IControl {
@@ -68,8 +78,14 @@ export class GeocodingControl extends Evented implements IControl {
     div.className =
       "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl";
 
-    const { maplibregl, marker, showResultMarkers, flyTo, ...restOptions } =
-      this.#options;
+    const {
+      maplibregl,
+      marker,
+      showResultMarkers,
+      flyTo,
+      fullGeometryStyle,
+      ...restOptions
+    } = this.#options;
 
     const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
 
@@ -79,7 +95,8 @@ export class GeocodingControl extends Evented implements IControl {
       marker,
       showResultMarkers,
       flyToOptions,
-      flyToOptions
+      flyToOptions,
+      fullGeometryStyle
     );
 
     this.#gc = new GeocodingControlComponent({
@@ -112,13 +129,19 @@ export class GeocodingControl extends Evented implements IControl {
   setOptions(options: MapLibreControlOptions) {
     this.#options = options;
 
-    const { maplibregl, marker, showResultMarkers, flyTo, ...restOptions } =
-      this.#options;
+    const {
+      maplibregl,
+      marker,
+      showResultMarkers,
+      flyTo,
+      fullGeometryStyle,
+      ...restOptions
+    } = this.#options;
 
     this.#gc?.$set(restOptions);
   }
 
-  setQuery(value: string, submit = true) {
+  setQuery(value: string, submit: boolean | "always" = true) {
     (this.#gc as any)?.setQuery(value, submit);
   }
 

@@ -99,14 +99,18 @@ Options:
 - `clearOnBlur`: `boolean` - If true, the geocoder control will clear its value when the input blurs. Default `false`.
 - `filter`: `(feature: Feature) => boolean` - A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list. Return true to keep the item, false otherwise.
 - `class`: `string` - Class of the root element.
-- `enableReverse`: `boolean | string` - Set to `true` to enable reverse geocoding button with title _toggle reverse geocoding_ or set the button title directly. Default `false`.
+- `enableReverse`: `boolean | "always""` - Set to `true` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active. Default `false`.
+- `reverseButtonTitle`: `string` - Reverse toggle button title. Default `"toggle reverse geocoding"`.
+- `clearButtonTitle`: `string` - Clear button title. Default `"clear"`.
+- `showFullGeometry`: `boolean` - Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown. Default `true`.
+- `fullGeometryStyle`: `{ fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">; line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">; } | (L.PathOptions | L.StyleFunction)` - style of the full feature geometry. See Mapplibre GL JS or Leaflet documentation.
 
 Methods:
 
 - `setQuery(value: string, submit = true): void` - set the query and optionally submit it
 - `focus(): void` - focus the query input box
 - `blur(): void` - blur the query input box
-- `setReverseMode(value: boolean): void` - set reverse mode
+- `setReverseMode(value: boolean | "always"): void` - set reverse mode
 
 Events:
 

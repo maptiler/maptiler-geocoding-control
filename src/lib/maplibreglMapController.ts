@@ -7,6 +7,8 @@ import type {
   Marker,
   FlyToOptions,
   GeoJSONSource,
+  FillLayerSpecification,
+  LineLayerSpecification,
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import type { Feature, MapController, Proximity } from "./types";
@@ -30,7 +32,29 @@ export function createMaplibreglMapController(
   marker: boolean | maplibregl.MarkerOptions = true,
   showResultMarkers: boolean | maplibregl.MarkerOptions = true,
   flyToOptions: FlyToOptions = {},
-  fitBoundsOptions: FitBoundsOptions = {}
+  fitBoundsOptions: FitBoundsOptions = {},
+  fullGeometryStyle: {
+    fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
+    line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
+  } = {
+    fill: {
+      layout: {},
+      paint: {
+        "fill-color": "#000",
+        "fill-opacity": 0.1,
+      },
+    },
+    line: {
+      layout: {
+        "line-cap": "square",
+      },
+      paint: {
+        "line-width": ["case", ["==", ["geometry-type"], "Polygon"], 2, 3],
+        "line-dasharray": [1, 1],
+        "line-color": "#3170fe",
+      },
+    },
+  }
 ) {
   let proximityChangeHandler: ((proximity: Proximity) => void) | undefined;
 
@@ -42,44 +66,33 @@ export function createMaplibreglMapController(
 
   let selectedMarker: maplibregl.Marker | undefined;
 
-  function addPreviewLayer() {
-    map.addSource("preview", {
+  function addFullGeometryLayer() {
+    map.addSource("full-geom", {
       type: "geojson",
       data: emptyGeojson,
     });
 
     map.addLayer({
-      id: "preview-fill",
+      ...fullGeometryStyle.fill,
+      id: "full-geom-fill",
       type: "fill",
-      source: "preview",
-      layout: {},
-      paint: {
-        "fill-color": "#000",
-        "fill-opacity": 0.1,
-      },
+      source: "full-geom",
       filter: ["==", ["geometry-type"], "Polygon"],
     });
 
     map.addLayer({
-      id: "preview-line",
+      ...fullGeometryStyle.line,
+      id: "full-geom-line",
       type: "line",
-      source: "preview",
-      layout: {
-        "line-cap": "square",
-      },
-      paint: {
-        "line-width": ["case", ["==", ["geometry-type"], "Polygon"], 2, 3],
-        "line-dasharray": [1, 1],
-        "line-color": "#3170fe",
-      },
+      source: "full-geom",
     });
   }
 
   if (map.loaded()) {
-    addPreviewLayer();
+    addFullGeometryLayer();
   } else {
     map.once("load", () => {
-      addPreviewLayer();
+      addFullGeometryLayer();
     });
   }
 
@@ -156,7 +169,7 @@ export function createMaplibreglMapController(
       picked: Feature | undefined
     ): void {
       function setData(data: GeoJSON.GeoJSON) {
-        (map.getSource("preview") as GeoJSONSource)?.setData(data);
+        (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
       }
 
       for (const marker of markers) {
