@@ -163,13 +163,24 @@ export function createMaplibreglMapController(
         marker.remove();
       }
 
-      setData(emptyGeojson);
-
       markers.length = 0;
+
+      setData(emptyGeojson);
 
       if (!maplibregl) {
         return;
       }
+
+      const createMarker = () => {
+        const element = document.createElement("div");
+
+        new MarkerIcon({
+          props: { displayIn: "maplibre" },
+          target: element,
+        });
+
+        return new maplibregl.Marker({ element });
+      };
 
       if (picked) {
         let handled = false;
@@ -210,8 +221,6 @@ export function createMaplibreglMapController(
           }
         }
 
-        let m: Marker | undefined = undefined;
-
         if (handled) {
           // nothing
         } else if (
@@ -225,25 +234,17 @@ export function createMaplibreglMapController(
         ) {
           setData(picked as any);
 
-          return;
+          return; // no pin for (multi)linestrings
         }
 
-        if (typeof marker === "object") {
-          m = new maplibregl.Marker(marker);
-        } else {
-          const element = document.createElement("div");
-
-          new MarkerIcon({
-            props: { displayIn: "maplibre" },
-            target: element,
-          });
-
-          m = new maplibregl.Marker({ element });
-        }
-
-        if (m) {
-          markers.push(m.setLngLat(picked.center).addTo(map));
-        }
+        markers.push(
+          (typeof marker === "object"
+            ? new maplibregl.Marker(marker)
+            : createMarker()
+          )
+            .setLngLat(picked.center)
+            .addTo(map)
+        );
       }
 
       for (const feature of markedFeatures ?? []) {
@@ -251,19 +252,14 @@ export function createMaplibreglMapController(
           continue;
         }
 
-        let m: Marker;
-
-        if (typeof showResultMarkers === "object") {
-          m = new maplibregl.Marker(showResultMarkers);
-        } else {
-          const element = document.createElement("div");
-
-          new MarkerIcon({ props: { displayIn: "maplibre" }, target: element });
-
-          m = new maplibregl.Marker({ element });
-        }
-
-        markers.push(m.setLngLat(feature.center).addTo(map));
+        markers.push(
+          (typeof showResultMarkers === "object"
+            ? new maplibregl.Marker(showResultMarkers)
+            : createMarker()
+          )
+            .setLngLat(feature.center)
+            .addTo(map)
+        );
       }
     },
 

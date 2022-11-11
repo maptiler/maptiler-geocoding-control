@@ -1,6 +1,14 @@
 import * as L from "leaflet";
 import MarkerIcon from "./MarkerIcon.svelte";
 import type { Feature, MapController, Proximity } from "./types";
+import type {
+  Polygon,
+  MultiPolygon,
+  LineString,
+  MultiLineString,
+} from "@turf/helpers";
+import mask from "@turf/mask";
+import union from "@turf/union";
 
 export function createLeafletMapController(
   map: L.Map,
@@ -18,6 +26,17 @@ export function createLeafletMapController(
   let markers: L.Marker[] = [];
 
   let selectedMarker: L.Marker | undefined;
+
+  let resultLayer = L.geoJSON(undefined, {
+    style: {
+      color: "#3170fe",
+      fillColor: "#000",
+      fillOpacity: 0.1,
+      weight: 2,
+      dashArray: [2, 2],
+      lineCap: "butt",
+    },
+  }).addTo(map);
 
   const handleMoveEnd = () => {
     if (!proximityChangeHandler) {
@@ -76,7 +95,7 @@ export function createLeafletMapController(
     },
 
     flyTo(center: [number, number], zoom: number) {
-      map.flyTo(center, zoom, flyToOptions);
+      map.flyTo(center, zoom, { duration: 2, ...flyToOptions });
     },
 
     fitBounds(bbox: [number, number, number, number], padding: number): void {
@@ -85,7 +104,7 @@ export function createLeafletMapController(
           [bbox[1], bbox[0]],
           [bbox[3], bbox[2]],
         ],
-        { ...flyToBounds, padding: [padding, padding] }
+        { padding: [padding, padding], duration: 2, ...flyToBounds }
       );
     },
 
@@ -97,37 +116,125 @@ export function createLeafletMapController(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined
     ): void {
+      function setData(data?: GeoJSON.GeoJSON) {
+        resultLayer.clearLayers();
+
+        if (data) {
+          resultLayer.addData(data);
+
+          resultLayer.eachLayer((layer) => {
+            if (layer instanceof L.Polyline) {
+              const type = layer.feature?.geometry?.type;
+
+              const weight =
+                type === "LineString" || type === "MultiLineString" ? 3 : 2;
+
+              layer.setStyle({
+                weight,
+                color: "#3170fe",
+                dashArray: [weight, weight],
+              });
+            }
+          });
+        }
+      }
+
       for (const marker of markers) {
         marker.remove();
       }
 
       markers.length = 0;
 
-      for (const feature of picked
-        ? [...(markedFeatures ?? []), picked]
-        : markedFeatures ?? []) {
-        let m: L.Marker;
+      setData();
+
+      const createMarker = (pos: L.LatLngExpression) => {
+        const element = document.createElement("div");
+
+        new MarkerIcon({ props: { displayIn: "leaflet" }, target: element });
+
+        return new L.Marker(pos, {
+          icon: new L.DivIcon({ html: element, className: "" }),
+        });
+      };
+
+      if (picked) {
+        let handled = false;
+
+        if (picked.geometry.type === "GeometryCollection") {
+          const geoms = picked.geometry.geometries.filter(
+            (geometry) =>
+              geometry.type === "Polygon" || geometry.type === "MultiPolygon"
+          ) as (Polygon | MultiPolygon)[];
+
+          if (geoms.length > 0) {
+            let geometry = geoms.pop()!;
+
+            for (const geom of geoms) {
+              geometry = union(geometry, geom) as unknown as
+                | Polygon
+                | MultiPolygon; // union actually returns geometry
+            }
+
+            setData(mask({ ...picked, geometry }));
+
+            handled = true;
+          } else {
+            const geometries = picked.geometry.geometries.filter(
+              (geometry) =>
+                geometry.type === "LineString" ||
+                geometry.type === "MultiLineString"
+            ) as (LineString | MultiLineString)[];
+
+            if (geometries.length > 0) {
+              setData({
+                ...picked,
+                geometry: { type: "GeometryCollection", geometries },
+              });
+
+              handled = true;
+            }
+          }
+        }
+
+        if (handled) {
+          // nothing
+        } else if (
+          picked.geometry.type === "Polygon" ||
+          picked.geometry.type === "MultiPolygon"
+        ) {
+          setData(mask(picked as any));
+        } else if (
+          picked.geometry.type === "LineString" ||
+          picked.geometry.type === "MultiLineString"
+        ) {
+          setData(picked as any);
+
+          return; // no pin for (multi)linestrings
+        }
+
+        const pos: L.LatLngExpression = [picked.center[1], picked.center[0]];
+
+        markers.push(
+          (typeof marker === "object"
+            ? new L.Marker(pos, marker)
+            : createMarker(pos)
+          ).addTo(map)
+        );
+      }
+
+      for (const feature of markedFeatures ?? []) {
+        if (feature === picked) {
+          continue;
+        }
 
         const pos: L.LatLngExpression = [feature.center[1], feature.center[0]];
 
-        if (feature === picked && typeof marker === "object") {
-          m = new L.Marker(pos, marker);
-        } else if (
-          feature !== picked &&
-          typeof showResultMarkers === "object"
-        ) {
-          m = new L.Marker(pos, showResultMarkers);
-        } else {
-          const element = document.createElement("div");
-
-          new MarkerIcon({ props: { displayIn: "leaflet" }, target: element });
-
-          m = new L.Marker(pos, {
-            icon: new L.DivIcon({ html: element, className: "" }),
-          });
-        }
-
-        markers.push(m.addTo(map));
+        markers.push(
+          (typeof showResultMarkers === "object"
+            ? new L.Marker(pos, showResultMarkers)
+            : createMarker(pos)
+          ).addTo(map)
+        );
       }
     },
 
