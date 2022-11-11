@@ -226,7 +226,7 @@
     }
   });
 
-  function handleOnSubmit() {
+  function handleOnSubmit(event?: unknown) {
     if (selectedItemIndex > -1 && listFeatures) {
       picked = listFeatures[selectedItemIndex];
       searchValue = picked.place_name.replace(/,.*/, "");
@@ -234,22 +234,30 @@
       markedFeatures = undefined;
       selectedItemIndex = -1;
     } else if (searchValue) {
+      const zoomTo = event || !isQuerReverse();
+
       search(searchValue)
         .then(() => {
           markedFeatures = listFeatures;
 
           picked = undefined;
 
-          zoomToResults();
+          if (zoomTo) {
+            zoomToResults();
+          }
         })
         .catch((err) => (error = err));
     }
   }
 
+  function isQuerReverse() {
+    return /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
+  }
+
   async function search(searchValue: string, byId = false) {
     error = undefined;
 
-    const isReverse = /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
+    const isReverse = isQuerReverse();
 
     const sp = new URLSearchParams();
 
