@@ -80,6 +80,13 @@
       selectedItemIndex = -1;
 
       handleOnSubmit();
+    } else {
+      handleInput();
+
+      setTimeout(() => {
+        input.focus();
+        input.select();
+      });
     }
   }
 
@@ -515,7 +522,6 @@
     position: relative;
     background-color: #fff;
     width: 100%;
-    max-width: 240px;
     z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
@@ -528,6 +534,7 @@
     max-width: 35px;
   }
 
+  form,
   form:focus-within,
   form:hover {
     max-width: 240px;

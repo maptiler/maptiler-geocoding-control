@@ -143,7 +143,7 @@ export function createMaplibreglMapController(
           [bbox[0], bbox[1]],
           [bbox[2], bbox[3]],
         ],
-        { ...fitBoundsOptions, padding }
+        { padding, ...fitBoundsOptions }
       );
     },
 
