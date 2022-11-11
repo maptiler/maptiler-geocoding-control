@@ -1,10 +1,10 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.37",
+  "version": "0.0.38",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && FLAVOUR=leaflet vite build && tsc --outDir dist --declaration --emitDeclarationOnly",
+    "build": "vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js && tsc --outDir dist --declaration --emitDeclarationOnly",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -15,11 +15,11 @@
   "exports": {
     "./leaflet": {
       "import": "./dist/leaflet.js",
-      "require": "./dist/leaflet.umd.cjs"
+      "require": "./dist/leaflet.umd.js"
     },
     "./maplibregl": {
       "import": "./dist/maplibregl.js",
-      "require": "./dist/maplibregl.umd.cjs"
+      "require": "./dist/maplibregl.umd.js"
     },
     "./dist/style.css": {
       "import": "./dist/style.css",
