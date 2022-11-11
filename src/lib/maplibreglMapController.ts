@@ -24,7 +24,7 @@ let emptyGeojson: GeoJSON.FeatureCollection = {
   features: [],
 };
 
-export function createMaplibreMapController(
+export function createMaplibreglMapController(
   map: Map,
   maplibregl?: typeof MapLibreGL | undefined,
   marker: boolean | maplibregl.MarkerOptions = true,

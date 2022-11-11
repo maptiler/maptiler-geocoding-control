@@ -1,6 +1,7 @@
 import * as L from "leaflet";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createLeafletMapController } from "./leafletMapController";
+export { createLeafletMapController } from "./leafletMapController";
 import type { ControlOptions } from "./types";
 
 type LeafletControlOptions = ControlOptions &

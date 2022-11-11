@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -25,9 +25,9 @@
       "import": "./dist/style.css",
       "require": "./dist/style.css"
     },
-    "./src/lib/Geocoder.svelte": {
-      "import": "./src/lib/Geocoder.svelte",
-      "require": "./src/lib/Geocoder.svelte"
+    "./src/lib/GeocodingControl.svelte": {
+      "import": "./src/lib/GeocodingControl.svelte",
+      "require": "./src/lib/GeocodingControl.svelte"
     }
   },
   "types": "./dist/lib/index.d.ts",
@@ -37,6 +37,7 @@
     "@turf/mask": "^6.5.0",
     "@turf/union": "^6.5.0",
     "@types/leaflet": "^1.9.0",
+    "prettier": "^2.7.1",
     "prettier-plugin-svelte": "^2.8.0",
     "svelte": "^3.52.0",
     "svelte-check": "^2.9.2",

@@ -19,7 +19,7 @@ import maplibregl from "maplibre-gl";
 import { GeocodingControl } from "@maptiler/geocoding-control/maplibre";
 import "@maptiler/geocoding-control/dist/style.css";
 
-const API_KEY = "your API key";
+const API_KEY = "YOUR_MAPTILER_API_KEY_HERE";
 
 const map = new maplibregl.Map({
   container: "map", // id of HTML container element
@@ -128,12 +128,12 @@ Component API matches API described above and options are exposed as component p
 <script lang="ts">
   import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
   import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
-  import { createMaplibreMapController } from "@maptiler/geocoding-control/src/lib/maplibreMapController";
+  import { createMaplibreglMapController } from "@maptiler/geocoding-control/src/lib/maplibreglMapController";
   import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
-  const apiKey = "your API key";
+  const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
 
   let mapController: MapController;
 
@@ -146,7 +146,7 @@ Component API matches API described above and options are exposed as component p
       container,
     });
 
-    const mapController = createMaplibreMapController(map, maplibregl);
+    const mapController = createMaplibreglMapController(map, maplibregl);
   }
 </script>
 

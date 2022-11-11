@@ -9,7 +9,8 @@ import {
 import type maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import type { ControlOptions } from "./types";
-import { createMaplibreMapController } from "./maplibreMapController";
+import { createMaplibreglMapController } from "./maplibreglMapController";
+export { createMaplibreglMapController } from "./maplibreglMapController";
 
 type MapLibreGL = typeof maplibregl;
 
@@ -72,7 +73,7 @@ export class GeocodingControl extends Evented implements IControl {
 
     const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
 
-    const mapController = createMaplibreMapController(
+    const mapController = createMaplibreglMapController(
       map,
       maplibregl,
       marker,
