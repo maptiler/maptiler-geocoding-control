@@ -6,9 +6,13 @@ import type {
   MultiPolygon,
   LineString,
   MultiLineString,
+  Feature as TurfFeature,
+  Position,
 } from "@turf/helpers";
-import mask from "@turf/mask";
+import difference from "@turf/difference";
 import union from "@turf/union";
+import buffer from "@turf/buffer";
+import { setMask } from "./mask";
 
 export function createLeafletMapController(
   map: L.Map,
@@ -19,12 +23,16 @@ export function createLeafletMapController(
   fullGeometryStyle: L.PathOptions | L.StyleFunction = (feature) => {
     const type = feature?.geometry?.type;
 
-    const weight = type === "LineString" || type === "MultiLineString" ? 3 : 2;
+    const weight = feature?.properties?.isMask
+      ? 0
+      : type === "LineString" || type === "MultiLineString"
+      ? 3
+      : 2;
 
     return {
       color: "#3170fe",
       fillColor: "#000",
-      fillOpacity: 0.1,
+      fillOpacity: feature?.properties?.isMask ? 0.1 : 0,
       weight,
       dashArray: [weight, weight],
       lineCap: "butt",
@@ -167,7 +175,7 @@ export function createLeafletMapController(
                 | MultiPolygon; // union actually returns geometry
             }
 
-            setData(mask({ ...picked, geometry }));
+            setMask({ ...picked, geometry }, setData);
 
             handled = true;
           } else {
@@ -194,7 +202,7 @@ export function createLeafletMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setData(mask(picked as any));
+          setMask(picked as any, setData);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"
