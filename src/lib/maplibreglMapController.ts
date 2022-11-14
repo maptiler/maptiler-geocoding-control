@@ -12,13 +12,16 @@ import type {
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import type { Feature, MapController, Proximity } from "./types";
-import mask from "@turf/mask";
 import union from "@turf/union";
+import buffer from "@turf/buffer";
+import difference from "@turf/difference";
 import type {
   Polygon,
   MultiPolygon,
   LineString,
   MultiLineString,
+  Feature as TurfFeature,
+  Position,
 } from "@turf/helpers";
 
 let emptyGeojson: GeoJSON.FeatureCollection = {
@@ -38,11 +41,11 @@ export function createMaplibreglMapController(
     line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
   } = {
     fill: {
-      layout: {},
       paint: {
         "fill-color": "#000",
         "fill-opacity": 0.1,
       },
+      filter: ["all", ["==", ["geometry-type"], "Polygon"], ["has", "isMask"]],
     },
     line: {
       layout: {
@@ -53,6 +56,7 @@ export function createMaplibreglMapController(
         "line-dasharray": [1, 1],
         "line-color": "#3170fe",
       },
+      filter: ["!", ["has", "isMask"]],
     },
   }
 ) {
@@ -77,7 +81,6 @@ export function createMaplibreglMapController(
       id: "full-geom-fill",
       type: "fill",
       source: "full-geom",
-      filter: ["==", ["geometry-type"], "Polygon"],
     });
 
     map.addLayer({
@@ -172,6 +175,64 @@ export function createMaplibreglMapController(
         (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
       }
 
+      // see https://maplibre.org/maplibre-gl-js-docs/example/line-across-180th-meridian/
+      function fixRing(ring: Position[]) {
+        let prev: Position | undefined = undefined;
+
+        for (const c of ring) {
+          if (prev && c[0] - prev[0] >= 180) {
+            c[0] -= 360;
+          } else if (prev && c[0] - prev[0] < -180) {
+            c[0] += 360;
+          }
+
+          prev = c;
+        }
+      }
+
+      function setMask(picked: TurfFeature<Polygon | MultiPolygon>) {
+        const diff = difference(
+          {
+            type: "Polygon",
+            coordinates: [
+              [
+                [180, 90],
+                [-180, 90],
+                [-180, -90],
+                [180, -90],
+                [180, 90],
+              ],
+            ],
+          },
+          picked
+        );
+
+        if (!diff) {
+          return;
+        }
+
+        diff.properties = { isMask: "y" };
+
+        const fixed = buffer(picked, 0);
+
+        if (fixed.geometry.type === "Polygon") {
+          for (const ring of fixed.geometry.coordinates) {
+            fixRing(ring);
+          }
+        } else {
+          for (const poly of fixed.geometry.coordinates) {
+            for (const ring of poly) {
+              fixRing(ring);
+            }
+          }
+        }
+
+        setData({
+          type: "FeatureCollection",
+          features: [fixed, diff],
+        });
+      }
+
       for (const marker of markers) {
         marker.remove();
       }
@@ -213,7 +274,7 @@ export function createMaplibreglMapController(
                 | MultiPolygon; // union actually returns geometry
             }
 
-            setData(mask({ ...picked, geometry }));
+            setMask({ ...picked, geometry });
 
             handled = true;
           } else {
@@ -240,7 +301,7 @@ export function createMaplibreglMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setData(mask(picked as any));
+          setMask(picked as any);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"
