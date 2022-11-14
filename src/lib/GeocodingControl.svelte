@@ -272,19 +272,17 @@
 
     const sp = new URLSearchParams();
 
-    sp.set("key", apiKey);
-
     if (language) {
       sp.set("language", String(language));
     }
 
     if (!isReverse) {
       if (bbox) {
-        sp.set("bbox", bbox.join(","));
+        sp.set("bbox", bbox.map((c) => c.toFixed(6)).join(","));
       }
 
       if (proximity) {
-        sp.set("proximity", proximity.join(","));
+        sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
       }
 
       // sp.set("autocomplete", String(autocomplete));
@@ -293,6 +291,8 @@
     }
 
     // sp.set("limit", String(limit));
+
+    sp.set("key", apiKey);
 
     const url =
       import.meta.env.VITE_API_URL +
