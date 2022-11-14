@@ -381,10 +381,27 @@
     }
   }
 
+  // taken from Leaflet
+  export function wrapNum(
+    x: number,
+    range: [number, number],
+    includeMax: boolean
+  ) {
+    const max = range[1],
+      min = range[0],
+      d = max - min;
+
+    return x === max && includeMax ? x : ((((x - min) % d) + d) % d) + min;
+  }
+
   function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = enableReverse === "always";
 
-    setQuery(coordinates[0].toFixed(6) + "," + coordinates[1].toFixed(6));
+    setQuery(
+      wrapNum(coordinates[0], [-180, 180], true).toFixed(6) +
+        "," +
+        coordinates[1].toFixed(6)
+    );
   }
 
   function handleKeyDown(e: KeyboardEvent) {

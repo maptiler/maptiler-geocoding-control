@@ -1,4 +1,4 @@
-import App from "./AppLeaflet.svelte";
+import App from "./AppMaplibregl.svelte";
 
 const appElement = document.getElementById("app");
 
