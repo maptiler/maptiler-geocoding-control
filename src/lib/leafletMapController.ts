@@ -6,12 +6,8 @@ import type {
   MultiPolygon,
   LineString,
   MultiLineString,
-  Feature as TurfFeature,
-  Position,
 } from "@turf/helpers";
-import difference from "@turf/difference";
 import union from "@turf/union";
-import buffer from "@turf/buffer";
 import { setMask } from "./mask";
 
 export function createLeafletMapController(

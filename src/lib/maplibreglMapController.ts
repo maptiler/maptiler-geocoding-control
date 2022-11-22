@@ -13,15 +13,11 @@ import type {
 import MarkerIcon from "./MarkerIcon.svelte";
 import type { Feature, MapController, Proximity } from "./types";
 import union from "@turf/union";
-import buffer from "@turf/buffer";
-import difference from "@turf/difference";
 import type {
   Polygon,
   MultiPolygon,
   LineString,
   MultiLineString,
-  Feature as TurfFeature,
-  Position,
 } from "@turf/helpers";
 import { setMask } from "./mask";
 
