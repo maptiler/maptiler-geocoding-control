@@ -1,12 +1,11 @@
-import {
-  type Map,
-  type IControl,
-  type MarkerOptions,
-  type FlyToOptions,
-  type FitBoundsOptions,
-  Evented,
-  type FillLayerSpecification,
-  type LineLayerSpecification,
+import type {
+  Map,
+  IControl,
+  MarkerOptions,
+  FlyToOptions,
+  FitBoundsOptions,
+  FillLayerSpecification,
+  LineLayerSpecification,
 } from "maplibre-gl";
 import type maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
@@ -61,7 +60,7 @@ type MapLibreControlOptions = ControlOptions & {
   };
 };
 
-export class GeocodingControl extends Evented implements IControl {
+export class GeocodingControl extends EventTarget implements IControl {
   #gc?: GeocodingControlComponent;
 
   #options: MapLibreControlOptions;
@@ -118,9 +117,7 @@ export class GeocodingControl extends Evented implements IControl {
       "reverseToggle",
       "queryChange",
     ]) {
-      this.#gc.$on(eventName, (event) =>
-        this.fire(eventName.toLowerCase(), event.detail)
-      );
+      this.#gc.$on(eventName, (event) => this.dispatchEvent(event));
     }
 
     return div;
