@@ -16,24 +16,20 @@ npm install --save @maptiler/geocoding-control maplibre-gl
 
 ```js
 import maplibregl from "maplibre-gl";
-import { GeocodingControl } from "@maptiler/geocoding-control/maplibre";
+import { GeocodingControl } from "@maptiler/geocoding-control/maplibregl";
 import "@maptiler/geocoding-control/dist/style.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
-const API_KEY = "YOUR_MAPTILER_API_KEY_HERE";
+const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
 
 const map = new maplibregl.Map({
   container: "map", // id of HTML container element
-  style:
-    "https://api.maptiler.com/maps/streets/style.json?key=" +
-    YOUR_MAPTILER_API_KEY_HERE,
+  style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
   center: [16.3, 49.2],
   zoom: 7,
 });
 
-const gc = new GeocodingControl({
-  apiKey: YOUR_MAPTILER_API_KEY_HERE,
-  maplibregl,
-});
+const gc = new GeocodingControl({ apiKey, maplibregl });
 
 map.addControl(gc);
 ```
@@ -49,13 +45,14 @@ import * as L from "leaflet";
 import { GeocodingControl } from "@maptiler/geocoding-control/leaflet";
 import "@maptiler/geocoding-control/dist/style.css";
 
+const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
+
 const map = L.map(document.getElementById("map")).setView([49.2, 16.3], 6);
 
 const scale = devicePixelRatio > 1.5 ? "@2x" : "";
 
 L.tileLayer(
-  `https://api.maptiler.com/maps/streets/{z}/{x}/{y}${scale}.png?key=` +
-    YOUR_MAPTILER_API_KEY_HERE,
+  `https://api.maptiler.com/maps/streets/{z}/{x}/{y}${scale}.png?key=` + apiKey,
   {
     tileSize: 512,
     zoomOffset: -1,
@@ -67,7 +64,7 @@ L.tileLayer(
   }
 ).addTo(map);
 
-L.control.maptilerGeocoding({ apiKey: YOUR_MAPTILER_API_KEY_HERE }).addTo(map);
+L.control.maptilerGeocoding({ apiKey }).addTo(map);
 ```
 
 For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:
