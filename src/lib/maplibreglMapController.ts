@@ -33,10 +33,12 @@ export function createMaplibreglMapController(
   showResultMarkers: boolean | maplibregl.MarkerOptions = true,
   flyToOptions: FlyToOptions = {},
   fitBoundsOptions: FitBoundsOptions = {},
-  fullGeometryStyle: {
-    fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
-    line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
-  } = {
+  fullGeometryStyle:
+    | undefined
+    | {
+        fill?: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
+        line?: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
+      } = {
     fill: {
       paint: {
         "fill-color": "#000",
@@ -68,24 +70,30 @@ export function createMaplibreglMapController(
   let selectedMarker: maplibregl.Marker | undefined;
 
   function addFullGeometryLayer() {
-    map.addSource("full-geom", {
-      type: "geojson",
-      data: emptyGeojson,
-    });
+    if (fullGeometryStyle?.fill || fullGeometryStyle?.line) {
+      map.addSource("full-geom", {
+        type: "geojson",
+        data: emptyGeojson,
+      });
+    }
 
-    map.addLayer({
-      ...fullGeometryStyle.fill,
-      id: "full-geom-fill",
-      type: "fill",
-      source: "full-geom",
-    });
+    if (fullGeometryStyle?.fill) {
+      map.addLayer({
+        ...fullGeometryStyle?.fill,
+        id: "full-geom-fill",
+        type: "fill",
+        source: "full-geom",
+      });
+    }
 
-    map.addLayer({
-      ...fullGeometryStyle.line,
-      id: "full-geom-line",
-      type: "line",
-      source: "full-geom",
-    });
+    if (fullGeometryStyle?.line) {
+      map.addLayer({
+        ...fullGeometryStyle?.line,
+        id: "full-geom-line",
+        type: "line",
+        source: "full-geom",
+      });
+    }
   }
 
   if (map.loaded()) {
@@ -250,29 +258,33 @@ export function createMaplibreglMapController(
           return; // no pin for (multi)linestrings
         }
 
-        markers.push(
-          (typeof marker === "object"
-            ? new maplibregl.Marker(marker)
-            : createMarker()
-          )
-            .setLngLat(picked.center)
-            .addTo(map)
-        );
+        if (showResultMarkers) {
+          markers.push(
+            (typeof marker === "object"
+              ? new maplibregl.Marker(marker)
+              : createMarker()
+            )
+              .setLngLat(picked.center)
+              .addTo(map)
+          );
+        }
       }
 
-      for (const feature of markedFeatures ?? []) {
-        if (feature === picked) {
-          continue;
-        }
+      if (showResultMarkers) {
+        for (const feature of markedFeatures ?? []) {
+          if (feature === picked) {
+            continue;
+          }
 
-        markers.push(
-          (typeof showResultMarkers === "object"
-            ? new maplibregl.Marker(showResultMarkers)
-            : createMarker()
-          )
-            .setLngLat(feature.center)
-            .addTo(map)
-        );
+          markers.push(
+            (typeof showResultMarkers === "object"
+              ? new maplibregl.Marker(showResultMarkers)
+              : createMarker()
+            )
+              .setLngLat(feature.center)
+              .addTo(map)
+          );
+        }
       }
     },
 
