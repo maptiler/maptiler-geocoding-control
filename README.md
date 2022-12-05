@@ -74,7 +74,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 
 ## API Documentation
 
-Options:
+### Options
 
 - `apiKey`<sup>\*</sup>: `string` - Maptiler API key
 - `maplibregl`: `MapLibreGL` - A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Required if `options.marker` is `true`. Used only with Maplibre GL library.
@@ -102,14 +102,16 @@ Options:
 - `showFullGeometry`: `boolean` - Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown. Default `true`.
 - `fullGeometryStyle`: `{ fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">; line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">; } | (L.PathOptions | L.StyleFunction)` - style of the full feature geometry. See Mapplibre GL JS or Leaflet documentation.
 
-Methods:
+### Methods
 
 - `setQuery(value: string, submit = true): void` - set the query and optionally submit it
 - `focus(): void` - focus the query input box
 - `blur(): void` - blur the query input box
 - `setReverseMode(value: boolean | "always"): void` - set reverse mode
 
-Events:
+### Events
+
+Events are implemented using [EventTarget](https://developer.mozilla.org/en-US/docs/Web/API/EventTarget) and [CustomEvent](https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent).
 
 - `select` - Fired on highlighting search result in the dropdown by hovering it or by keyboard selection. Event value will be set to the highlighted `Feature` or to `undefined` if nothing is highlighted.
 - `pick` - Fired on picking the result from the dropdown. Event value will be set to the picked `Feature` or to `undefined` if nothing is picked (eg. search input is cleared).
@@ -119,6 +121,14 @@ Events:
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
 - `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
 - `querychange` - Fired if query was changed. Event value is the query string.
+
+Example:
+
+```javascript
+geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
+  console.log("Options visible:" + e.detail);
+});
+```
 
 ## Svelte component
 
