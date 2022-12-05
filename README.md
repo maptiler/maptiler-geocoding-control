@@ -126,7 +126,7 @@ Example:
 
 ```javascript
 geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
-  console.log("Options visible:" + e.detail);
+  console.log("Options visible:", e.detail);
 });
 ```
 
