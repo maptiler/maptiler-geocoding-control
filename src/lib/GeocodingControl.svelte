@@ -37,7 +37,7 @@
 
   export let minLength = 2;
 
-  export let language: string | undefined = undefined;
+  export let language: string | string[] | undefined = undefined;
 
   export let showResultsWhileTyping = true;
 
@@ -65,11 +65,13 @@
 
   export let showFullGeometry = true;
 
-  // export let limit = 5;
+  export let limit: number | undefined = undefined;
 
-  // export let autocomplete = true;
+  export let fuzzyMatch = true;
 
-  // export let fuzzy = true;
+  export let countries: string | string[] | undefined = undefined;
+
+  export let types: string[] | undefined = undefined;
 
   export function focus() {
     input.focus();
@@ -120,6 +122,8 @@
 
   let focusedDelayed: boolean;
 
+  let reverseCoords: undefined | [number, number];
+
   const dispatch = createEventDispatcher<{
     select: Feature;
     pick: Feature;
@@ -166,6 +170,7 @@
 
     listFeatures = undefined;
     markedFeatures = undefined;
+    reverseCoords = undefined;
     selectedItemIndex = -1;
   }
 
@@ -182,6 +187,7 @@
     listFeatures = undefined;
     error = undefined;
     markedFeatures = listFeatures;
+    reverseCoords = undefined;
   }
 
   // highlight selected marker
@@ -204,6 +210,8 @@
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
+
+  $: mapController?.setReverseMarker(reverseCoords);
 
   $: dispatch("select", selected);
 
@@ -244,6 +252,7 @@
       error = undefined;
       markedFeatures = undefined;
       selectedItemIndex = -1;
+      reverseCoords = undefined;
     } else if (searchValue) {
       const zoomTo = event || !isQuerReverse();
 
@@ -273,7 +282,21 @@
     const sp = new URLSearchParams();
 
     if (language) {
-      sp.set("language", String(language));
+      sp.set(
+        "language",
+        Array.isArray(language) ? language.join(",") : language
+      );
+    }
+
+    if (countries) {
+      sp.set(
+        "stack",
+        Array.isArray(countries) ? countries.join(",") : countries
+      );
+    }
+
+    if (types) {
+      sp.set("types", types.join(","));
     }
 
     if (!isReverse) {
@@ -285,12 +308,16 @@
         sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
       }
 
-      // sp.set("autocomplete", String(autocomplete));
+      if (!showResultsWhileTyping) {
+        sp.set("autocomplete", "false");
+      }
 
-      // sp.set("fuzzyMatch", String(fuzzy));
+      sp.set("fuzzyMatch", String(fuzzyMatch));
     }
 
-    // sp.set("limit", String(limit));
+    if (limit !== undefined) {
+      sp.set("limit", String(limit));
+    }
 
     sp.set("key", apiKey);
 
@@ -397,6 +424,8 @@
   function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = enableReverse === "always";
 
+    reverseCoords = coordinates;
+
     setQuery(
       wrapNum(coordinates[0], [-180, 180], true).toFixed(6) +
         "," +
@@ -429,6 +458,8 @@
   }
 
   function handleInput(debounce = true) {
+    reverseCoords = undefined;
+
     if (showResultsWhileTyping && searchValue.length > minLength) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);

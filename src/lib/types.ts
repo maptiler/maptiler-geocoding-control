@@ -35,6 +35,8 @@ export type MapController = {
     picked: Feature | undefined
   ): void;
 
+  setReverseMarker(coordinates?: [number, number]): void;
+
   setSelectedMarker(index: number): void;
 };
 
@@ -101,12 +103,12 @@ export type ControlOptions = {
    */
   bbox?: [number, number, number, number];
 
-  // /**
-  //  * Maximum number of results to show.
-  //  *
-  //  * @default 5
-  //  */
-  // limit?: number;
+  /**
+   * Maximum number of results to show.
+   *
+   * @default 5
+   */
+  limit?: number;
 
   /**
    * Specify the language to use for response text and query result weighting.
@@ -114,7 +116,7 @@ export type ControlOptions = {
    * More than one value can also be specified, separated by commas.
    * Defaults to the browser's language settings.
    */
-  language?: string;
+  language?: string | string[];
 
   /**
    * If `false`, indicates that search will only occur on enter key press.
@@ -124,19 +126,12 @@ export type ControlOptions = {
    */
   showResultsWhileTyping?: boolean;
 
-  // /**
-  //  * Set to `false` to disable autocomplete.
-  //  *
-  //  * @default true
-  //  */
-  // autocomplete?: boolean;
-
-  // /**
-  //  * Set to `false` to disable fuzzy search.
-  //  *
-  //  * @default true
-  //  */
-  // fuzzy?: boolean;
+  /**
+   * Set to `false` to disable fuzzy search.
+   *
+   * @default true
+   */
+  fuzzyMatch?: boolean;
 
   /**
    * On geocoded result what zoom level should the map animate to when a bbox isn't found in the response.
@@ -212,6 +207,20 @@ export type ControlOptions = {
    * @default true
    */
   showFullGeometry?: boolean;
+
+  /**
+   * Limit search to specified country(ies).
+   *
+   * @default undefined use all countries
+   */
+  country?: string | string[];
+
+  /**
+   * Filter of feature types to return.
+   *
+   * @default undefined all available feature types are returned
+   */
+  types?: string[];
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

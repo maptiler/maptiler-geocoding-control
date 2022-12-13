@@ -60,4 +60,13 @@
     fill: #98b7ff;
     stroke: #3170fe;
   }
+
+  :global(.marker-reverse) svg path {
+    fill: silver;
+    stroke: gray;
+  }
+
+  :global(.marker-non-interactive) {
+    cursor: inherit !important;
+  }
 </style>

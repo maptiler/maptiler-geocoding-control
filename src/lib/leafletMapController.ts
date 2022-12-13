@@ -45,6 +45,8 @@ export function createLeafletMapController(
 
   let selectedMarker: L.Marker | undefined;
 
+  let reverseMarker: L.Marker | undefined;
+
   let resultLayer = L.geoJSON(undefined, {
     style: fullGeometryStyle,
   }).addTo(map);
@@ -73,6 +75,16 @@ export function createLeafletMapController(
   const handleMapClick = (e: L.LeafletMouseEvent) => {
     mapClickHandler?.([e.latlng.lng, e.latlng.lat]);
   };
+
+  function createMarker(pos: L.LatLngExpression) {
+    const element = document.createElement("div");
+
+    new MarkerIcon({ props: { displayIn: "leaflet" }, target: element });
+
+    return new L.Marker(pos, {
+      icon: new L.DivIcon({ html: element, className: "" }),
+    });
+  }
 
   const ctrl: MapController = {
     setProximityChangeHandler(
@@ -123,6 +135,20 @@ export function createLeafletMapController(
       map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
+    setReverseMarker(coordinates: [number, number]) {
+      reverseMarker?.remove();
+
+      if (coordinates) {
+        reverseMarker = (
+          typeof marker === "object"
+            ? new L.Marker(coordinates, marker)
+            : createMarker(coordinates)
+        ).addTo(map);
+
+        reverseMarker.getElement()?.classList.add("marker-reverse");
+      }
+    },
+
     setMarkers(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined
@@ -142,16 +168,6 @@ export function createLeafletMapController(
       markers.length = 0;
 
       setData();
-
-      const createMarker = (pos: L.LatLngExpression) => {
-        const element = document.createElement("div");
-
-        new MarkerIcon({ props: { displayIn: "leaflet" }, target: element });
-
-        return new L.Marker(pos, {
-          icon: new L.DivIcon({ html: element, className: "" }),
-        });
-      };
 
       if (picked) {
         let handled = false;

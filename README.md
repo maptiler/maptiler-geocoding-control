@@ -86,7 +86,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `trackProximity`: `boolean` - If true, the geocoder proximity will automatically update based on the map view. Default `true`.
 - `minLength`: `number` - Minimum number of characters to enter before results are shown. Default `2`.
 - `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
-- `language`: `string` - Specify the language to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Set to empty string for forcing no language preference.
+- `language`: `string | string[]` - Specify the language(s) to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Set to empty string for forcing no language preference.
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
 - `marker`: `boolean | MarkerOptions` - If `true`, a [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
@@ -101,6 +101,10 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `clearButtonTitle`: `string` - Clear button title. Default `"clear"`.
 - `showFullGeometry`: `boolean` - Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown. Default `true`.
 - `fullGeometryStyle`: `{ fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">; line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">; } | (L.PathOptions | L.StyleFunction)` - style of the full feature geometry. See Mapplibre GL JS or Leaflet documentation.
+- `fuzzyMatch`: `boolean` - Set to `false` to disable fuzzy search. Default `true`.
+- `limit`: `number` - Maximum number of results to show. Default `5`.
+- `country`: `string | string[]` - Limit search to specified country(ies). Default `undefined` (use all countries).
+- `types`: `string[]` - Filter of feature types to return. Default `undefined` (all available feature types are returned).
 
 ### Methods
 

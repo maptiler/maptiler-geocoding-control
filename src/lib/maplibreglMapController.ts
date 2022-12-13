@@ -69,6 +69,8 @@ export function createMaplibreglMapController(
 
   let selectedMarker: maplibregl.Marker | undefined;
 
+  let reverseMarker: maplibregl.Marker | undefined;
+
   function addFullGeometryLayer() {
     if (fullGeometryStyle?.fill || fullGeometryStyle?.line) {
       map.addSource("full-geom", {
@@ -123,6 +125,23 @@ export function createMaplibreglMapController(
     }
   };
 
+  function createMarker() {
+    if (!maplibregl) {
+      throw new Error();
+    }
+
+    const element = document.createElement("div");
+
+    element.classList.add("marker-non-interactive");
+
+    new MarkerIcon({
+      props: { displayIn: "maplibre" },
+      target: element,
+    });
+
+    return new maplibregl.Marker({ element });
+  }
+
   const ctrl: MapController = {
     setProximityChangeHandler(
       _proximityChangeHandler: ((proximity: Proximity) => void) | undefined
@@ -169,7 +188,27 @@ export function createMaplibreglMapController(
     },
 
     indicateReverse(reverse: boolean): void {
-      map.getCanvas().style.cursor = reverse ? "crosshair" : "";
+      map.getCanvasContainer().style.cursor = reverse ? "crosshair" : "";
+    },
+
+    setReverseMarker(coordinates: [number, number]) {
+      if (!maplibregl) {
+        return;
+      }
+
+      reverseMarker?.remove();
+
+      if (coordinates) {
+        reverseMarker = (
+          typeof marker === "object"
+            ? new maplibregl.Marker(marker)
+            : createMarker()
+        )
+          .setLngLat(coordinates)
+          .addTo(map);
+
+        reverseMarker.getElement().classList.add("marker-reverse");
+      }
     },
 
     setMarkers(
@@ -191,17 +230,6 @@ export function createMaplibreglMapController(
       if (!maplibregl) {
         return;
       }
-
-      const createMarker = () => {
-        const element = document.createElement("div");
-
-        new MarkerIcon({
-          props: { displayIn: "maplibre" },
-          target: element,
-        });
-
-        return new maplibregl.Marker({ element });
-      };
 
       if (picked) {
         let handled = false;
@@ -258,7 +286,7 @@ export function createMaplibreglMapController(
           return; // no pin for (multi)linestrings
         }
 
-        if (showResultMarkers) {
+        if (marker) {
           markers.push(
             (typeof marker === "object"
               ? new maplibregl.Marker(marker)
