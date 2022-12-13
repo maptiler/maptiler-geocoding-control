@@ -122,8 +122,6 @@
 
   let focusedDelayed: boolean;
 
-  let reverseCoords: undefined | [number, number];
-
   const dispatch = createEventDispatcher<{
     select: Feature;
     pick: Feature;
@@ -170,7 +168,6 @@
 
     listFeatures = undefined;
     markedFeatures = undefined;
-    reverseCoords = undefined;
     selectedItemIndex = -1;
   }
 
@@ -187,7 +184,6 @@
     listFeatures = undefined;
     error = undefined;
     markedFeatures = listFeatures;
-    reverseCoords = undefined;
   }
 
   // highlight selected marker
@@ -211,7 +207,13 @@
 
   $: selected = listFeatures?.[selectedItemIndex];
 
-  $: mapController?.setReverseMarker(reverseCoords);
+  $: {
+    const m = /^(-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)$/.exec(searchValue);
+
+    mapController?.setReverseMarker(
+      m ? [Number(m[1]), Number(m[2])] : undefined
+    );
+  }
 
   $: dispatch("select", selected);
 
@@ -252,7 +254,6 @@
       error = undefined;
       markedFeatures = undefined;
       selectedItemIndex = -1;
-      reverseCoords = undefined;
     } else if (searchValue) {
       const zoomTo = event || !isQuerReverse();
 
@@ -424,8 +425,6 @@
   function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = enableReverse === "always";
 
-    reverseCoords = coordinates;
-
     setQuery(
       wrapNum(coordinates[0], [-180, 180], true).toFixed(6) +
         "," +
@@ -458,8 +457,6 @@
   }
 
   function handleInput(debounce = true) {
-    reverseCoords = undefined;
-
     if (showResultsWhileTyping && searchValue.length > minLength) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);

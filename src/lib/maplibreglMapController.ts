@@ -192,13 +192,19 @@ export function createMaplibreglMapController(
     },
 
     setReverseMarker(coordinates: [number, number]) {
-      if (!maplibregl) {
+      if (!maplibregl || !marker) {
         return;
       }
 
-      reverseMarker?.remove();
+      if (reverseMarker) {
+        if (!coordinates) {
+          reverseMarker.remove();
 
-      if (coordinates) {
+          reverseMarker = undefined;
+        } else {
+          reverseMarker.setLngLat(coordinates);
+        }
+      } else if (coordinates) {
         reverseMarker = (
           typeof marker === "object"
             ? new maplibregl.Marker(marker)
@@ -215,6 +221,10 @@ export function createMaplibreglMapController(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined
     ): void {
+      if (!marker) {
+        return;
+      }
+
       function setData(data: GeoJSON.GeoJSON) {
         (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
       }

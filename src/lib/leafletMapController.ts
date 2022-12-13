@@ -136,13 +136,26 @@ export function createLeafletMapController(
     },
 
     setReverseMarker(coordinates: [number, number]) {
-      reverseMarker?.remove();
+      if (!marker) {
+        return;
+      }
 
-      if (coordinates) {
+      const latLng =
+        coordinates && ([coordinates[1], coordinates[0]] as [number, number]);
+
+      if (reverseMarker) {
+        if (!latLng) {
+          reverseMarker.remove();
+
+          reverseMarker = undefined;
+        } else {
+          reverseMarker.setLatLng(latLng);
+        }
+      } else if (latLng) {
         reverseMarker = (
           typeof marker === "object"
-            ? new L.Marker(coordinates, marker)
-            : createMarker(coordinates)
+            ? new L.Marker(latLng, marker)
+            : createMarker(latLng)
         ).addTo(map);
 
         reverseMarker.getElement()?.classList.add("marker-reverse");
@@ -153,6 +166,10 @@ export function createLeafletMapController(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined
     ): void {
+      if (!marker) {
+        return;
+      }
+
       function setData(data?: GeoJSON.GeoJSON) {
         resultLayer.clearLayers();
 
