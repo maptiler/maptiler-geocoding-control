@@ -153,7 +153,7 @@
     !picked.address &&
     picked.geometry.type === "Point"
   ) {
-    search(picked.id, true).catch((err) => (error = err));
+    search(picked.id, { byId: true }).catch((err) => (error = err));
   }
 
   $: if (mapController && picked && flyTo) {
@@ -257,7 +257,7 @@
     } else if (searchValue) {
       const zoomTo = event || !isQuerReverse();
 
-      search(searchValue)
+      search(searchValue, { exact: true })
         .then(() => {
           markedFeatures = listFeatures;
 
@@ -275,7 +275,13 @@
     return /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
   }
 
-  async function search(searchValue: string, byId = false) {
+  async function search(
+    searchValue: string,
+    {
+      byId = false,
+      exact = false,
+    }: undefined | { byId?: boolean; exact?: boolean } = {}
+  ) {
     error = undefined;
 
     const isReverse = isQuerReverse();
@@ -309,7 +315,7 @@
         sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
       }
 
-      if (!showResultsWhileTyping) {
+      if (exact || !showResultsWhileTyping) {
         sp.set("autocomplete", "false");
       }
 
