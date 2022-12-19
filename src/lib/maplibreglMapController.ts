@@ -11,7 +11,7 @@ import type {
   LineLayerSpecification,
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
-import type { Feature, MapController, Proximity } from "./types";
+import type { Feature, MapController, MapEvent, Proximity } from "./types";
 import union from "@turf/union";
 import type {
   Polygon,
@@ -59,9 +59,7 @@ export function createMaplibreglMapController(
     },
   }
 ) {
-  let proximityChangeHandler: ((proximity: Proximity) => void) | undefined;
-
-  let mapClickHandler: ((coordinates: [number, number]) => void) | undefined;
+  let eventHandler: ((e: MapEvent) => void) | undefined;
 
   let prevProximity: Proximity = undefined;
 
@@ -107,7 +105,10 @@ export function createMaplibreglMapController(
   }
 
   const handleMapClick = (e: MapMouseEvent) => {
-    mapClickHandler?.([e.lngLat.lng, e.lngLat.lat]);
+    eventHandler?.({
+      type: "mapClick",
+      coordinates: [e.lngLat.lng, e.lngLat.lat],
+    });
   };
 
   const handleMoveEnd = () => {
@@ -121,54 +122,46 @@ export function createMaplibreglMapController(
     if (prevProximity !== proximity) {
       prevProximity = proximity;
 
-      proximityChangeHandler?.(proximity);
+      eventHandler?.({ type: "proximityChange", proximity });
     }
   };
 
-  function createMarker() {
+  function createMarker(interactive = false) {
     if (!maplibregl) {
       throw new Error();
     }
 
     const element = document.createElement("div");
 
-    element.classList.add("marker-non-interactive");
+    if (interactive) {
+      element.classList.add("marker-interactive");
+    }
 
     new MarkerIcon({
       props: { displayIn: "maplibre" },
       target: element,
     });
 
-    return new maplibregl.Marker({ element });
+    return new maplibregl.Marker({ element, offset: [1, -13] });
   }
 
   const ctrl: MapController = {
-    setProximityChangeHandler(
-      _proximityChangeHandler: ((proximity: Proximity) => void) | undefined
-    ): void {
-      if (_proximityChangeHandler) {
-        proximityChangeHandler = _proximityChangeHandler;
+    setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
+      if (handler) {
+        eventHandler = handler;
 
         map.on("moveend", handleMoveEnd);
 
         handleMoveEnd();
+
+        map.on("click", handleMapClick);
       } else {
         map.off("moveend", handleMoveEnd);
 
-        proximityChangeHandler?.(undefined);
+        eventHandler?.({ type: "proximityChange", proximity: undefined });
 
-        proximityChangeHandler = undefined;
-      }
-    },
+        eventHandler = undefined;
 
-    setMapClickHandler(
-      _mapClickHandler: ((coordinates: [number, number]) => void) | undefined
-    ): void {
-      mapClickHandler = _mapClickHandler;
-
-      if (mapClickHandler) {
-        map.on("click", handleMapClick);
-      } else {
         map.off("click", handleMapClick);
       }
     },
@@ -314,14 +307,33 @@ export function createMaplibreglMapController(
             continue;
           }
 
-          markers.push(
-            (typeof showResultMarkers === "object"
+          const marker = (
+            typeof showResultMarkers === "object"
               ? new maplibregl.Marker(showResultMarkers)
-              : createMarker()
-            )
-              .setLngLat(feature.center)
-              .addTo(map)
-          );
+              : createMarker(true)
+          )
+            .setLngLat(feature.center)
+            .addTo(map);
+
+          const element = marker.getElement();
+
+          element.addEventListener("click", (e) => {
+            e.stopPropagation();
+
+            eventHandler?.({ type: "markerClick", id: feature.id });
+          });
+
+          element.addEventListener("mouseenter", () => {
+            eventHandler?.({ type: "markerMouseEnter", id: feature.id });
+          });
+
+          element.addEventListener("mouseleave", () => {
+            eventHandler?.({ type: "markerMouseLeave", id: feature.id });
+          });
+
+          element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+
+          markers.push(marker);
         }
       }
     },

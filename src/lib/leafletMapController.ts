@@ -1,6 +1,6 @@
 import * as L from "leaflet";
 import MarkerIcon from "./MarkerIcon.svelte";
-import type { Feature, MapController, Proximity } from "./types";
+import type { Feature, MapController, MapEvent, Proximity } from "./types";
 import type {
   Polygon,
   MultiPolygon,
@@ -35,9 +35,7 @@ export function createLeafletMapController(
     };
   }
 ) {
-  let proximityChangeHandler: ((proximity: Proximity) => void) | undefined;
-
-  let mapClickHandler: ((coordinates: [number, number]) => void) | undefined;
+  let eventHandler: ((e: MapEvent) => void) | undefined;
 
   let prevProximity: Proximity = undefined;
 
@@ -49,15 +47,10 @@ export function createLeafletMapController(
 
   let resultLayer = L.geoJSON(undefined, {
     style: fullGeometryStyle,
+    interactive: false,
   }).addTo(map);
 
   const handleMoveEnd = () => {
-    if (!proximityChangeHandler) {
-      prevProximity = undefined;
-
-      return;
-    }
-
     let c: L.LatLng;
 
     const proximity =
@@ -68,51 +61,49 @@ export function createLeafletMapController(
     if (prevProximity !== proximity) {
       prevProximity = proximity;
 
-      proximityChangeHandler(proximity);
+      eventHandler?.({ type: "proximityChange", proximity });
     }
   };
 
   const handleMapClick = (e: L.LeafletMouseEvent) => {
-    mapClickHandler?.([e.latlng.lng, e.latlng.lat]);
+    eventHandler?.({
+      type: "mapClick",
+      coordinates: [e.latlng.lng, e.latlng.lat],
+    });
   };
 
-  function createMarker(pos: L.LatLngExpression) {
+  function createMarker(pos: L.LatLngExpression, interactive = false) {
     const element = document.createElement("div");
 
     new MarkerIcon({ props: { displayIn: "leaflet" }, target: element });
 
     return new L.Marker(pos, {
-      icon: new L.DivIcon({ html: element, className: "" }),
+      interactive,
+      icon: new L.DivIcon({
+        html: element,
+        className: "",
+        iconAnchor: [12, 26],
+      }),
     });
   }
 
   const ctrl: MapController = {
-    setProximityChangeHandler(
-      _proximityChangeHandler: ((proximity: Proximity) => void) | undefined
-    ): void {
-      if (_proximityChangeHandler) {
-        proximityChangeHandler = _proximityChangeHandler;
+    setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
+      if (handler) {
+        eventHandler = handler;
 
         map.on("moveend", handleMoveEnd);
 
         handleMoveEnd();
+
+        map.on("click", handleMapClick);
       } else {
         map.off("moveend", handleMoveEnd);
 
-        proximityChangeHandler?.(undefined);
+        eventHandler?.({ type: "proximityChange", proximity: undefined });
 
-        proximityChangeHandler = undefined;
-      }
-    },
+        eventHandler = undefined;
 
-    setMapClickHandler(
-      _mapClickHandler: ((coordinates: [number, number]) => void) | undefined
-    ): void {
-      mapClickHandler = _mapClickHandler;
-
-      if (mapClickHandler) {
-        map.on("click", handleMapClick);
-      } else {
         map.off("click", handleMapClick);
       }
     },
@@ -251,19 +242,46 @@ export function createLeafletMapController(
         );
       }
 
-      for (const feature of markedFeatures ?? []) {
-        if (feature === picked) {
-          continue;
+      if (showResultMarkers) {
+        for (const feature of markedFeatures ?? []) {
+          if (feature === picked) {
+            continue;
+          }
+
+          const pos: L.LatLngExpression = [
+            feature.center[1],
+            feature.center[0],
+          ];
+
+          const marker =
+            typeof showResultMarkers === "object"
+              ? new L.Marker(pos, showResultMarkers)
+              : createMarker(pos, true);
+
+          marker.addTo(map);
+
+          const element = marker.getElement();
+
+          if (element) {
+            element.addEventListener("click", (e) => {
+              e.stopPropagation();
+
+              eventHandler?.({ type: "markerClick", id: feature.id });
+            });
+
+            element.addEventListener("mouseenter", () => {
+              eventHandler?.({ type: "markerMouseEnter", id: feature.id });
+            });
+
+            element.addEventListener("mouseleave", () => {
+              eventHandler?.({ type: "markerMouseLeave", id: feature.id });
+            });
+
+            element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+          }
+
+          markers.push(marker);
         }
-
-        const pos: L.LatLngExpression = [feature.center[1], feature.center[0]];
-
-        markers.push(
-          (typeof showResultMarkers === "object"
-            ? new L.Marker(pos, showResultMarkers)
-            : createMarker(pos)
-          ).addTo(map)
-        );
       }
     },
 

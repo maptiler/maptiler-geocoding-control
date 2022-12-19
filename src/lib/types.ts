@@ -6,6 +6,7 @@ export type Feature = GeoJSON.Feature & {
   center: [number, number];
   bbox: [number, number, number, number];
   address?: string;
+  matching_text?: string;
 };
 
 export type FeatureCollection = {
@@ -13,16 +14,18 @@ export type FeatureCollection = {
   features: Feature[];
 };
 
-export type MapController = {
-  setProximityChangeHandler(
-    proximityChangeHandler:
-      | undefined
-      | ((proximity: [number, number] | undefined) => void)
-  ): void;
+export type MapEvent =
+  | {
+      type: "proximityChange";
+      proximity: [number, number] | undefined;
+    }
+  | { type: "mapClick"; coordinates: [number, number] }
+  | { type: "markerClick"; id: string }
+  | { type: "markerMouseEnter"; id: string }
+  | { type: "markerMouseLeave"; id: string };
 
-  setMapClickHandler(
-    mapClickHandler: undefined | ((coordinates: [number, number]) => void)
-  ): void;
+export type MapController = {
+  setEventHandler(handler: undefined | ((e: MapEvent) => void)): void;
 
   flyTo(center: [number, number], zoom: number): void;
 

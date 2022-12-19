@@ -7,8 +7,6 @@
   viewBox="0 0 70 85"
   fill="none"
   class:in-map={displayIn !== "list"}
-  class:for-maplibre={displayIn === "maplibre"}
-  class:for-leaflet={displayIn === "leaflet"}
   class:list-icon={displayIn === "list"}
 >
   <path
@@ -21,6 +19,7 @@
 
 <style>
   svg {
+    display: block;
     fill: #6b7c93;
     stroke: #6b7c93;
   }
@@ -33,17 +32,6 @@
 
   .in-map {
     height: 30px;
-  }
-
-  .for-maplibre {
-    position: relative;
-    top: -10px;
-  }
-
-  .for-leaflet {
-    position: relative;
-    top: -23px;
-    left: -50%;
   }
 
   :global(.maplibregl-canvas-container .marker-selected) {
@@ -66,7 +54,17 @@
     stroke: gray;
   }
 
-  :global(.marker-non-interactive) {
-    cursor: inherit !important;
+  :global(.marker-interactive) {
+    cursor: pointer !important;
+  }
+
+  :global(.marker-fuzzy) svg path {
+    fill: silver;
+    stroke: gray;
+  }
+
+  :global(.marker-fuzzy.marker-selected) svg path {
+    fill: #ddd;
+    stroke: silver;
   }
 </style>

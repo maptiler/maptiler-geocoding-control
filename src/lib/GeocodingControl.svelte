@@ -133,16 +133,6 @@
     queryChange: string;
   }>();
 
-  $: if (mapController) {
-    mapController.setProximityChangeHandler(
-      trackProximity
-        ? (p) => {
-            proximity = p;
-          }
-        : undefined
-    );
-  }
-
   $: if (!trackProximity) {
     proximity = undefined;
   }
@@ -234,13 +224,47 @@
   }
 
   $: if (mapController) {
-    mapController.setMapClickHandler(reverseActive ? handleReverse : undefined);
+    mapController.setEventHandler((e) => {
+      switch (e.type) {
+        case "mapClick":
+          if (reverseActive) {
+            handleReverse(e.coordinates);
+          }
+
+          break;
+        case "proximityChange":
+          proximity = trackProximity ? e.proximity : undefined;
+
+          break;
+        case "markerClick":
+          {
+            const feature = listFeatures?.find(
+              (feature) => feature.id === e.id
+            );
+
+            if (feature) {
+              pick(feature);
+            }
+          }
+
+          break;
+        case "markerMouseEnter":
+          selectedItemIndex = !focusedDelayed
+            ? -1
+            : listFeatures?.findIndex((feature) => feature.id === e.id) ?? -1;
+
+          break;
+        case "markerMouseLeave":
+          selectedItemIndex = -1;
+
+          break;
+      }
+    });
   }
 
   onDestroy(() => {
     if (mapController) {
-      mapController.setProximityChangeHandler(undefined);
-      mapController.setMapClickHandler(undefined);
+      mapController.setEventHandler(undefined);
       mapController.indicateReverse(false);
       mapController.setSelectedMarker(-1);
       mapController.setMarkers(undefined, undefined);
@@ -405,11 +429,15 @@
 
     const bbox: [number, number, number, number] = [180, 90, -180, -90];
 
+    const fuzzyOnly = !markedFeatures.some((feature) => !feature.matching_text);
+
     for (const feature of markedFeatures) {
-      bbox[0] = Math.min(bbox[0], feature.bbox?.[0] ?? feature.center[0]);
-      bbox[1] = Math.min(bbox[1], feature.bbox?.[1] ?? feature.center[1]);
-      bbox[2] = Math.max(bbox[2], feature.bbox?.[2] ?? feature.center[0]);
-      bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
+      if (fuzzyOnly || !feature.matching_text) {
+        bbox[0] = Math.min(bbox[0], feature.bbox?.[0] ?? feature.center[0]);
+        bbox[1] = Math.min(bbox[1], feature.bbox?.[1] ?? feature.center[1]);
+        bbox[2] = Math.max(bbox[2], feature.bbox?.[2] ?? feature.center[0]);
+        bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
+      }
     }
 
     if (mapController && markedFeatures.length > 0) {
@@ -422,11 +450,7 @@
   }
 
   // taken from Leaflet
-  export function wrapNum(
-    x: number,
-    range: [number, number],
-    includeMax: boolean
-  ) {
+  function wrapNum(x: number, range: [number, number], includeMax: boolean) {
     const max = range[1],
       min = range[0],
       d = max - min;
@@ -486,6 +510,12 @@
       listFeatures = undefined;
       error = undefined;
     }
+  }
+
+  function pick(feature: Feature) {
+    picked = feature;
+    searchValue = feature.place_name.replace(/,.*/, "");
+    selectedItemIndex = -1;
   }
 </script>
 
@@ -559,11 +589,7 @@
           data-selected={selectedItemIndex === i}
           class:selected={selectedItemIndex === i}
           on:mouseover={() => (selectedItemIndex = i)}
-          on:focus={() => {
-            picked = feature;
-            searchValue = feature.place_name.replace(/,.*/, "");
-            selectedItemIndex = -1;
-          }}
+          on:focus={() => pick(feature)}
         >
           <MarkerIcon displayIn="list" />
           <span>

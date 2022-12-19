@@ -38,9 +38,9 @@
 
     new GeocodingControl({
       apiKey,
-      enableReverse: true,
+      enableReverse: "always",
       showPlaceType: true,
-      collapsed: true,
+      // collapsed: true,
     }).addTo(map);
   });
 </script>
