@@ -109,7 +109,7 @@ export function createLeafletMapController(
     },
 
     flyTo(center: [number, number], zoom: number) {
-      map.flyTo(center, zoom, { duration: 2, ...flyToOptions });
+      map.flyTo([center[1], center[0]], zoom, { duration: 2, ...flyToOptions });
     },
 
     fitBounds(bbox: [number, number, number, number], padding: number): void {
