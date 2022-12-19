@@ -118,7 +118,7 @@
 
   let abortController: AbortController | undefined;
 
-  let searchTimeoutRef: number;
+  let searchTimeoutRef: number | undefined;
 
   let focusedDelayed: boolean;
 
@@ -248,6 +248,12 @@
   });
 
   function handleOnSubmit(event?: unknown) {
+    if (searchTimeoutRef) {
+      clearTimeout(searchTimeoutRef);
+
+      searchTimeoutRef = undefined;
+    }
+
     if (selectedItemIndex > -1 && listFeatures) {
       picked = listFeatures[selectedItemIndex];
       searchValue = picked.place_name.replace(/,.*/, "");
