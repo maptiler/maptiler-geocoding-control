@@ -69,7 +69,7 @@
 
   export let fuzzyMatch = true;
 
-  export let countries: string | string[] | undefined = undefined;
+  export let country: string | string[] | undefined = undefined;
 
   export let types: string[] | undefined = undefined;
 
@@ -325,11 +325,8 @@
       );
     }
 
-    if (countries) {
-      sp.set(
-        "stack",
-        Array.isArray(countries) ? countries.join(",") : countries
-      );
+    if (country) {
+      sp.set("country", Array.isArray(country) ? country.join(",") : country);
     }
 
     if (types) {
