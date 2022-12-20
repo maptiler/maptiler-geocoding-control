@@ -313,6 +313,14 @@ export function createMaplibreglMapController(
               : createMarker(true)
           )
             .setLngLat(feature.center)
+            .setPopup(
+              new maplibregl.Popup({
+                offset: [1, -27],
+                closeButton: false,
+                closeOnMove: true,
+                className: "maptiler-gc-popup",
+              }).setText(feature.place_name.replace(/,.*/, ""))
+            )
             .addTo(map);
 
           const element = marker.getElement();
@@ -325,10 +333,14 @@ export function createMaplibreglMapController(
 
           element.addEventListener("mouseenter", () => {
             eventHandler?.({ type: "markerMouseEnter", id: feature.id });
+
+            marker.togglePopup();
           });
 
           element.addEventListener("mouseleave", () => {
             eventHandler?.({ type: "markerMouseLeave", id: feature.id });
+
+            marker.togglePopup();
           });
 
           element.classList.toggle("marker-fuzzy", !!feature.matching_text);

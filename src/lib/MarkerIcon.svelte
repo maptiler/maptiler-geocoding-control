@@ -67,4 +67,8 @@
     fill: #ddd;
     stroke: silver;
   }
+
+  :global(.maptiler-gc-popup > .maplibregl-popup-content) {
+    padding: 2px 8px;
+  }
 </style>

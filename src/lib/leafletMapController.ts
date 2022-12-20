@@ -83,6 +83,8 @@ export function createLeafletMapController(
         html: element,
         className: "",
         iconAnchor: [12, 26],
+        iconSize: [25, 30],
+        tooltipAnchor: [1, -24],
       }),
     });
   }
@@ -258,7 +260,11 @@ export function createLeafletMapController(
               ? new L.Marker(pos, showResultMarkers)
               : createMarker(pos, true);
 
-          marker.addTo(map);
+          marker
+            .addTo(map)
+            .bindTooltip(feature.place_name.replace(/,.*/, ""), {
+              direction: "top",
+            });
 
           const element = marker.getElement();
 
