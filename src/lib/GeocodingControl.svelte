@@ -511,7 +511,7 @@
 
   function pick(feature: Feature) {
     picked = feature;
-    searchValue = feature.place_name.replace(/,.*/, "");
+    searchValue = feature.place_name;
     selectedItemIndex = -1;
   }
 </script>
