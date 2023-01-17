@@ -571,10 +571,10 @@
     <slot />
   </div>
 
-  {#if !focusedDelayed}
-    {""}
-  {:else if error}
+  {#if error}
     <div class="error">{errorMessage}</div>
+  {:else if !focusedDelayed}
+    {""}
   {:else if listFeatures?.length === 0}
     <div class="no-results">{noResultsMessage}</div>
   {:else if focusedDelayed && listFeatures?.length}
