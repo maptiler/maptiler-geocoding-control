@@ -233,6 +233,7 @@
 
           break;
         case "proximityChange":
+          console.log("AAAAAAAAA");
           proximity = trackProximity ? e.proximity : undefined;
 
           break;
@@ -338,15 +339,17 @@
         sp.set("bbox", bbox.map((c) => c.toFixed(6)).join(","));
       }
 
-      if (proximity) {
-        sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
-      }
+      if (!byId) {
+        if (proximity) {
+          sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
+        }
 
-      if (exact || !showResultsWhileTyping) {
-        sp.set("autocomplete", "false");
-      }
+        if (exact || !showResultsWhileTyping) {
+          sp.set("autocomplete", "false");
+        }
 
-      sp.set("fuzzyMatch", String(fuzzyMatch));
+        sp.set("fuzzyMatch", String(fuzzyMatch));
+      }
     }
 
     if (limit !== undefined) {
@@ -383,6 +386,7 @@
     let res: Response;
 
     try {
+      console.log("FFFFFFF");
       res = await fetch(url, { signal: abortController.signal }).finally(() => {
         abortController = undefined;
       });
