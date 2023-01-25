@@ -233,7 +233,6 @@
 
           break;
         case "proximityChange":
-          console.log("AAAAAAAAA");
           proximity = trackProximity ? e.proximity : undefined;
 
           break;
@@ -386,7 +385,6 @@
     let res: Response;
 
     try {
-      console.log("FFFFFFF");
       res = await fetch(url, { signal: abortController.signal }).finally(() => {
         abortController = undefined;
       });
