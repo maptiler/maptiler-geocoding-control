@@ -1,11 +1,12 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.55",
+  "version": "0.0.56",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
     "email": "martin.zdila@maptiler.com"
   },
+  "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
     "url": "https://github.com/maptiler/maptiler-geocoding-control"
@@ -13,6 +14,18 @@
   "bugs": {
     "url": "https://github.com/maptiler/maptiler-geocoding-control/issues"
   },
+  "keywords": [
+    "geocoding",
+    "forward geocoding",
+    "reverse geocoding",
+    "maptiler",
+    "leaflet",
+    "maplibre",
+    "map",
+    "search",
+    "component",
+    "control"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js && tsc --outDir dist --declaration --emitDeclarationOnly",
