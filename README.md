@@ -136,7 +136,7 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 
 ## Svelte component
 
-In addition to using the component as MapLibre GL Control it is alto possible to use it stand-alone in Svelte projects.
+In addition to using the component as MapLibre GL Control it is also possible to use it stand-alone in Svelte projects.
 Component API matches API described above and options are exposed as component properties.
 
 ```svelte
