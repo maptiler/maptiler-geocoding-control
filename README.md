@@ -1,6 +1,6 @@
 # MapTiler Geocoding control for MapLibre GL JS and Leaflet
 
-A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js).
+A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js) which utilizes [Maptiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/).
 
 Component can be used as ES module or UMD module.
 
