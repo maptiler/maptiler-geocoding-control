@@ -16,14 +16,15 @@
   },
   "keywords": [
     "geocoding",
-    "forward geocoding",
-    "reverse geocoding",
+    "forward-geocoding",
+    "reverse-geocoding",
     "maptiler",
     "leaflet",
     "maplibre",
     "map",
     "search",
-    "component",
+    "leaflet-control",
+    "maplibre-control",
     "control"
   ],
   "scripts": {
