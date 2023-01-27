@@ -103,7 +103,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `fullGeometryStyle`: `{ fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">; line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">; } | (L.PathOptions | L.StyleFunction)` - style of the full feature geometry. See Mapplibre GL JS or Leaflet documentation.
 - `fuzzyMatch`: `boolean` - Set to `false` to disable fuzzy search. Default `true`.
 - `limit`: `number` - Maximum number of results to show. Default `5`.
-- `country`: `string | string[]` - Limit search to specified country(ies). Default `undefined` (use all countries).
+- `country`: `string | string[]` - Limit search to specified country(ies). Default `undefined` (use all countries). Specify as [alpha-2 ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) lowercase code.
 - `types`: `string[]` - Filter of feature types to return. Default `undefined` (all available feature types are returned).
 
 ### Methods
