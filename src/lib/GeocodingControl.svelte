@@ -325,10 +325,6 @@
       );
     }
 
-    if (country) {
-      sp.set("country", Array.isArray(country) ? country.join(",") : country);
-    }
-
     if (types) {
       sp.set("types", types.join(","));
     }
@@ -338,17 +334,21 @@
         sp.set("bbox", bbox.map((c) => c.toFixed(6)).join(","));
       }
 
-      if (!byId) {
-        if (proximity) {
-          sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
-        }
-
-        if (exact || !showResultsWhileTyping) {
-          sp.set("autocomplete", "false");
-        }
-
-        sp.set("fuzzyMatch", String(fuzzyMatch));
+      if (country) {
+        sp.set("country", Array.isArray(country) ? country.join(",") : country);
       }
+    }
+
+    if (!byId) {
+      if (proximity) {
+        sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
+      }
+
+      if (exact || !showResultsWhileTyping) {
+        sp.set("autocomplete", "false");
+      }
+
+      sp.set("fuzzyMatch", String(fuzzyMatch));
     }
 
     if (limit !== undefined) {
