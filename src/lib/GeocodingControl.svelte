@@ -318,7 +318,7 @@
 
     const sp = new URLSearchParams();
 
-    if (language) {
+    if (language != undefined) {
       sp.set(
         "language",
         Array.isArray(language) ? language.join(",") : language
