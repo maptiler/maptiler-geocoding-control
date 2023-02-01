@@ -387,8 +387,6 @@
     let res: Response;
 
     try {
-      console.log("fetch");
-
       res = await fetch(url, { signal: ac.signal }).finally(() => {
         if (ac === abortController) {
           abortController = undefined;
