@@ -380,13 +380,19 @@
 
     abortController?.abort();
 
-    abortController = new AbortController();
+    const ac = new AbortController();
+
+    abortController = ac;
 
     let res: Response;
 
     try {
-      res = await fetch(url, { signal: abortController.signal }).finally(() => {
-        abortController = undefined;
+      console.log("fetch");
+
+      res = await fetch(url, { signal: ac.signal }).finally(() => {
+        if (ac === abortController) {
+          abortController = undefined;
+        }
       });
     } catch (e) {
       if (e && typeof e === "object" && (e as any).name === "AbortError") {
