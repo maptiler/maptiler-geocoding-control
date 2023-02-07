@@ -599,7 +599,10 @@
             <span>
               <span>{feature.place_name.replace(/,.*/, "")}</span>
               {#if showPlaceType}
-                <span>{feature.place_type}</span>
+                <span
+                  >{feature.properties?.place_type_name?.[0] ??
+                    feature.place_type[0]}</span
+                >
               {/if}
             </span>
           </span>
