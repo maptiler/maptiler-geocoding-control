@@ -584,14 +584,17 @@
   {:else if listFeatures?.length === 0}
     <div class="no-results">{noResultsMessage}</div>
   {:else if focusedDelayed && listFeatures?.length}
-    <ul on:mouseout={() => (selectedItemIndex = -1)} on:blur={() => undefined}>
+    <ul
+      on:mouseleave={() => (selectedItemIndex = -1)}
+      on:blur={() => undefined}
+    >
       {#each listFeatures as feature, i}
         <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
         <li
           tabindex="0"
           data-selected={selectedItemIndex === i}
           class:selected={selectedItemIndex === i}
-          on:mouseover={() => (selectedItemIndex = i)}
+          on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
         >
           <MarkerIcon displayIn="list" />
