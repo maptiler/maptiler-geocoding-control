@@ -29,7 +29,11 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js && tsc --outDir dist --declaration --emitDeclarationOnly",
+    "build": "concurrently --names \"MAPLIBRE,LEAFLET ,REACT   ,TYPES   \" \"npm run build-maplibre\" \"npm run build-leaflet\" \"npm run build-react\" \"npm run build-types\"",
+    "build-maplibre": "FLAVOUR=maplibre vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js",
+    "build-leaflet": "FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js",
+    "build-react": "FLAVOUR=react vite build && mv dist/react.umd.cjs dist/react.umd.js",
+    "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
@@ -65,8 +69,15 @@
     "@turf/difference": "^6.5.0",
     "@turf/union": "^6.5.0",
     "@types/leaflet": "^1.9.0",
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.10",
+    "concurrently": "^7.6.0",
+    "leaflet": "^1.9.3",
+    "maplibre-gl": "^2.4.0",
     "prettier": "^2.8.3",
     "prettier-plugin-svelte": "^2.9.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
     "svelte": "^3.55.1",
     "svelte-check": "^3.0.3",
     "svelte-preprocess": "^5.0.1",
@@ -76,13 +87,17 @@
   },
   "peerDependencies": {
     "leaflet": "^1.9.3",
-    "maplibre-gl": "^2.4.0"
+    "maplibre-gl": "^2.4.0",
+    "react": "^18.2.0"
   },
   "peerDependenciesMeta": {
     "leaflet": {
       "optional": true
     },
     "maplibre-gl": {
+      "optional": true
+    },
+    "react": {
       "optional": true
     }
   }

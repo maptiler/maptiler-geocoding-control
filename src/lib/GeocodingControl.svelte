@@ -17,61 +17,61 @@
 
   export { className as class };
 
-  export let mapController: MapController | undefined = undefined;
-
   export let apiKey: string;
-
-  export let debounceSearch = 200;
-
-  export let placeholder = "Search";
-
-  export let errorMessage = "Searching failed";
-
-  export let noResultsMessage = "No results found";
-
-  export let proximity: Proximity = undefined;
 
   export let bbox: [number, number, number, number] | undefined = undefined;
 
-  export let trackProximity = true;
-
-  export let minLength = 2;
-
-  export let language: string | string[] | undefined = undefined;
-
-  export let showResultsWhileTyping = true;
-
-  export let zoom = 16;
-
-  export let flyTo = true;
-
-  export let collapsed = false;
+  export let clearButtonTitle = "clear";
 
   export let clearOnBlur = false;
 
-  export let enableReverse: boolean | "always" = false;
-
-  export let reverseButtonTitle = "toggle reverse geocoding";
-
-  export let clearButtonTitle = "clear";
-
-  export let filter: (feature: Feature) => boolean = () => true;
-
-  export let searchValue = "";
-
-  export let reverseActive = enableReverse === "always";
-
-  export let showPlaceType = false;
-
-  export let showFullGeometry = true;
-
-  export let limit: number | undefined = undefined;
-
-  export let fuzzyMatch = true;
+  export let collapsed = false;
 
   export let country: string | string[] | undefined = undefined;
 
+  export let debounceSearch = 200;
+
+  export let enableReverse: boolean | "always" = false;
+
+  export let errorMessage = "Searching failed";
+
+  export let filter: (feature: Feature) => boolean = () => true;
+
+  export let flyTo = true;
+
+  export let fuzzyMatch = true;
+
+  export let language: string | string[] | undefined = undefined;
+
+  export let limit: number | undefined = undefined;
+
+  export let mapController: MapController | undefined = undefined;
+
+  export let minLength = 2;
+
+  export let noResultsMessage = "No results found";
+
+  export let placeholder = "Search";
+
+  export let proximity: Proximity = undefined;
+
+  export let reverseActive = enableReverse === "always";
+
+  export let reverseButtonTitle = "toggle reverse geocoding";
+
+  export let searchValue = "";
+
+  export let showFullGeometry = true;
+
+  export let showPlaceType = false;
+
+  export let showResultsWhileTyping = true;
+
+  export let trackProximity = true;
+
   export let types: string[] | undefined = undefined;
+
+  export let zoom = 16;
 
   export function focus() {
     input.focus();
