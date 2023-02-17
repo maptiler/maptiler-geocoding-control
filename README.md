@@ -192,7 +192,6 @@ Component API matches API described above where options and events are exposed a
 ```svelte
 <script lang="ts">
   import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
-  import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
   import { createMaplibreglMapController } from "@maptiler/geocoding-control/src/lib/maplibreglMapController";
   import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
   import maplibregl from "maplibre-gl";

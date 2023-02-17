@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.72",
+  "version": "0.0.74",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -39,7 +39,7 @@
     "build-react": "FLAVOUR=react vite build && mv dist/react.umd.cjs dist/react.umd.js",
     "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly",
     "clean": "rm -rf dist",
-    "order-dist-files": "mv dist/ReactGeocodingControl.d.ts dist/react.d.ts && mv dist/MaplibreglGeocodingControl.d.ts dist/maplibre.d.ts && mv dist/maplibreglMapController.d.ts dist/maplibregl-controller.d.ts && mv dist/LeafletGeocodingControl.d.ts dist/leaflet.d.ts && mv dist/leafletMapController.d.ts dist/leaflet-controller.d.ts && cp -r package.json src dist",
+    "order-dist-files": "mv dist/ReactGeocodingControl.d.ts dist/react.d.ts && mv dist/MaplibreglGeocodingControl.d.ts dist/maplibre.d.ts && mv dist/maplibreglMapController.d.ts dist/maplibregl-controller.d.ts && mv dist/LeafletGeocodingControl.d.ts dist/leaflet.d.ts && mv dist/leafletMapController.d.ts dist/leaflet-controller.d.ts && cp -r LICENSE README.md package.json src dist",
     "build-and-order-dist-files": "npm run clean && npm run build && npm run order-dist-files",
     "pack": "npm run build-and-order-dist-files && cd dist && npm pack",
     "pub": "npm run build-and-order-dist-files && cd dist && npm publish",
