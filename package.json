@@ -42,7 +42,7 @@
     "order-dist-files": "mv dist/ReactGeocodingControl.d.ts dist/react.d.ts && mv dist/MaplibreglGeocodingControl.d.ts dist/maplibre.d.ts && mv dist/maplibreglMapController.d.ts dist/maplibregl-controller.d.ts && mv dist/LeafletGeocodingControl.d.ts dist/leaflet.d.ts && mv dist/leafletMapController.d.ts dist/leaflet-controller.d.ts && cp -r package.json src dist",
     "build-and-order-dist-files": "npm run clean && npm run build && npm run order-dist-files",
     "pack": "npm run build-and-order-dist-files && cd dist && npm pack",
-    "publish": "npm run build-and-order-dist-files && cd dist && npm publish",
+    "pub": "npm run build-and-order-dist-files && cd dist && npm publish",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
