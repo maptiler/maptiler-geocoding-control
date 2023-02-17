@@ -6,6 +6,7 @@ import type {
 } from "@turf/helpers";
 import difference from "@turf/difference";
 import buffer from "@turf/buffer";
+import type { GeoJSON } from "geojson";
 
 // see https://maplibre.org/maplibre-gl-js-docs/example/line-across-180th-meridian/
 function fixRing(ring: Position[]) {
@@ -24,7 +25,7 @@ function fixRing(ring: Position[]) {
 
 export function setMask(
   picked: TurfFeature<Polygon | MultiPolygon>,
-  setData: (data: GeoJSON.GeoJSON) => void
+  setData: (data: GeoJSON) => void
 ) {
   const diff = difference(
     {

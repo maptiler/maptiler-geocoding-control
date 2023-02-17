@@ -18,5 +18,6 @@
     "strict": true
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "src/**/*.svelte"],
+  "exclude": ["src/main*"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

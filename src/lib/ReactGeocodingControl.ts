@@ -7,7 +7,7 @@ import {
   useRef,
   type Ref,
 } from "react";
-import type { ControlOptions, Feature } from "./types";
+import type { ControlOptions, Feature, MapController } from "./types";
 
 // TODO this would be nice to be derived from `Parameters<GeocodingControl["$on"]>[0]` but it just doesn't work
 type CallbackProperties = {
@@ -38,6 +38,10 @@ const eventNames = [
   "select",
 ] as const satisfies readonly EventNames[];
 
+type MapControllerProp = {
+  mapController?: MapController;
+};
+
 const propertyNames = [
   "apiKey",
   "bbox",
@@ -63,7 +67,8 @@ const propertyNames = [
   "trackProximity",
   "types",
   "zoom",
-] as const satisfies readonly (keyof ControlOptions)[];
+  "mapController",
+] as const satisfies readonly (keyof (ControlOptions & MapControllerProp))[];
 
 type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
 
@@ -73,13 +78,20 @@ function getEventFnName<T extends EventNames>(name: T): EventHandlerFnName<T> {
     name.slice(1)) as EventHandlerFnName<T>;
 }
 
-export type Props = ControlOptions & CallbackProperties;
+export type Props = ControlOptions & CallbackProperties & MapControllerProp;
 
-type MethodNames = "blur" | "focus" | "setQuery";
+// // not used because it does not integrate well with Svelte
+// type MethodNames = "blur" | "focus" | "setQuery";
+//
+// export type Methods = { [T in MethodNames]: GeocodingControl[T] };
 
-export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+export type Methods = {
+  blur: () => void;
+  focus: () => void;
+  setQuery: (value: string, submit?: boolean) => void;
+};
 
-export const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
+const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
   ref: Ref<Methods>
 ) {
@@ -100,7 +112,7 @@ export const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
 
     const control = new GeocodingControl({
       target: divRef.current,
-      ...options,
+      props: options,
     });
 
     controlRef.current = control;
@@ -142,3 +154,5 @@ export const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
 
   return createElement("div", { ref: divRef });
 });
+
+export { ReactGeocodingControl as GeocodingControl };

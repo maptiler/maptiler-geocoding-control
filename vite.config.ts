@@ -29,7 +29,21 @@ export default defineConfig({
             name: "MaptilerGeocoder",
             formats: ["es", "umd"],
           }
-        : false,
+        : process.env.FLAVOUR === "leaflet-controller"
+        ? {
+            fileName: "leaflet-controller",
+            entry: ["src/lib/leafletMapController.ts"],
+            name: "leafletMaptilerGeocodingController",
+            formats: ["es", "umd"],
+          }
+        : process.env.FLAVOUR === "maplibregl-controller"
+        ? {
+            fileName: "maplibregl-controller",
+            entry: ["src/lib/maplibreglMapController.ts"],
+            name: "maplibreglMaptilerGeocodingController",
+            formats: ["es", "umd"],
+          }
+        : error(new Error("unknown FLAVOUR")),
     rollupOptions: {
       external: ["maplibre-gl", "leaflet", "react", "react-dom"],
       output: {
@@ -45,3 +59,7 @@ export default defineConfig({
     },
   },
 });
+
+function error(e: any): any {
+  throw e;
+}

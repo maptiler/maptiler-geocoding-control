@@ -1,4 +1,6 @@
-export type Feature = GeoJSON.Feature & {
+import type { Feature as FeatureType } from "geojson";
+
+export type Feature = FeatureType & {
   id: string;
   text: string;
   place_name: string;

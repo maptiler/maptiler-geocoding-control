@@ -9,6 +9,7 @@ import type {
 } from "@turf/helpers";
 import union from "@turf/union";
 import { setMask } from "./mask";
+import type { GeoJSON } from "geojson";
 
 export function createLeafletMapController(
   map: L.Map,
@@ -163,7 +164,7 @@ export function createLeafletMapController(
         return;
       }
 
-      function setData(data?: GeoJSON.GeoJSON) {
+      function setData(data?: GeoJSON) {
         resultLayer.clearLayers();
 
         if (data) {
@@ -260,11 +261,9 @@ export function createLeafletMapController(
               ? new L.Marker(pos, showResultMarkers)
               : createMarker(pos, true);
 
-          marker
-            .addTo(map)
-            .bindTooltip(feature.place_name.replace(/,.*/, ""), {
-              direction: "top",
-            });
+          marker.addTo(map).bindTooltip(feature.place_name.replace(/,.*/, ""), {
+            direction: "top",
+          });
 
           const element = marker.getElement();
 

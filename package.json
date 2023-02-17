@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.61",
+  "version": "0.0.72",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -25,43 +25,60 @@
     "search",
     "leaflet-control",
     "maplibre-control",
-    "control"
+    "control",
+    "react",
+    "svelte"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "concurrently --names \"MAPLIBRE,LEAFLET ,REACT   ,TYPES   \" \"npm run build-maplibre\" \"npm run build-leaflet\" \"npm run build-react\" \"npm run build-types\"",
+    "build": "concurrently --names \"MAPLIBRE,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-maplibre\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\"",
     "build-maplibre": "FLAVOUR=maplibre vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js",
+    "build-maplibre-controller": "FLAVOUR=maplibregl-controller vite build && mv dist/maplibregl-controller.umd.cjs dist/maplibregl-controller.umd.js",
     "build-leaflet": "FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js",
+    "build-leaflet-controller": "FLAVOUR=leaflet-controller vite build && mv dist/leaflet-controller.umd.cjs dist/leaflet-controller.umd.js",
     "build-react": "FLAVOUR=react vite build && mv dist/react.umd.cjs dist/react.umd.js",
     "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly",
+    "clean": "rm -rf dist",
+    "order-dist-files": "mv dist/ReactGeocodingControl.d.ts dist/react.d.ts && mv dist/MaplibreglGeocodingControl.d.ts dist/maplibre.d.ts && mv dist/maplibreglMapController.d.ts dist/maplibregl-controller.d.ts && mv dist/LeafletGeocodingControl.d.ts dist/leaflet.d.ts && mv dist/leafletMapController.d.ts dist/leaflet-controller.d.ts && cp -r package.json src dist",
+    "build-and-order-dist-files": "npm run clean && npm run build && npm run order-dist-files",
+    "pack": "npm run build-and-order-dist-files && cd dist && npm pack",
+    "publish": "npm run build-and-order-dist-files && cd dist && npm publish",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
-  "files": [
-    "dist",
-    "src/lib"
-  ],
   "exports": {
     "./leaflet": {
-      "import": "./dist/leaflet.js",
-      "require": "./dist/leaflet.umd.js",
-      "types": "./dist/lib/LeafletGeocodingControl.d.ts"
+      "import": "./leaflet.js",
+      "require": "./leaflet.umd.js"
+    },
+    "./leaflet-controller": {
+      "import": "./leaflet-controller.js",
+      "require": "./leaflet-controller.umd.js"
     },
     "./maplibregl": {
-      "import": "./dist/maplibregl.js",
-      "require": "./dist/maplibregl.umd.js",
-      "types": "./dist/lib/MaplibreglGeocodingControl.d.ts"
+      "import": "./maplibregl.js",
+      "require": "./maplibregl.umd.js"
     },
-    "./dist/style.css": {
-      "import": "./dist/style.css",
-      "require": "./dist/style.css"
+    "./maplibregl-controller": {
+      "import": "./maplibregl-controller.js",
+      "require": "./maplibregl-controller.umd.js"
+    },
+    "./react": {
+      "import": "./react.js",
+      "require": "./react.umd.js"
+    },
+    "./style.css": {
+      "import": "./style.css",
+      "require": "./style.css"
     },
     "./src/lib/GeocodingControl.svelte": {
       "import": "./src/lib/GeocodingControl.svelte",
       "require": "./src/lib/GeocodingControl.svelte"
     }
   },
-  "types": "./dist/lib/index.d.ts",
+  "dependencies": {
+    "@types/geojson": "^7946.0.10"
+  },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^2.0.2",
     "@tsconfig/svelte": "^3.0.0",

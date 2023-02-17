@@ -11,7 +11,7 @@ import type {
   LineLayerSpecification,
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
-import type { Feature, MapController, MapEvent, Proximity } from "./types";
+import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
 import union from "@turf/union";
 import type {
   Polygon,
@@ -20,8 +20,9 @@ import type {
   MultiLineString,
 } from "@turf/helpers";
 import { setMask } from "./mask";
+import type { FeatureCollection, GeoJSON } from "geojson";
 
-let emptyGeojson: GeoJSON.FeatureCollection = {
+let emptyGeojson: FeatureCollection = {
   type: "FeatureCollection",
   features: [],
 };
@@ -218,7 +219,7 @@ export function createMaplibreglMapController(
         return;
       }
 
-      function setData(data: GeoJSON.GeoJSON) {
+      function setData(data: GeoJSON) {
         (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
       }
 

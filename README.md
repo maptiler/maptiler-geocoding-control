@@ -4,11 +4,11 @@ A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl
 
 Component can be used as ES module or UMD module.
 
+Geocoding control is provided also as [React component](#react) and [Svelte component](#svelte).
+
 ## Usage
 
-### Usage with a module bundler
-
-Example for Maplibre GL JS:
+### Example for Maplibre GL JS using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control maplibre-gl
@@ -17,7 +17,7 @@ npm install --save @maptiler/geocoding-control maplibre-gl
 ```js
 import maplibregl from "maplibre-gl";
 import { GeocodingControl } from "@maptiler/geocoding-control/maplibregl";
-import "@maptiler/geocoding-control/dist/style.css";
+import "@maptiler/geocoding-control/style.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
@@ -34,7 +34,7 @@ const gc = new GeocodingControl({ apiKey, maplibregl });
 map.addControl(gc);
 ```
 
-Example for Leaflet:
+### Example for Leaflet  using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control leaflet
@@ -43,7 +43,7 @@ npm install --save @maptiler/geocoding-control leaflet
 ```js
 import * as L from "leaflet";
 import { GeocodingControl } from "@maptiler/geocoding-control/leaflet";
-import "@maptiler/geocoding-control/dist/style.css";
+import "@maptiler/geocoding-control/style.css";
 
 const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
 
@@ -134,10 +134,60 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 });
 ```
 
-## Svelte component
+## <a name="react"></a>React component
 
-In addition to using the component as MapLibre GL Control it is also possible to use it stand-alone in Svelte projects.
-Component API matches API described above and options are exposed as component properties.
+In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in React projects with or without MapLibre GL or Leaflet integration.
+
+Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
+
+### Example for integration with MapLibre
+
+```typescript
+import { useEffect, useRef, useState } from "react";
+import { GeocodingControl } from "@maptiler/geocoding-control/react";
+import { createMaplibreglMapController } from "@maptiler/geocoding-control/maplibregl-controller";
+import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
+import "@maptiler/geocoding-control/style.css";
+import maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
+
+export function App() {
+  const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
+
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+
+  const [mapController, setMapController] = useState<MapController>();
+
+  useEffect(() => {
+    if (!mapContainerRef.current) {
+      return;
+    }
+
+    const map = new maplibregl.Map({
+      style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
+      container: mapContainerRef.current,
+    });
+
+    setMapController(createMaplibreglMapController(map, maplibregl));
+  }, []);
+
+  return (
+    <div>
+      <GeocodingControl apiKey={apiKey} mapController={mapController} />
+
+      <div ref={mapContainerRef} style={{ width: "800px", height: "600px", marginTop: "8px" }} />
+    </div>
+  );
+}
+```
+
+## <a name="svelte"></a>Svelte component
+
+In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL or Leaflet integration.
+
+Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
+
+### Example for integration with MapLibre
 
 ```svelte
 <script lang="ts">
@@ -161,7 +211,7 @@ Component API matches API described above and options are exposed as component p
       container,
     });
 
-    const mapController = createMaplibreglMapController(map, maplibregl);
+    mapController = createMaplibreglMapController(map, maplibregl);
   }
 </script>
 
