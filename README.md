@@ -1,10 +1,10 @@
 # MapTiler Geocoding control for MapLibre GL JS and Leaflet
 
-A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js) which utilizes [Maptiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/).
+A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
 
-Component can be used as ES module or UMD module.
+The component can be used as an ES module or UMD module.
 
-Geocoding control is provided also as [React component](#react) and [Svelte component](#svelte).
+Geocoding control is also provided as [React component](#react) and a [Svelte component](#svelte).
 
 ## Usage
 
