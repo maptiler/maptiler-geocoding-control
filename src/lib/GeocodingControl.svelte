@@ -73,6 +73,8 @@
 
   export let zoom = 16;
 
+  export let fetchParameters: RequestInit = {};
+
   export function focus() {
     input.focus();
   }
@@ -387,7 +389,10 @@
     let res: Response;
 
     try {
-      res = await fetch(url, { signal: ac.signal }).finally(() => {
+      res = await fetch(url, {
+        signal: ac.signal,
+        ...fetchParameters,
+      }).finally(() => {
         if (ac === abortController) {
           abortController = undefined;
         }
