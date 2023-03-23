@@ -362,7 +362,7 @@
     const url =
       import.meta.env.VITE_API_URL +
       "/" +
-      encodeURIComponent(searchValue.replaceAll(";", ",")) +
+      encodeURIComponent(searchValue) +
       ".json?" +
       sp.toString();
 
