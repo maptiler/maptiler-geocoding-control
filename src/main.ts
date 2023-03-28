@@ -1,17 +1,17 @@
 import App from "./AppMaplibregl.svelte";
 
-import {
-  createElement,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from "react";
-import { createRoot } from "react-dom/client";
-import {
-  ReactGeocodingControl,
-  type Methods,
-} from "./lib/ReactGeocodingControl";
+// import {
+//   createElement,
+//   useEffect,
+//   useLayoutEffect,
+//   useRef,
+//   useState,
+// } from "react";
+// import { createRoot } from "react-dom/client";
+// import {
+//   ReactGeocodingControl,
+//   type Methods,
+// } from "./lib/ReactGeocodingControl";
 
 const appElement = document.getElementById("app");
 
