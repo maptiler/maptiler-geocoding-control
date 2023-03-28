@@ -4,7 +4,6 @@
     "target": "ESNext",
     "useDefineForClassFields": true,
     "module": "ESNext",
-    // "resolveJsonModule": true,
     "baseUrl": ".",
     /**
      * Typecheck JS in `.svelte` and `.js` files by default.
@@ -14,7 +13,6 @@
      */
     "allowJs": true,
     "checkJs": true,
-    "isolatedModules": true,
     "strict": true,
     "ignoreDeprecations": "5.0"
   },

@@ -15,11 +15,13 @@
 
   let className: string | undefined = undefined;
 
+  type BBox = [number, number, number, number];
+
   export { className as class };
 
   export let apiKey: string;
 
-  export let bbox: [number, number, number, number] | undefined = undefined;
+  export let bbox: BBox | undefined = undefined;
 
   export let clearButtonTitle = "clear";
 
@@ -155,7 +157,7 @@
     ) {
       mapController.flyTo(picked.center, zoom);
     } else {
-      mapController.fitBounds(picked.bbox, 50);
+      mapController.fitBounds(unwrapBbox(picked.bbox), 50);
     }
 
     listFeatures = undefined;
@@ -452,7 +454,7 @@
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
         mapController.flyTo(picked.center, zoom);
       } else {
-        mapController.fitBounds(bbox, 50);
+        mapController.fitBounds(unwrapBbox(bbox), 50);
       }
     }
   }
@@ -524,6 +526,16 @@
     picked = feature;
     searchValue = feature.place_name;
     selectedItemIndex = -1;
+  }
+
+  function unwrapBbox(bbox0: BBox): BBox {
+    let bbox = [...bbox0] satisfies BBox;
+
+    if (bbox[2] < bbox[0]) {
+      bbox[2] += 360;
+    }
+
+    return bbox;
   }
 </script>
 
