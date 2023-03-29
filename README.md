@@ -4,7 +4,7 @@ A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl
 
 The component can be used as an ES module or UMD module.
 
-Geocoding control is also provided as [React component](#react) and a [Svelte component](#svelte).
+Geocoding control is also provided as [React component](#react-component) and a [Svelte component](#svelte-component).
 
 ## Usage
 
@@ -134,7 +134,7 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 });
 ```
 
-## <a name="react"></a>React component
+## React component
 
 In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in React projects with or without MapLibre GL or Leaflet integration.
 
@@ -146,7 +146,7 @@ Component API matches API described above where options and events are exposed a
 import { useEffect, useRef, useState } from "react";
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
 import { createMaplibreglMapController } from "@maptiler/geocoding-control/maplibregl-controller";
-import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
+import type { MapController } from "@maptiler/geocoding-control/types";
 import "@maptiler/geocoding-control/style.css";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -181,7 +181,7 @@ export function App() {
 }
 ```
 
-## <a name="svelte"></a>Svelte component
+## Svelte component
 
 In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL or Leaflet integration.
 
@@ -191,9 +191,9 @@ Component API matches API described above where options and events are exposed a
 
 ```svelte
 <script lang="ts">
-  import GeocodingControl from "@maptiler/geocoding-control/src/lib/GeocodingControl.svelte";
-  import { createMaplibreglMapController } from "@maptiler/geocoding-control/src/lib/maplibreglMapController";
-  import type { MapController } from "@maptiler/geocoding-control/src/lib/types";
+  import GeocodingControl from "@maptiler/geocoding-control/GeocodingControl.svelte";
+  import { createMaplibreglMapController } from "@maptiler/geocoding-control/maplibregl";
+  import type { MapController } from "@maptiler/geocoding-control/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 

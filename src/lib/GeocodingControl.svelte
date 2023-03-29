@@ -614,20 +614,22 @@
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
         >
-          <MarkerIcon displayIn="list" />
-          <span>
-            <span>
-              <span>{feature.place_name.replace(/,.*/, "")}</span>
-              {#if showPlaceType}
-                <span
-                  >{feature.properties?.place_type_name?.[0] ??
-                    feature.place_type[0]}</span
-                >
-              {/if}
+          <!-- <MarkerIcon displayIn="list" /> -->
+          <span class="texts">
+            <span class="line1">
+              <span class="primary">
+                {feature.place_name.replace(/,.*/, "")}
+              </span>
+              <span class="secondary">
+                {feature.place_name.replace(/[^,]*,?\s*/, "")}
+              </span>
             </span>
-          </span>
-          <span>
-            <span>{feature.place_name.replace(/[^,]*,?\s*/, "")}</span>
+            {#if showPlaceType}
+              <span class="line2">
+                {feature.properties?.place_type_name?.[0] ??
+                  feature.place_type[0]}
+              </span>
+            {/if}
           </span>
         </li>
       {/each}
@@ -635,7 +637,7 @@
   {/if}
 </form>
 
-<style>
+<style type="text/scss">
   form,
   form *,
   form *:after,
@@ -644,7 +646,7 @@
   }
 
   form {
-    font-family: "Ubuntu", "Open Sans", "Helvetica Neue", Arial, Helvetica,
+    font-family: "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica,
       sans-serif;
     position: relative;
     background-color: #fff;
@@ -652,9 +654,9 @@
     z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
-    box-shadow: 0px 2px 8px rgba(51, 51, 89, 0.15);
-    --color-text: #333359;
-    --color-icon-button: #333359;
+    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+    --color-text: #444952;
+    --color-icon-button: #444952;
   }
 
   form.can-collapse {
@@ -675,14 +677,14 @@
     background-color: transparent;
     margin: 0;
     height: 36px;
-    color: rgba(0, 0, 0, 0.75);
+    color: #444952;
     white-space: nowrap;
     overflow: hidden;
     padding: 0;
   }
 
   input:focus {
-    color: rgba(0, 0, 0, 0.75);
+    color: #444952;
     outline: 0;
     outline: none;
     box-shadow: none;
@@ -716,47 +718,54 @@
     text-align: left;
     cursor: default;
     display: grid;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: 1fr;
     color: var(--color-text);
-    padding: 4px 0px;
+    padding: 8px 0px;
+    font-size: 14px;
+    line-height: 18px;
   }
 
   li:first-child {
-    padding-top: 8px;
+    padding-top: 10px;
   }
 
   li:last-child {
-    padding-bottom: 8px;
+    padding-bottom: 10px;
   }
 
-  li > span {
-    /* text-overflow: ellipsis; */
-    overflow: hidden;
-    padding-right: 8px;
+  .texts {
+    padding: 0 17px;
   }
 
-  li > span > span {
+  .texts > * {
     white-space: nowrap;
     display: block;
     min-width: fit-content;
   }
 
-  li.selected > span > span {
+  li.selected .texts > * {
     animation: backAndForth 5s linear infinite;
   }
 
-  li > span:nth-of-type(1) > span > span:nth-of-type(1) {
-    font-weight: bold;
+  .primary {
+    font-weight: 600;
   }
 
-  li > span:nth-of-type(1) > span > span:nth-of-type(2) {
+  li.selected .primary {
+    color: #2b8bfb;
+  }
+
+  .secondary {
     color: #aeb6c7;
-    font-size: 12px;
     padding-left: 4px;
   }
 
+  .line2 {
+    color: #aeb6c7;
+  }
+
   li.selected {
-    background-color: #f3f3f3;
+    background-color: #f3f6ff;
   }
 
   button:hover {
@@ -780,7 +789,7 @@
     align-items: stretch;
     gap: 7px;
     padding-inline: 8px;
-    outline: #c1cfe4 solid 2px;
+    outline: #c1cfe4 solid 1.5px;
     border-radius: 4px;
     overflow: hidden;
   }
@@ -790,7 +799,7 @@
   }
 
   .input-group:focus-within {
-    outline: #3170fe solid 2px;
+    outline: #2b8bfb solid 1.5px;
   }
 
   div.error,
@@ -826,10 +835,10 @@
       transform: translateX(0);
     }
     45% {
-      transform: translateX(calc(-100% + 196px));
+      transform: translateX(calc(-100% + 206px));
     }
     55% {
-      transform: translateX(calc(-100% + 196px));
+      transform: translateX(calc(-100% + 206px));
     }
     90% {
       transform: translateX(0);
