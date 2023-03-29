@@ -5,6 +5,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 export default defineConfig({
   plugins: [svelte()],
   build: {
+    sourcemap: true,
     emptyOutDir: false,
     lib:
       // simplify after https://github.com/vitejs/vite/pull/10609 is released
