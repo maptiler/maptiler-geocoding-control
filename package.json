@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.79",
+  "version": "0.0.80",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -86,9 +86,9 @@
     "@turf/difference": "^6.5.0",
     "@turf/union": "^6.5.0",
     "@types/leaflet": "^1.9.3",
-    "@types/react": "^18.0.30",
+    "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
-    "concurrently": "^7.6.0",
+    "concurrently": "^8.0.1",
     "leaflet": "^1.9.3",
     "maplibre-gl": "^2.4.0",
     "prettier": "^2.8.7",
