@@ -204,7 +204,6 @@ Component API matches API described above where options and events are exposed a
   let container: HTMLElement;
 
   onMount(() => {
-
     const map = new maplibregl.Map({
       style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
       container,
