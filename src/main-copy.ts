@@ -2,10 +2,7 @@
 
 import { createElement, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  ReactGeocodingControl,
-  type Methods,
-} from "./lib/ReactGeocodingControl";
+import { GeocodingControl, type Methods } from "./lib/ReactGeocodingControl";
 
 const appElement = document.getElementById("app");
 
@@ -46,7 +43,7 @@ function App() {
     }, 5000);
   }, []);
 
-  return createElement(ReactGeocodingControl, {
+  return createElement(GeocodingControl, {
     ref,
     apiKey,
     collapsed,
