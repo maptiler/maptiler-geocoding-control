@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.82",
+  "version": "0.0.83",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -31,7 +31,7 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "concurrently --names \"SVELTE  ,MAPLIBRE,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
+    "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
     "build-svelte": "svelte-package -o dist.svelte",
     "build-maplibre": "FLAVOUR=maplibre vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && mv dist/maplibregl.umd.cjs.map dist/maplibregl.umd.js.map",
     "build-maplibre-controller": "FLAVOUR=maplibregl-controller vite build && mv dist/maplibregl-controller.umd.cjs dist/maplibregl-controller.umd.js && mv dist/maplibregl-controller.umd.cjs.map dist/maplibregl-controller.umd.js.map",
@@ -102,12 +102,16 @@
     "vite": "^4.2.1"
   },
   "peerDependencies": {
+    "@maptiler/sdk": "^1.0.8",
     "leaflet": "^1.9.3",
     "maplibre-gl": "^2.4.0",
     "react": "^18.2.0",
     "svelte": "^3.57.0"
   },
   "peerDependenciesMeta": {
+    "@maptiler/sdk": {
+      "optional": true
+    },
     "leaflet": {
       "optional": true
     },

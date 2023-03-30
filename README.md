@@ -1,6 +1,6 @@
-# MapTiler Geocoding control for MapLibre GL JS and Leaflet
+# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS and Leaflet
 
-A geocoding control for [Maplibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://github.com/maplibre/maplibre-gl-js) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
+A geocoding control for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
 
 The component can be used as an ES module or UMD module.
 
@@ -8,7 +8,7 @@ Geocoding control is also provided as [React component](#react-component) and a 
 
 ## Usage
 
-### Example for Maplibre GL JS using module bundler
+### Example for MapLibre GL JS using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control maplibre-gl
@@ -69,15 +69,15 @@ L.control.maptilerGeocoding({ apiKey }).addTo(map);
 
 For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:
 
-- Maplibre GL JS: `sensible-browser file://$(pwd)/demo-maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
+- MapLibre GL JS: `sensible-browser file://$(pwd)/demo-maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
 - Leaflet: `sensible-browser file://$(pwd)/demo-leaflet.html#key=YOUR_MAPTILER_API_KEY_HERE`
 
 ## API Documentation
 
 ### Options
 
-- `apiKey`<sup>\*</sup>: `string` - Maptiler API key
-- `maplibregl`: `MapLibreGL` - A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Required if `options.marker` is `true`. Used only with Maplibre GL library.
+- `apiKey`<sup>\*</sup>: `string` - Maptiler API key. Not needed if used with MapTiler SDK.
+- `maplibregl`: `MapLibreGL` - A MapLibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Used if `options.marker` is `true` with MapLibre GL library. If not provided it will be autodetected. Not needed if used with MapTiler SDK.
 - `debounceSearch`: `number` - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.

@@ -7,17 +7,23 @@ import type {
   FillLayerSpecification,
   LineLayerSpecification,
 } from "maplibre-gl";
-import type maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import type { ControlOptions } from "./types";
 import { createMaplibreglMapController } from "./maplibreglMapController";
 export { createMaplibreglMapController } from "./maplibreglMapController";
+import * as maptilersdk from "@maptiler/sdk";
 
-type MapLibreGL = typeof maplibregl;
+type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
-type MapLibreControlOptions = ControlOptions & {
+type MapLibreControlOptions = Omit<ControlOptions, "apiKey"> & {
   /**
-   * A Maplibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker).
+   * Maptiler API key. Optional if used with MapTiler SDK.
+   */
+  apiKey?: string;
+
+  /**
+   * A MapLibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker).
    * Required if `options.marker` is `true`.
    */
   maplibregl?: MapLibreGL;
@@ -65,7 +71,7 @@ export class GeocodingControl extends EventTarget implements IControl {
 
   #options: MapLibreControlOptions;
 
-  constructor(options: MapLibreControlOptions) {
+  constructor(options: MapLibreControlOptions = {}) {
     super();
 
     this.#options = options;
@@ -78,7 +84,6 @@ export class GeocodingControl extends EventTarget implements IControl {
       "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl";
 
     const {
-      maplibregl,
       marker,
       showResultMarkers,
       flyTo,
@@ -88,9 +93,25 @@ export class GeocodingControl extends EventTarget implements IControl {
 
     const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
 
+    const sdkConfig: { apiKey?: string; language?: string } = {};
+
+    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
+      const { primaryLanguage, apiKey } = map.getSdkConfig();
+
+      sdkConfig.apiKey = apiKey;
+
+      const match = /^([a-z]{2})($|_|-)/.exec(primaryLanguage);
+
+      if (match) {
+        sdkConfig.language = match[1];
+      }
+    }
+
     const mapController = createMaplibreglMapController(
       map,
-      maplibregl,
+      (maptilersdk as unknown as MapLibreGL | undefined) ??
+        maplibregl ??
+        this.#options.maplibregl,
       marker,
       showResultMarkers,
       flyToOptions,
@@ -98,14 +119,19 @@ export class GeocodingControl extends EventTarget implements IControl {
       fullGeometryStyle
     );
 
-    this.#gc = new GeocodingControlComponent({
-      target: div,
-      props: {
-        mapController,
-        flyTo: flyTo === undefined ? true : !!flyTo,
-        ...restOptions,
-      },
-    });
+    const props = {
+      mapController,
+      flyTo: flyTo === undefined ? true : !!flyTo,
+      apiKey: "", // just to satisfy apiKey; TODO find a better solution
+      ...sdkConfig,
+      ...restOptions,
+    };
+
+    if (!props.apiKey) {
+      throw new Error("no apiKey provided");
+    }
+
+    this.#gc = new GeocodingControlComponent({ target: div, props });
 
     for (const eventName of [
       "select",

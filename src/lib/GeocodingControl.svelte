@@ -857,4 +857,9 @@
   form.can-collapse:hover :not(:nth-of-type(1)) {
     opacity: 1;
   }
+
+  :global(.maplibregl-ctrl-geocoder) {
+    position: relative;
+    z-index: 3;
+  }
 </style>

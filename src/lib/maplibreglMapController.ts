@@ -1,4 +1,4 @@
-import type MapLibreGL from "maplibre-gl";
+import type maplibregl from "maplibre-gl";
 import type {
   FitBoundsOptions,
   MapMouseEvent,
@@ -22,6 +22,8 @@ import type {
 import { setMask } from "./mask";
 import type { FeatureCollection, GeoJSON } from "geojson";
 
+type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
+
 let emptyGeojson: FeatureCollection = {
   type: "FeatureCollection",
   features: [],
@@ -29,7 +31,7 @@ let emptyGeojson: FeatureCollection = {
 
 export function createMaplibreglMapController(
   map: Map,
-  maplibregl?: typeof MapLibreGL | undefined,
+  maplibregl?: MapLibreGL | undefined,
   marker: boolean | maplibregl.MarkerOptions = true,
   showResultMarkers: boolean | maplibregl.MarkerOptions = true,
   flyToOptions: FlyToOptions = {},

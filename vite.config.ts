@@ -46,11 +46,18 @@ export default defineConfig({
           }
         : error(new Error("unknown FLAVOUR")),
     rollupOptions: {
-      external: ["maplibre-gl", "leaflet", "react", "react-dom"],
+      external: [
+        "@maptiler/sdk",
+        "maplibre-gl",
+        "leaflet",
+        "react",
+        "react-dom",
+      ],
       output: {
         // Provide global variables to use in the UMD build
         // for externalized deps
         globals: {
+          "@maptiler/sdk": "maptilersdk",
           "maplibre-gl": "maplibregl",
           leaflet: "leaflet",
           react: "React",
