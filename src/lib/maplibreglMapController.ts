@@ -1,26 +1,26 @@
-import type maplibregl from "maplibre-gl";
 import type {
-  FitBoundsOptions,
-  MapMouseEvent,
-  LngLat,
-  Map,
-  Marker,
-  FlyToOptions,
-  GeoJSONSource,
-  FillLayerSpecification,
-  LineLayerSpecification,
-} from "maplibre-gl";
-import MarkerIcon from "./MarkerIcon.svelte";
-import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
-import union from "@turf/union";
-import type {
-  Polygon,
-  MultiPolygon,
   LineString,
   MultiLineString,
+  MultiPolygon,
+  Polygon,
 } from "@turf/helpers";
-import { setMask } from "./mask";
+import union from "@turf/union";
 import type { FeatureCollection, GeoJSON } from "geojson";
+import type {
+  FillLayerSpecification,
+  FitBoundsOptions,
+  FlyToOptions,
+  GeoJSONSource,
+  LineLayerSpecification,
+  LngLat,
+  Map,
+  MapMouseEvent,
+  Marker,
+} from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
+import MarkerIcon from "./MarkerIcon.svelte";
+import { setMask } from "./mask";
+import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 

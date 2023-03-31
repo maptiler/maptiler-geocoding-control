@@ -1,15 +1,15 @@
-import * as L from "leaflet";
-import MarkerIcon from "./MarkerIcon.svelte";
-import type { Feature, MapController, MapEvent, Proximity } from "./types";
 import type {
-  Polygon,
-  MultiPolygon,
   LineString,
   MultiLineString,
+  MultiPolygon,
+  Polygon,
 } from "@turf/helpers";
 import union from "@turf/union";
-import { setMask } from "./mask";
 import type { GeoJSON } from "geojson";
+import * as L from "leaflet";
+import MarkerIcon from "./MarkerIcon.svelte";
+import { setMask } from "./mask";
+import type { Feature, MapController, MapEvent, Proximity } from "./types";
 
 export function createLeafletMapController(
   map: L.Map,

@@ -1,18 +1,18 @@
+import * as maptilersdk from "@maptiler/sdk";
 import type {
-  Map,
-  IControl,
-  MarkerOptions,
-  FlyToOptions,
-  FitBoundsOptions,
   FillLayerSpecification,
+  FitBoundsOptions,
+  FlyToOptions,
+  IControl,
   LineLayerSpecification,
+  Map,
+  MarkerOptions,
 } from "maplibre-gl";
 import * as maplibregl from "maplibre-gl";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import type { ControlOptions } from "./types";
 import { createMaplibreglMapController } from "./maplibreglMapController";
+import type { ControlOptions } from "./types";
 export { createMaplibreglMapController } from "./maplibreglMapController";
-import * as maptilersdk from "@maptiler/sdk";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 

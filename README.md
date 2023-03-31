@@ -9,6 +9,7 @@ Geocoding control is also provided as [React component](#react-component) and a 
 ## Usage
 
 ### Example for MapTiler SDK using module bundler
+
 ```
 npm install --save @maptiler/geocoding-control @maptiler/sdk
 ```
@@ -22,7 +23,7 @@ import "@maptiler/geocoding-control/style.css";
 maptilersdk.config.apiKey = "YOUR_MAPTILER_API_KEY_HERE";
 
 const map = new maptilersdk.Map({
-  container: "map" // id of HTML container element
+  container: "map", // id of HTML container element
 });
 
 const gc = new GeocodingControl();
@@ -198,7 +199,10 @@ export function App() {
     <div>
       <GeocodingControl apiKey={apiKey} mapController={mapController} />
 
-      <div ref={mapContainerRef} style={{ width: "800px", height: "600px", marginTop: "8px" }} />
+      <div
+        ref={mapContainerRef}
+        style={{ width: "800px", height: "600px", marginTop: "8px" }}
+      />
     </div>
   );
 }
@@ -233,7 +237,7 @@ Component API matches API described above where options and events are exposed a
     });
 
     mapController = createMaplibreglMapController(map, maplibregl);
-  }
+  });
 </script>
 
 <div class="map" bind:this={container} />

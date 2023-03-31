@@ -1,11 +1,11 @@
-import type {
-  Polygon,
-  MultiPolygon,
-  Feature as TurfFeature,
-  Position,
-} from "@turf/helpers";
-import difference from "@turf/difference";
 import buffer from "@turf/buffer";
+import difference from "@turf/difference";
+import type {
+  MultiPolygon,
+  Polygon,
+  Position,
+  Feature as TurfFeature,
+} from "@turf/helpers";
 import type { GeoJSON } from "geojson";
 
 // see https://maplibre.org/maplibre-gl-js-docs/example/line-across-180th-meridian/

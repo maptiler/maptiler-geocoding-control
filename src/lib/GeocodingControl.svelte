@@ -1,9 +1,10 @@
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
-  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import ClearIcon from "./ClearIcon.svelte";
+  import type { DispatcherType } from "./DispatcherType";
   import LoadingIcon from "./LoadingIcon.svelte";
+  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
   import type {
     Feature,
@@ -11,7 +12,6 @@
     MapController,
     Proximity,
   } from "./types";
-  import type { DispatcherType } from "./DispatcherType";
 
   let className: string | undefined = undefined;
 
