@@ -34,7 +34,7 @@ const gc = new GeocodingControl({ apiKey, maplibregl });
 map.addControl(gc);
 ```
 
-### Example for Leaflet  using module bundler
+### Example for Leaflet using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control leaflet
@@ -112,6 +112,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `focus(): void` - focus the query input box
 - `blur(): void` - blur the query input box
 - `setReverseMode(value: boolean | "always"): void` - set reverse mode
+- `setOptions(options: Partial<Options>): void` - change one or more options of existing control
 
 ### Events
 
