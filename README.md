@@ -8,6 +8,28 @@ Geocoding control is also provided as [React component](#react-component) and a 
 
 ## Usage
 
+### Example for MapTiler SDK using module bundler
+```
+npm install --save @maptiler/geocoding-control @maptiler/sdk
+```
+
+```js
+import * as maptilersdk from "@maptiler/sdk";
+import { GeocodingControl } from "@maptiler/geocoding-control/maplibregl";
+import "@maptiler/sdk/dist/maptiler-sdk.css";
+import "@maptiler/geocoding-control/style.css";
+
+maptilersdk.config.apiKey = "YOUR_MAPTILER_API_KEY_HERE";
+
+const map = new maptilersdk.Map({
+  container: "map" // id of HTML container element
+});
+
+const gc = new GeocodingControl();
+
+map.addControl(gc);
+```
+
 ### Example for MapLibre GL JS using module bundler
 
 ```bash
