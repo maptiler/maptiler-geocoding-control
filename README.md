@@ -100,7 +100,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 ### Options
 
 - `apiKey`<sup>\*</sup>: `string` - Maptiler API key. Not needed if used with MapTiler SDK.
-- `maplibregl`: `MapLibreGL` - A MapLibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Used if `options.marker` is `true` with MapLibre GL library. If not provided it will be autodetected. Not needed if used with MapTiler SDK.
+- `maplibregl`: `MapLibreGL` - A MapLibre GL JS instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Used if `options.marker` is `true` with MapLibre GL JS library. If not provided it will be autodetected. Not needed if used with MapTiler SDK.
 - `debounceSearch`: `number` - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.
@@ -111,8 +111,8 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.
 - `language`: `string | string[]` - Specify the language(s) to use for response text and query result weighting. Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script. More than one value can also be specified, separated by commas. Set to empty string or empty array for forcing no language preference. If this parameter is not provided at all the browser's language settings will be used.
 - `showResultsWhileTyping`: `boolean` - If `false`, indicates that search will only occur on enter key press. If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option. Default `false`.
-- `marker`: `boolean | MarkerOptions` - If `true`, a [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
-- `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [MapLibre GL Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+- `marker`: `boolean | MarkerOptions` - If `true`, a [MapLibre GL JS Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location of the user-selected result using a default set of Marker options. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
+- `showResultMarkers`: `boolean | MarkerOptions` - If `true`, [MapLibre GL JS Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) / [Leaflet Marker](https://leafletjs.com/reference.html#marker) will be added to the map at the location the top results for the query. If the value is an object, the marker will be constructed using these options. If `false`, no marker will be added to the map. Requires that `options.maplibregl` also be set. Default `true`.
 - `zoom`: `number` - On geocoded result what zoom level should the map animate to when a bbox isn't found in the response. If a bbox is found the map will fit to the bbox. Default `16`.
 - `flyTo`: `boolean | (FlyToOptions & FitBoundsOptions)` - If `false`, animating the map to a selected result is disabled. If `true`, animating the map will use the default animation parameters. If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition. Default `true`.
 - `collapsed`: `boolean` - If `true`, the geocoder control will collapse until hovered or in focus. Default `false`.
@@ -160,7 +160,7 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 
 ## React component
 
-In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in React projects with or without MapLibre GL or Leaflet integration.
+In addition to using the component as MapLibre GL JS or Leaflet Control it is also possible to use it stand-alone in React projects with or without MapLibre GL JS or Leaflet integration.
 
 Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
 
@@ -210,11 +210,11 @@ export function App() {
 
 ## Svelte component
 
-In addition to using the component as MapLibre GL or Leaflet Control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL or Leaflet integration.
+In addition to using the component as MapLibre GL JS or Leaflet Control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL JS or Leaflet integration.
 
 Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
 
-### Example for integration with MapLibre
+### Example for integration with MapLibre GL JS
 
 ```svelte
 <script lang="ts">
