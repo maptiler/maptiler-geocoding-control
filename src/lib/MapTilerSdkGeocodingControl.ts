@@ -18,19 +18,20 @@ export class GeocodingControl extends MapLibreBasedGeocodingControl {
   ): Partial<Props<GeocodingControlComponent>> {
     const sdkConfig: { apiKey?: string; language?: string } = {};
 
-    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
-      const { primaryLanguage, apiKey } = map.getSdkConfig();
-
-      sdkConfig.apiKey = apiKey;
-
-      const match = /^([a-z]{2})($|_|-)/.exec(primaryLanguage);
-
-      if (match) {
-        sdkConfig.language = match[1];
-      }
-
-      div.className += " maptiler-ctrl";
+    if (!("getSdkConfig" in map && typeof map.getSdkConfig === "function")) {
+      throw new Error("MapTiler SDK not detected");
     }
+    const { primaryLanguage, apiKey } = map.getSdkConfig();
+
+    sdkConfig.apiKey = apiKey;
+
+    const match = /^([a-z]{2})($|_|-)/.exec(primaryLanguage);
+
+    if (match) {
+      sdkConfig.language = match[1];
+    }
+
+    div.className += " maptiler-ctrl";
 
     return sdkConfig;
   }
