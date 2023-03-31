@@ -6,6 +6,7 @@ import type {
 } from "@turf/helpers";
 import union from "@turf/union";
 import type { FeatureCollection, GeoJSON } from "geojson";
+import type * as maplibregl from "maplibre-gl";
 import type {
   FillLayerSpecification,
   FitBoundsOptions,
@@ -17,7 +18,6 @@ import type {
   MapMouseEvent,
   Marker,
 } from "maplibre-gl";
-import * as maplibregl from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
 import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
@@ -29,7 +29,7 @@ let emptyGeojson: FeatureCollection = {
   features: [],
 };
 
-export function createMaplibreglMapController(
+export function createMapLibreGlMapController(
   map: Map,
   maplibregl?: MapLibreGL | undefined,
   marker: boolean | maplibregl.MarkerOptions = true,

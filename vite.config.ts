@@ -24,15 +24,22 @@ export default defineConfig({
         : process.env.FLAVOUR === "maplibre"
         ? {
             fileName: "maplibregl",
-            entry: ["src/lib/MaplibreglGeocodingControl.ts"],
+            entry: ["src/lib/MapLibreGlGeocodingControl.ts"],
             name: "maplibreglMaptilerGeocoder",
+            formats: ["es", "umd"],
+          }
+        : process.env.FLAVOUR === "maptilersdk"
+        ? {
+            fileName: "maptilersdk",
+            entry: ["src/lib/MapTilerSdkGeocodingControl.ts"],
+            name: "maptilersdkMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "react"
         ? {
             fileName: "react",
             entry: ["src/lib/ReactGeocodingControl.ts"],
-            name: "MaptilerGeocoder",
+            name: "MapTilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "leaflet-controller"

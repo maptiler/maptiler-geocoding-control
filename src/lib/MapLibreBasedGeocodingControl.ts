@@ -1,4 +1,4 @@
-import * as maptilersdk from "@maptiler/sdk";
+import type * as maplibregl from "maplibre-gl";
 import type {
   FillLayerSpecification,
   FitBoundsOptions,
@@ -8,25 +8,17 @@ import type {
   Map,
   MarkerOptions,
 } from "maplibre-gl";
-import * as maplibregl from "maplibre-gl";
+import type { SvelteComponent, SvelteComponentTyped } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import { createMaplibreglMapController } from "./maplibreglMapController";
+import { createMapLibreGlMapController } from "./maplibreglMapController";
 import type { ControlOptions } from "./types";
-export { createMaplibreglMapController } from "./maplibreglMapController";
-
-type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
+export { createMapLibreGlMapController } from "./maplibreglMapController";
 
 type MapLibreControlOptions = Omit<ControlOptions, "apiKey"> & {
   /**
    * Maptiler API key. Optional if used with MapTiler SDK.
    */
   apiKey?: string;
-
-  /**
-   * A MapLibre GL instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker).
-   * Required if `options.marker` is `true`.
-   */
-  maplibregl?: MapLibreGL;
 
   /**
    * If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options.
@@ -66,7 +58,14 @@ type MapLibreControlOptions = Omit<ControlOptions, "apiKey"> & {
   };
 };
 
-export class GeocodingControl extends EventTarget implements IControl {
+export type Props<T> = T extends SvelteComponentTyped<infer P, any, any>
+  ? P
+  : never;
+
+export abstract class MapLibreBasedGeocodingControl
+  extends EventTarget
+  implements IControl
+{
   #gc?: GeocodingControlComponent;
 
   #options: MapLibreControlOptions;
@@ -76,6 +75,11 @@ export class GeocodingControl extends EventTarget implements IControl {
 
     this.#options = options;
   }
+
+  abstract getExtraProps(
+    map: Map,
+    div: HTMLElement
+  ): Partial<Props<GeocodingControlComponent>>;
 
   onAdd(map: Map) {
     const div = document.createElement("div");
@@ -93,27 +97,11 @@ export class GeocodingControl extends EventTarget implements IControl {
 
     const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
 
-    const sdkConfig: { apiKey?: string; language?: string } = {};
+    const extraConfig = this.getExtraProps(map, div);
 
-    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
-      const { primaryLanguage, apiKey } = map.getSdkConfig();
-
-      sdkConfig.apiKey = apiKey;
-
-      const match = /^([a-z]{2})($|_|-)/.exec(primaryLanguage);
-
-      if (match) {
-        sdkConfig.language = match[1];
-      }
-
-      div.className += " maptiler-ctrl";
-    }
-
-    const mapController = createMaplibreglMapController(
+    const mapController = createMapLibreGlMapController(
       map,
-      (maptilersdk as unknown as MapLibreGL | undefined) ??
-        maplibregl ??
-        this.#options.maplibregl,
+      this.getMapLibre(),
       marker,
       showResultMarkers,
       flyToOptions,
@@ -125,7 +113,7 @@ export class GeocodingControl extends EventTarget implements IControl {
       mapController,
       flyTo: flyTo === undefined ? true : !!flyTo,
       apiKey: "", // just to satisfy apiKey; TODO find a better solution
-      ...sdkConfig,
+      ...extraConfig,
       ...restOptions,
     };
 
@@ -151,11 +139,12 @@ export class GeocodingControl extends EventTarget implements IControl {
     return div;
   }
 
+  abstract getMapLibre(): typeof maplibregl;
+
   setOptions(options: MapLibreControlOptions) {
     this.#options = options;
 
     const {
-      maplibregl,
       marker,
       showResultMarkers,
       flyTo,

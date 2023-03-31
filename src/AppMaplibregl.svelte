@@ -1,9 +1,9 @@
 <script lang="ts">
   import "maplibre-gl/dist/maplibre-gl.css";
 
-  import maplibregl, { Map } from "maplibre-gl";
+  import { Map, NavigationControl } from "maplibre-gl";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/MaplibreglGeocodingControl";
+  import { GeocodingControl } from "./lib/MapLibreGlGeocodingControl";
 
   let containerElement: HTMLElement;
 
@@ -26,14 +26,13 @@
     map.addControl(
       new GeocodingControl({
         apiKey,
-        maplibregl,
         enableReverse: "always",
         showPlaceType: true,
         collapsed: true,
       })
     );
 
-    map.addControl(new maplibregl.NavigationControl({}));
+    map.addControl(new NavigationControl({}));
   });
 </script>
 

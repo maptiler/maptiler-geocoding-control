@@ -16,7 +16,7 @@ npm install --save @maptiler/geocoding-control @maptiler/sdk
 
 ```js
 import * as maptilersdk from "@maptiler/sdk";
-import { GeocodingControl } from "@maptiler/geocoding-control/maplibregl";
+import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import "@maptiler/geocoding-control/style.css";
 
@@ -169,7 +169,7 @@ Component API matches API described above where options and events are exposed a
 ```typescript
 import { useEffect, useRef, useState } from "react";
 import { GeocodingControl } from "@maptiler/geocoding-control/react";
-import { createMaplibreglMapController } from "@maptiler/geocoding-control/maplibregl-controller";
+import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl-controller";
 import type { MapController } from "@maptiler/geocoding-control/types";
 import "@maptiler/geocoding-control/style.css";
 import maplibregl from "maplibre-gl";
@@ -192,7 +192,7 @@ export function App() {
       container: mapContainerRef.current,
     });
 
-    setMapController(createMaplibreglMapController(map, maplibregl));
+    setMapController(createMapLibreGlMapController(map, maplibregl));
   }, []);
 
   return (
@@ -219,7 +219,7 @@ Component API matches API described above where options and events are exposed a
 ```svelte
 <script lang="ts">
   import GeocodingControl from "@maptiler/geocoding-control/GeocodingControl.svelte";
-  import { createMaplibreglMapController } from "@maptiler/geocoding-control/maplibregl";
+  import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl";
   import type { MapController } from "@maptiler/geocoding-control/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
@@ -236,7 +236,7 @@ Component API matches API described above where options and events are exposed a
       container,
     });
 
-    mapController = createMaplibreglMapController(map, maplibregl);
+    mapController = createMapLibreGlMapController(map, maplibregl);
   });
 </script>
 
