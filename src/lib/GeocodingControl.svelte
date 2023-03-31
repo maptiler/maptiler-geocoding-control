@@ -678,6 +678,7 @@
     font: inherit;
     font-size: 14px;
     width: 100%;
+    min-height: 28px;
     border: 0;
     background-color: transparent;
     margin: 0;
