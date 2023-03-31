@@ -8,18 +8,13 @@ import type {
   Map,
   MarkerOptions,
 } from "maplibre-gl";
-import type { SvelteComponent, SvelteComponentTyped } from "svelte";
+import type { SvelteComponentTyped } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createMapLibreGlMapController } from "./maplibreglMapController";
 import type { ControlOptions } from "./types";
 export { createMapLibreGlMapController } from "./maplibreglMapController";
 
-type MapLibreControlOptions = Omit<ControlOptions, "apiKey"> & {
-  /**
-   * Maptiler API key. Optional if used with MapTiler SDK.
-   */
-  apiKey?: string;
-
+export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
   /**
    * If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options.
    * If the value is an object, the marker will be constructed using these options.
@@ -62,15 +57,17 @@ export type Props<T> = T extends SvelteComponentTyped<infer P, any, any>
   ? P
   : never;
 
-export abstract class MapLibreBasedGeocodingControl
+export abstract class MapLibreBasedGeocodingControl<
+    T extends MapLibreBaseControlOptions
+  >
   extends EventTarget
   implements IControl
 {
   #gc?: GeocodingControlComponent;
 
-  #options: MapLibreControlOptions;
+  #options: T;
 
-  constructor(options: MapLibreControlOptions = {}) {
+  constructor(options: T) {
     super();
 
     this.#options = options;
@@ -101,7 +98,7 @@ export abstract class MapLibreBasedGeocodingControl
 
     const mapController = createMapLibreGlMapController(
       map,
-      this.getMapLibre(),
+      this.getMapLibreGl(),
       marker,
       showResultMarkers,
       flyToOptions,
@@ -139,9 +136,9 @@ export abstract class MapLibreBasedGeocodingControl
     return div;
   }
 
-  abstract getMapLibre(): typeof maplibregl;
+  abstract getMapLibreGl(): typeof maplibregl;
 
-  setOptions(options: MapLibreControlOptions) {
+  setOptions(options: T) {
     this.#options = options;
 
     const {

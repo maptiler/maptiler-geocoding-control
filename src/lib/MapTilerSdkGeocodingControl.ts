@@ -4,11 +4,12 @@ import type { Map } from "maplibre-gl";
 import type GeocodingControlComponent from "./GeocodingControl.svelte";
 import {
   MapLibreBasedGeocodingControl,
+  type MapLibreBaseControlOptions,
   type Props,
 } from "./MapLibreBasedGeocodingControl";
 
-export class GeocodingControl extends MapLibreBasedGeocodingControl {
-  getMapLibre(): typeof maplibregl {
+export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBaseControlOptions> {
+  getMapLibreGl(): typeof maplibregl {
     return maptilersdk as any;
   }
 
@@ -21,6 +22,7 @@ export class GeocodingControl extends MapLibreBasedGeocodingControl {
     if (!("getSdkConfig" in map && typeof map.getSdkConfig === "function")) {
       throw new Error("MapTiler SDK not detected");
     }
+
     const { primaryLanguage, apiKey } = map.getSdkConfig();
 
     sdkConfig.apiKey = apiKey;
