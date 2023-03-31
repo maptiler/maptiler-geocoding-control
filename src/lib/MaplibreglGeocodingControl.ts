@@ -81,7 +81,7 @@ export class GeocodingControl extends EventTarget implements IControl {
     const div = document.createElement("div");
 
     div.className =
-      "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl";
+      "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
 
     const {
       marker,
@@ -105,6 +105,8 @@ export class GeocodingControl extends EventTarget implements IControl {
       if (match) {
         sdkConfig.language = match[1];
       }
+
+      div.className += " maptiler-ctrl";
     }
 
     const mapController = createMaplibreglMapController(

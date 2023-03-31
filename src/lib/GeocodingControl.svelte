@@ -558,14 +558,13 @@
       aria-label={placeholder}
     />
 
-    <div class="clear-button-container">
+    <div class="clear-button-container" class:displayable={searchValue !== ""}>
       <button
         type="button"
         on:click={() => {
           searchValue = "";
           input.focus();
         }}
-        class:displayable={searchValue !== ""}
         title={clearButtonTitle}
       >
         <ClearIcon />
@@ -633,36 +632,46 @@
   {/if}
 </form>
 
-<style type="text/scss">
-  form,
-  form *,
-  form *:after,
-  form *:before {
-    box-sizing: border-box;
-  }
-
+<style lang="scss">
   form {
     font-family: "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica,
       sans-serif;
     position: relative;
     background-color: #fff;
-    width: 100%;
     z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
-    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+    /* box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15); */
     --color-text: #444952;
     --color-icon-button: #444952;
-  }
 
-  form.can-collapse {
-    max-width: 35px;
-  }
+    &,
+    & *,
+    & *:after,
+    & *:before {
+      box-sizing: border-box;
+    }
 
-  form,
-  form:focus-within,
-  form:hover {
-    max-width: 240px;
+    &.can-collapse {
+      max-width: 30px;
+
+      & .input-group {
+        padding-inline: 5px;
+        transition: padding-inline 0.25s;
+      }
+
+      &:focus-within .input-group,
+      &:hover .input-group {
+        padding-inline: 8px;
+      }
+    }
+
+    &,
+    &:focus-within,
+    &:hover {
+      width: 240px;
+      max-width: 240px;
+    }
   }
 
   input {
@@ -672,18 +681,17 @@
     border: 0;
     background-color: transparent;
     margin: 0;
-    height: 36px;
     color: #444952;
     white-space: nowrap;
     overflow: hidden;
     padding: 0;
-  }
 
-  input:focus {
-    color: #444952;
-    outline: 0;
-    outline: none;
-    box-shadow: none;
+    &:focus {
+      color: #444952;
+      outline: 0;
+      outline: none;
+      box-shadow: none;
+    }
   }
 
   ul,
@@ -719,36 +727,40 @@
     padding: 8px 0px;
     font-size: 14px;
     line-height: 18px;
-  }
 
-  li:first-child {
-    padding-top: 10px;
-  }
+    &:first-child {
+      padding-top: 10px;
+    }
 
-  li:last-child {
-    padding-bottom: 10px;
+    &:last-child {
+      padding-bottom: 10px;
+    }
+
+    &.selected {
+      background-color: #f3f6ff;
+
+      & .texts > * {
+        animation: backAndForth 5s linear infinite;
+      }
+
+      & .primary {
+        color: #2b8bfb;
+      }
+    }
   }
 
   .texts {
     padding: 0 17px;
-  }
 
-  .texts > * {
-    white-space: nowrap;
-    display: block;
-    min-width: fit-content;
-  }
-
-  li.selected .texts > * {
-    animation: backAndForth 5s linear infinite;
+    & > * {
+      white-space: nowrap;
+      display: block;
+      min-width: fit-content;
+    }
   }
 
   .primary {
     font-weight: 600;
-  }
-
-  li.selected .primary {
-    color: #2b8bfb;
   }
 
   .secondary {
@@ -760,24 +772,21 @@
     color: #aeb6c7;
   }
 
-  li.selected {
-    background-color: #f3f6ff;
-  }
-
-  button:hover {
-    background-color: transparent;
-  }
-
-  button:hover :global(svg),
-  button.active :global(svg) {
-    fill: #6b7c92;
-  }
-
   button {
     padding: 0;
     margin: 0;
     border: 0;
     background-color: transparent;
+    width: auto;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
+
+  button:hover :global(svg),
+  button.active :global(svg) {
+    fill: #3588d4;
   }
 
   .input-group {
@@ -785,17 +794,16 @@
     align-items: stretch;
     gap: 7px;
     padding-inline: 8px;
-    outline: #c1cfe4 solid 1.5px;
     border-radius: 4px;
     overflow: hidden;
+
+    &:focus-within {
+      outline: #2b8bfb solid 2px;
+    }
   }
 
-  .input-group:hover .displayable {
-    visibility: visible;
-  }
-
-  .input-group:focus-within {
-    outline: #2b8bfb solid 1.5px;
+  .clear-button-container.displayable {
+    display: flex;
   }
 
   div.error,
@@ -814,13 +822,9 @@
   }
 
   .clear-button-container {
+    display: none;
     position: relative;
-    display: flex;
     align-items: stretch;
-  }
-
-  .clear-button-container button {
-    visibility: hidden;
   }
 
   @keyframes backAndForth {
@@ -844,18 +848,31 @@
     }
   }
 
-  form.can-collapse button:not(:nth-of-type(1)) {
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  form.can-collapse:focus-within :not(:nth-of-type(1)),
-  form.can-collapse:hover :not(:nth-of-type(1)) {
-    opacity: 1;
-  }
-
   :global(.maplibregl-ctrl-geocoder) {
     position: relative;
     z-index: 3;
+  }
+
+  :global(.maptiler-ctrl) {
+    & .input-group:focus-within {
+      outline: #2b8bfb solid 1.5px;
+    }
+
+    & form {
+      &.can-collapse {
+        max-width: 34px;
+
+        & .input-group {
+          padding-inline: 7px;
+        }
+      }
+
+      &,
+      &:focus-within,
+      &:hover {
+        width: 240px;
+        max-width: 240px;
+      }
+    }
   }
 </style>
