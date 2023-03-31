@@ -118,8 +118,8 @@ export class GeocodingControl extends L.Control {
     this.#gc?.$set(restOptions);
   }
 
-  setQuery(value: string, submit: boolean | "always" = true) {
-    (this.#gc as any)?.setQuery(value, submit);
+  setQuery(value: string, submit = true) {
+    this.#gc?.setQuery(value, submit);
   }
 
   setReverseMode(value: boolean) {
@@ -127,15 +127,15 @@ export class GeocodingControl extends L.Control {
   }
 
   focus() {
-    (this.#gc as any)?.focus();
+    this.#gc?.focus();
   }
 
   blur() {
-    (this.#gc as any)?.blur();
+    this.#gc?.blur();
   }
 
   onRemove() {
-    (this.#gc as any)?.$destroy();
+    this.#gc?.$destroy();
   }
 }
 

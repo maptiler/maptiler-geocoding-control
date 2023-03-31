@@ -1,4 +1,3 @@
-import GeocodingControl from "./GeocodingControl.svelte";
 import {
   createElement,
   forwardRef,
@@ -7,34 +6,28 @@ import {
   useRef,
   type Ref,
 } from "react";
-import type { ControlOptions, Feature, MapController } from "./types";
+import type { DispatcherType } from "./DispatcherType";
+import GeocodingControl from "./GeocodingControl.svelte";
+import type { ControlOptions, MapController } from "./types";
 
-// TODO this would be nice to be derived from `Parameters<GeocodingControl["$on"]>[0]` but it just doesn't work
-type CallbackProperties = {
-  onSelect?: (feature: Feature | undefined) => void;
-  onPick?: (feature: Feature | undefined) => void;
-  onOptionsVisibilityChange?: (visible: boolean) => void;
-  onFeaturesListed?: (visible: Feature[] | undefined) => void;
-  onFeaturesMarked?: (visible: Feature[] | undefined) => void;
-  onResponse?: (onResponse: { url: string; response: Response }) => void;
-  onReversetoggle?: (reverse: boolean) => void;
-  onQuerychange?: (query: string) => void;
+type EventNames = keyof DispatcherType;
+
+type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
+
+type CallbackProperties<T> = {
+  [K in keyof T as EventHandlerFnName<Extract<K, EventNames>>]?: (
+    event: T[K]
+  ) => void;
 };
-
-type EventName<T extends keyof CallbackProperties> = T extends `on${infer U}`
-  ? Uncapitalize<U>
-  : never;
-
-type EventNames = EventName<keyof CallbackProperties>;
 
 const eventNames = [
   "featuresListed",
   "featuresMarked",
   "optionsVisibilityChange",
   "pick",
-  "querychange",
+  "queryChange",
   "response",
-  "reversetoggle",
+  "reverseToggle",
   "select",
 ] as const satisfies readonly EventNames[];
 
@@ -70,26 +63,20 @@ const propertyNames = [
   "mapController",
 ] as const satisfies readonly (keyof (ControlOptions & MapControllerProp))[];
 
-type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
-
 function getEventFnName<T extends EventNames>(name: T): EventHandlerFnName<T> {
   return ("on" +
     name[0].toUpperCase() +
     name.slice(1)) as EventHandlerFnName<T>;
 }
 
-export type Props = ControlOptions & CallbackProperties & MapControllerProp;
+export type Props = ControlOptions &
+  CallbackProperties<DispatcherType> &
+  MapControllerProp;
 
-// // not used because it does not integrate well with Svelte
-// type MethodNames = "blur" | "focus" | "setQuery";
-//
-// export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+// not used because it does not integrate well with Svelte
+type MethodNames = "blur" | "focus" | "setQuery";
 
-export type Methods = {
-  blur: () => void;
-  focus: () => void;
-  setQuery: (value: string, submit?: boolean) => void;
-};
+export type Methods = { [T in MethodNames]: GeocodingControl[T] };
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,

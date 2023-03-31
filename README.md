@@ -123,8 +123,8 @@ Events are implemented using [EventTarget](https://developer.mozilla.org/en-US/d
 - `featuresListed` - Fired after features are retrieved from the server. Event value contains list of features or `undefined`.
 - `featuresMarked` - Fired after features are marked on the map. Event value contains list of features or `undefined`.
 - `response` - Fired after HTTP response of the geocoding server. Event value contains object with requested `url` and responded `featureCollection`.
-- `reversetoggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
-- `querychange` - Fired if query was changed. Event value is the query string.
+- `reverseToggle` - Fired if reverse geocoding button is toggled. Event value is `true` if reverse geocoding mode is active, otherwise `false`.
+- `queryChange` - Fired if query was changed. Event value is the query string.
 
 Example:
 

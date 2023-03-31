@@ -4,7 +4,6 @@
   import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
-  import MarkerIcon from "./MarkerIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
   import type {
     Feature,
@@ -12,6 +11,7 @@
     MapController,
     Proximity,
   } from "./types";
+  import type { DispatcherType } from "./DispatcherType";
 
   let className: string | undefined = undefined;
 
@@ -126,16 +126,7 @@
 
   let focusedDelayed: boolean;
 
-  const dispatch = createEventDispatcher<{
-    select: Feature;
-    pick: Feature;
-    optionsVisibilityChange: boolean;
-    featuresListed: Feature[];
-    featuresMarked: Feature[];
-    response: { url: string; featureCollection: FeatureCollection };
-    reverseToggle: boolean;
-    queryChange: string;
-  }>();
+  const dispatch = createEventDispatcher<DispatcherType>();
 
   $: if (!trackProximity) {
     proximity = undefined;
@@ -400,7 +391,12 @@
         }
       });
     } catch (e) {
-      if (e && typeof e === "object" && (e as any).name === "AbortError") {
+      if (
+        e &&
+        typeof e === "object" &&
+        "name" in e &&
+        e.name === "AbortError"
+      ) {
         return;
       }
 

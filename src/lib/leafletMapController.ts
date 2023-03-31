@@ -230,7 +230,7 @@ export function createLeafletMapController(
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"
         ) {
-          setData(picked as any);
+          setData(picked);
 
           return; // no pin for (multi)linestrings
         }
