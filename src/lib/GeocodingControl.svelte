@@ -787,7 +787,7 @@
 
   button:hover :global(svg),
   button.active :global(svg) {
-    fill: #3588d4;
+    fill: #2b8bfb;
   }
 
   .input-group {
