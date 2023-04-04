@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.87",
+  "version": "0.0.88",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -31,15 +31,16 @@
   ],
   "scripts": {
     "dev": "vite",
-    "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER ,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
+    "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && npm run cjs2js && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
     "build-svelte": "svelte-package -o dist.svelte",
-    "build-maptilersdk": "FLAVOUR=maptilersdk vite build && mv dist/maptilersdk.umd.cjs dist/maptilersdk.umd.js && mv dist/maptilersdk.umd.cjs.map dist/maptilersdk.umd.js.map",
-    "build-maplibre": "FLAVOUR=maplibre vite build && mv dist/maplibregl.umd.cjs dist/maplibregl.umd.js && mv dist/maplibregl.umd.cjs.map dist/maplibregl.umd.js.map",
-    "build-maplibre-controller": "FLAVOUR=maplibregl-controller vite build && mv dist/maplibregl-controller.umd.cjs dist/maplibregl-controller.umd.js && mv dist/maplibregl-controller.umd.cjs.map dist/maplibregl-controller.umd.js.map",
-    "build-leaflet": "FLAVOUR=leaflet vite build && mv dist/leaflet.umd.cjs dist/leaflet.umd.js && mv dist/leaflet.umd.cjs.map dist/leaflet.umd.js.map",
-    "build-leaflet-controller": "FLAVOUR=leaflet-controller vite build && mv dist/leaflet-controller.umd.cjs dist/leaflet-controller.umd.js && mv dist/leaflet-controller.umd.cjs.map dist/leaflet-controller.umd.js.map",
-    "build-react": "FLAVOUR=react vite build && mv dist/react.umd.cjs dist/react.umd.js && mv dist/react.umd.cjs.map dist/react.umd.js.map",
-    "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly && mv dist/ReactGeocodingControl.d.ts dist/react.d.ts && mv dist/MapLibreGlGeocodingControl.d.ts dist/maplibregl.d.ts && mv dist/maplibreglMapController.d.ts dist/maplibregl-controller.d.ts && mv dist/LeafletGeocodingControl.d.ts dist/leaflet.d.ts && mv dist/leafletMapController.d.ts dist/leaflet-controller.d.ts",
+    "build-maptilersdk": "FLAVOUR=maptilersdk vite build",
+    "build-maplibre": "FLAVOUR=maplibre vite build",
+    "build-maplibre-controller": "FLAVOUR=maplibregl-controller vite build ",
+    "build-leaflet": "FLAVOUR=leaflet vite build",
+    "build-leaflet-controller": "FLAVOUR=leaflet-controller vite build",
+    "build-react": "FLAVOUR=react vite build",
+    "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly",
+    "cjs2js": "renamer --find '/\\bcjs\\b/' --replace js dist/*cjs*",
     "clean": "rm -rf dist dist.svelte",
     "pack": "npm run clean && npm run build && cd dist && npm pack",
     "pub": "npm run clean && npm run build && cd dist && npm publish",
@@ -81,6 +82,7 @@
     }
   },
   "devDependencies": {
+    "@maptiler/sdk": "^1.0.8",
     "@sveltejs/package": "^2.0.2",
     "@sveltejs/vite-plugin-svelte": "^2.0.4",
     "@tsconfig/svelte": "^4.0.1",
@@ -89,7 +91,7 @@
     "@turf/union": "^6.5.0",
     "@types/geojson": "^7946.0.10",
     "@types/leaflet": "^1.9.3",
-    "@types/react": "^18.0.31",
+    "@types/react": "^18.0.33",
     "@types/react-dom": "^18.0.11",
     "concurrently": "^8.0.1",
     "esm-env": "^1.0.0",
@@ -100,6 +102,7 @@
     "prettier-plugin-svelte": "^2.10.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "renamer": "^4.0.0",
     "sass": "^1.60.0",
     "svelte": "^3.58.0",
     "svelte-check": "^3.1.4",
@@ -109,11 +112,11 @@
     "vite": "^4.2.1"
   },
   "peerDependencies": {
-    "@maptiler/sdk": "^1.0.8",
-    "leaflet": "^1.9.3",
-    "maplibre-gl": "^2.4.0",
-    "react": "^18.2.0",
-    "svelte": "^3.57.0"
+    "@maptiler/sdk": "^1",
+    "leaflet": "^1.9 || ^1.8",
+    "maplibre-gl": "^2 || ^3.0.0-alpha",
+    "react": "^17 || ^18",
+    "svelte": "^3.50"
   },
   "peerDependenciesMeta": {
     "@maptiler/sdk": {

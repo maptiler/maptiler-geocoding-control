@@ -6,7 +6,7 @@ import {
   type MapLibreBaseControlOptions,
   type Props,
 } from "./MapLibreBasedGeocodingControl";
-export { createMapLibreGlMapController } from "./maplibreglMapController";
+export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 type Options = MapLibreBaseControlOptions & {
   /**

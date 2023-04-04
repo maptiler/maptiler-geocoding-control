@@ -233,3 +233,14 @@ export type ControlOptions = {
   // popupRender // A function that specifies how the results should be rendered in the popup menu. This function should accept a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
   // getItemValue // A function that specifies how the selected result should be rendered in the search bar. This function should accept a single Carmen GeoJSON object as input and return a string. HTML tags in the output string will not be rendered. Defaults to (item) => item.place_name.
 };
+
+export type DispatcherType = {
+  featuresListed: Feature[];
+  featuresMarked: Feature[];
+  optionsVisibilityChange: boolean;
+  pick: Feature;
+  queryChange: string;
+  response: { url: string; featureCollection: FeatureCollection };
+  reverseToggle: boolean;
+  select: Feature;
+};

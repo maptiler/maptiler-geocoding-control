@@ -17,42 +17,42 @@ export default defineConfig({
       process.env.FLAVOUR === "leaflet"
         ? {
             fileName: "leaflet",
-            entry: ["src/lib/LeafletGeocodingControl.ts"],
+            entry: ["src/lib/leaflet.ts"],
             name: "leafletMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maplibre"
         ? {
             fileName: "maplibregl",
-            entry: ["src/lib/MapLibreGlGeocodingControl.ts"],
+            entry: ["src/lib/maplibregl.ts"],
             name: "maplibreglMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maptilersdk"
         ? {
             fileName: "maptilersdk",
-            entry: ["src/lib/MapTilerSdkGeocodingControl.ts"],
+            entry: ["src/lib/maptilersdk.ts"],
             name: "maptilersdkMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "react"
         ? {
             fileName: "react",
-            entry: ["src/lib/ReactGeocodingControl.ts"],
+            entry: ["src/lib/react.ts"],
             name: "MapTilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "leaflet-controller"
         ? {
             fileName: "leaflet-controller",
-            entry: ["src/lib/leafletMapController.ts"],
+            entry: ["src/lib/leaflet-controller.ts"],
             name: "leafletMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maplibregl-controller"
         ? {
             fileName: "maplibregl-controller",
-            entry: ["src/lib/maplibreglMapController.ts"],
+            entry: ["src/lib/maplibregl-controller.ts"],
             name: "maplibreglMaptilerGeocodingController",
             formats: ["es", "umd"],
           }

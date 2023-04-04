@@ -2,11 +2,11 @@
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
   import ClearIcon from "./ClearIcon.svelte";
-  import type { DispatcherType } from "./DispatcherType";
   import LoadingIcon from "./LoadingIcon.svelte";
   import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
   import type {
+    DispatcherType,
     Feature,
     FeatureCollection,
     MapController,

@@ -6,9 +6,8 @@ import {
   useRef,
   type Ref,
 } from "react";
-import type { DispatcherType } from "./DispatcherType";
 import GeocodingControl from "./GeocodingControl.svelte";
-import type { ControlOptions, MapController } from "./types";
+import type { ControlOptions, DispatcherType, MapController } from "./types";
 
 type EventNames = keyof DispatcherType;
 

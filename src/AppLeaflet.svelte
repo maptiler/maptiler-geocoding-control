@@ -1,9 +1,9 @@
 <script lang="ts">
   import "leaflet/dist/leaflet.css";
 
-  import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/LeafletGeocodingControl";
   import * as L from "leaflet";
+  import { onMount } from "svelte";
+  import { GeocodingControl } from "./lib/leaflet";
 
   let containerElement: HTMLElement;
 
