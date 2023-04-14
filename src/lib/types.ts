@@ -77,14 +77,14 @@ export type ControlOptions = {
   /**
    * Override the default error message.
    *
-   * @default "Searching failed"
+   * @default "Something went wrong…"
    */
   errorMessage?: string;
 
   /**
    * Override the default message if no results are found.
    *
-   * @default "No results found"
+   * @default "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"
    */
   noResultsMessage?: string;
 

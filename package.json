@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.88",
+  "version": "0.0.89",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -30,7 +30,7 @@
     "svelte"
   ],
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && npm run cjs2js && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
     "build-svelte": "svelte-package -o dist.svelte",
     "build-maptilersdk": "FLAVOUR=maptilersdk vite build",
@@ -82,7 +82,7 @@
     }
   },
   "devDependencies": {
-    "@maptiler/sdk": "^1.0.8",
+    "@maptiler/sdk": "^1.0.9",
     "@sveltejs/package": "^2.0.2",
     "@sveltejs/vite-plugin-svelte": "^2.0.4",
     "@tsconfig/svelte": "^4.0.1",
@@ -91,7 +91,7 @@
     "@turf/union": "^6.5.0",
     "@types/geojson": "^7946.0.10",
     "@types/leaflet": "^1.9.3",
-    "@types/react": "^18.0.33",
+    "@types/react": "^18.0.35",
     "@types/react-dom": "^18.0.11",
     "concurrently": "^8.0.1",
     "esm-env": "^1.0.0",
@@ -103,12 +103,12 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "renamer": "^4.0.0",
-    "sass": "^1.60.0",
+    "sass": "^1.62.0",
     "svelte": "^3.58.0",
-    "svelte-check": "^3.1.4",
+    "svelte-check": "^3.2.0",
     "svelte-preprocess": "^5.0.3",
     "tslib": "^2.5.0",
-    "typescript": "^5.0.3",
+    "typescript": "^5.0.4",
     "vite": "^4.2.1"
   },
   "peerDependencies": {

@@ -104,8 +104,8 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `debounceSearch`: `number` - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.
-- `errorMessage`: `string` - Override the default error message. Default `"Searching failed"`.
-- `noResultsMessage`: `string` - Override the default message if no results are found. Default `"No results found"`.
+- `errorMessage`: `string` - Override the default error message. Default `"Something went wrong…"`.
+- `noResultsMessage`: `string` - Override the default message if no results are found. Default `"Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"`.
 - `trackProximity`: `boolean` - If true, the geocoder proximity will automatically update based on the map view. Default `true`.
 - `minLength`: `number` - Minimum number of characters to enter before results are shown. Default `2`.
 - `bbox`: `[number, number, number, number]` - A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY]. Search results will be limited to the bounding box.

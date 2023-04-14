@@ -2,6 +2,8 @@
   import { createEventDispatcher } from "svelte";
   import { onDestroy } from "svelte/internal";
   import ClearIcon from "./ClearIcon.svelte";
+  import FailIcon from "./FailIcon.svelte";
+  import FeatureItem from "./FeatureItem.svelte";
   import LoadingIcon from "./LoadingIcon.svelte";
   import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
   import SearchIcon from "./SearchIcon.svelte";
@@ -35,7 +37,7 @@
 
   export let enableReverse: boolean | "always" = false;
 
-  export let errorMessage = "Searching failed";
+  export let errorMessage = "Something went wrong…";
 
   export let filter: (feature: Feature) => boolean = () => true;
 
@@ -51,7 +53,8 @@
 
   export let minLength = 2;
 
-  export let noResultsMessage = "No results found";
+  export let noResultsMessage =
+    "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!";
 
   export let placeholder = "Search";
 
@@ -499,9 +502,15 @@
   }
 
   function handleInput(debounce = true) {
-    if (showResultsWhileTyping && searchValue.length > minLength) {
+    error = undefined;
+
+    if (showResultsWhileTyping) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);
+      }
+
+      if (searchValue.length <= minLength) {
+        return;
       }
 
       const sv = searchValue;
@@ -543,7 +552,7 @@
   class={className}
 >
   <div class="input-group">
-    <button type="button" on:click={() => input.focus()}>
+    <button class="search-button" type="button" on:click={() => input.focus()}>
       <SearchIcon />
     </button>
 
@@ -590,43 +599,36 @@
   </div>
 
   {#if error}
-    <div class="error">{errorMessage}</div>
+    <div class="error">
+      <FailIcon />
+
+      <div>{errorMessage}</div>
+
+      <button on:click={() => (error = undefined)}>
+        <ClearIcon />
+      </button>
+    </div>
   {:else if !focusedDelayed}
     {""}
   {:else if listFeatures?.length === 0}
-    <div class="no-results">{noResultsMessage}</div>
+    <div class="no-results">
+      <FailIcon />
+
+      <div>{noResultsMessage}</div>
+    </div>
   {:else if focusedDelayed && listFeatures?.length}
     <ul
       on:mouseleave={() => (selectedItemIndex = -1)}
       on:blur={() => undefined}
     >
       {#each listFeatures as feature, i}
-        <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-        <li
-          tabindex="0"
-          data-selected={selectedItemIndex === i}
-          class:selected={selectedItemIndex === i}
+        <FeatureItem
+          {feature}
+          {showPlaceType}
+          selected={selectedItemIndex === i}
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
-        >
-          <!-- <MarkerIcon displayIn="list" /> -->
-          <span class="texts">
-            <span class="line1">
-              <span class="primary">
-                {feature.place_name.replace(/,.*/, "")}
-              </span>
-              <span class="secondary">
-                {feature.place_name.replace(/[^,]*,?\s*/, "")}
-              </span>
-            </span>
-            {#if showPlaceType}
-              <span class="line2">
-                {feature.properties?.place_type_name?.[0] ??
-                  feature.place_type[0]}
-              </span>
-            {/if}
-          </span>
-        </li>
+        />
       {/each}
     </ul>
   {/if}
@@ -641,7 +643,7 @@
     z-index: 10;
     border-radius: 4px;
     transition: max-width 0.25s;
-    /* box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15); */
+    box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
     --color-text: #444952;
     --color-icon-button: #444952;
 
@@ -653,38 +655,28 @@
     }
 
     &.can-collapse {
-      max-width: 30px;
-
-      & .input-group {
-        padding-inline: 5px;
-        transition: padding-inline 0.25s;
-      }
-
-      &:focus-within .input-group,
-      &:hover .input-group {
-        padding-inline: 8px;
-      }
+      max-width: 29px;
     }
 
     &,
     &:focus-within,
     &:hover {
-      width: 240px;
-      max-width: 240px;
+      width: 270px;
+      max-width: 270px;
     }
   }
 
   input {
     font: inherit;
     font-size: 14px;
-    width: 100%;
-    min-height: 28px;
-    border: 0;
+    flex-grow: 1;
+    min-height: 29px;
     background-color: transparent;
-    margin: 0;
     color: #444952;
     white-space: nowrap;
     overflow: hidden;
+    border: 0;
+    margin: 0;
     padding: 0;
 
     &:focus {
@@ -707,10 +699,69 @@
     position: absolute;
     width: 100%;
     top: calc(100% + 6px);
-    font-size: 14px;
-    box-shadow: 0px 2px 8px rgba(51, 51, 89, 0.15);
-    line-height: 16px;
     overflow: hidden;
+  }
+
+  ul {
+    font-size: 14px;
+    line-height: 16px;
+    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+  }
+
+  div.error,
+  div.no-results {
+    font: inherit;
+    line-height: 18px;
+    font-size: 12px;
+    display: flex;
+    gap: 16px;
+  }
+
+  div.error {
+    padding: 16px;
+    font-weight: 600;
+    color: #e25041;
+    background-color: #fbeae8;
+
+    div {
+      flex-grow: 1;
+    }
+
+    :global(svg) {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+    }
+
+    button {
+      flex-shrink: 0;
+      & > :global(svg) {
+        width: 13px;
+        fill: #e25041;
+      }
+
+      &:hover :global(svg),
+      &:active :global(svg) {
+        fill: #444952;
+      }
+    }
+  }
+
+  div.no-results {
+    padding: 14px 24px 14px 16px;
+    font-weight: 400;
+    color: #6b7c93;
+
+    :global(svg) {
+      margin-top: 4px;
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      width: 30px;
+      height: 30px;
+    }
+
+    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
   }
 
   :global(.maplibregl-ctrl-bottom-left) ul,
@@ -719,65 +770,12 @@
     bottom: 100%;
   }
 
-  li {
-    text-align: left;
-    cursor: default;
-    display: grid;
-    grid-template-columns: 1fr;
-    color: var(--color-text);
-    padding: 8px 0px;
-    font-size: 14px;
-    line-height: 18px;
-
-    &:first-child {
-      padding-top: 10px;
-    }
-
-    &:last-child {
-      padding-bottom: 10px;
-    }
-
-    &.selected {
-      background-color: #f3f6ff;
-
-      & .texts > * {
-        animation: backAndForth 5s linear infinite;
-      }
-
-      & .primary {
-        color: #2b8bfb;
-      }
-    }
-  }
-
-  .texts {
-    padding: 0 17px;
-
-    & > * {
-      white-space: nowrap;
-      display: block;
-      min-width: fit-content;
-    }
-  }
-
-  .primary {
-    font-weight: 600;
-  }
-
-  .secondary {
-    color: #aeb6c7;
-    padding-left: 4px;
-  }
-
-  .line2 {
-    color: #aeb6c7;
-  }
-
   button {
     padding: 0;
     margin: 0;
     border: 0;
     background-color: transparent;
+    height: auto;
     width: auto;
 
     &:hover {
@@ -786,7 +784,7 @@
   }
 
   button:hover :global(svg),
-  button.active :global(svg) {
+  button:active :global(svg) {
     fill: #2b8bfb;
   }
 
@@ -803,49 +801,19 @@
     }
   }
 
-  .clear-button-container.displayable {
-    display: flex;
-  }
-
-  div.error,
-  div.no-results {
-    font: inherit;
-    font-size: 14px;
-    padding: 6px 10px;
-  }
-
-  div.error {
-    color: #e25041;
-  }
-
-  div.no-results {
-    color: var(--color-text);
+  .search-button {
+    flex-shrink: 0;
   }
 
   .clear-button-container {
+    display: flex;
     display: none;
     position: relative;
     align-items: stretch;
-  }
 
-  @keyframes backAndForth {
-    0% {
-      transform: translateX(0);
-    }
-    10% {
-      transform: translateX(0);
-    }
-    45% {
-      transform: translateX(calc(-100% + 206px));
-    }
-    55% {
-      transform: translateX(calc(-100% + 206px));
-    }
-    90% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(0);
+    &.displayable {
+      display: flex;
+      flex-shrink: 0;
     }
   }
 
@@ -855,24 +823,31 @@
   }
 
   :global(.maptiler-ctrl) {
-    & .input-group:focus-within {
-      outline: #2b8bfb solid 1.5px;
+    &:not(:empty) {
+      box-shadow: none;
+    }
+
+    & .input-group {
+      padding-inline: 8px;
+      border: white solid 2px;
+
+      &:focus-within {
+        border: #2b8bfb solid 2px;
+        outline: 0;
+        outline: none;
+      }
     }
 
     & form {
       &.can-collapse {
         max-width: 34px;
-
-        & .input-group {
-          padding-inline: 7px;
-        }
       }
 
       &,
       &:focus-within,
       &:hover {
-        width: 240px;
-        max-width: 240px;
+        width: 270px;
+        max-width: 270px;
       }
     }
   }
