@@ -44,6 +44,7 @@
     "clean": "rm -rf dist dist.svelte",
     "pack": "npm run clean && npm run build && cd dist && npm pack",
     "pub": "npm run clean && npm run build && cd dist && npm publish",
+    "cdn-pr": "npm run clean && npm run build && ./create-cdn-pr.sh",
     "preview": "vite preview",
     "check": "svelte-check --tsconfig ./tsconfig.json"
   },
