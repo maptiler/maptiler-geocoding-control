@@ -9,7 +9,7 @@ If you've noticed a bug or have a feature request, [make one](https://github.com
 generally best if you get confirmation of your bug or approval for your feature
 request this way before starting to code.
 
-If you have a general question about MapTiler Geocoding Control, you can reach out to the 
+If you have a general question about MapTiler Geocoding Control, you can reach out to the
 [MapTiler documentation portal](https://documentation.maptiler.com/hc/en-us/search?query=geocoding)
 or contact [our support](https://documentation.maptiler.com/hc/en-us/requests/new), the issue tracker is only for bugs and feature requests.
 
@@ -34,18 +34,16 @@ Install the development dependencies:
 npm install
 ```
 
-Then run the development mode, make sure, you export the [MapTiler Key](https://docs.maptiler.com/cloud/api/authentication-key/) as environment variable 
+Then run the development mode, make sure, you export the [MapTiler Key](https://docs.maptiler.com/cloud/api/authentication-key/) as environment variable
 
 ```sh
 VITE_API_KEY=YOUR_MAPTILER_API_KEY_HERE npm run dev
 ```
 
-
 ### Implement your fix or feature
 
 At this point, you're ready to make your changes! Feel free to ask for help;
 everyone is a beginner at first :smile_cat:
-
 
 ### Make a Pull Request
 
@@ -69,5 +67,6 @@ git push --set-upstream origin 325-add-poi-filter
 Finally, go to GitHub and [make a Pull Request](https://github.com/maptiler/maptiler-geocoding-control/compare)
 
 ## Final word
+
 Thank you one more time for your contribution. We try to deliver best user experience of geocoding, your contribution
 will make better experience to all users!
