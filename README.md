@@ -164,7 +164,7 @@ In addition to using the component as MapLibre GL JS or Leaflet Control it is al
 
 Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
 
-### Example for integration with MapLibre
+### Example for integration with MapLibre GL JS
 
 ```typescript
 import { useEffect, useRef, useState } from "react";
