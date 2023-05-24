@@ -56,7 +56,7 @@ export default defineConfig({
             name: "maplibreglMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
-        : error(new Error("unknown FLAVOUR")),
+        : undefined,
     rollupOptions: {
       external: [
         "@maptiler/sdk",
@@ -79,7 +79,3 @@ export default defineConfig({
     },
   },
 });
-
-function error(e: any): any {
-  throw e;
-}
