@@ -167,7 +167,7 @@
     mapController.setMarkers(markedFeatures, picked);
   }
 
-  $: if (!searchValue) {
+  $: if (searchValue.length < minLength) {
     picked = undefined;
     listFeatures = undefined;
     error = undefined;
@@ -509,7 +509,7 @@
         clearTimeout(searchTimeoutRef);
       }
 
-      if (searchValue.length <= minLength) {
+      if (searchValue.length < minLength) {
         return;
       }
 
