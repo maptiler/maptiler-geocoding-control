@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="Layer_1"
+   x="0px"
+   y="0px"
+   width="7.2951126"
+   height="14.74016"
+   viewBox="0 0 7.2951126 14.74016"
+   enable-background="new 0 0 21 21"
+   xml:space="preserve"
+   sodipodi:docname="oneway.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)"><metadata
+   id="metadata14349"><rdf:RDF><cc:Work
+       rdf:about=""><dc:format>image/svg+xml</dc:format><dc:type
+         rdf:resource="http://purl.org/dc/dcmitype/StillImage" /><dc:title /></cc:Work></rdf:RDF></metadata><defs
+   id="defs14347" /><sodipodi:namedview
+   pagecolor="#ffffff"
+   bordercolor="#666666"
+   borderopacity="1"
+   objecttolerance="10"
+   gridtolerance="10"
+   guidetolerance="10"
+   inkscape:pageopacity="0"
+   inkscape:pageshadow="2"
+   inkscape:window-width="1128"
+   inkscape:window-height="686"
+   id="namedview14345"
+   showgrid="false"
+   inkscape:zoom="26.142857"
+   inkscape:cx="4.3738104"
+   inkscape:cy="8.9958887"
+   inkscape:window-x="210"
+   inkscape:window-y="43"
+   inkscape:window-maximized="0"
+   inkscape:current-layer="Layer_1"
+   inkscape:document-rotation="0" />
+<g
+   id="g14342"
+   transform="matrix(0.64,0,0,0.64,-3.0603986,0.63792)"
+   style="fill:#686464;fill-opacity:1;stroke:#ffffff;stroke-width:2.1875;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill">
+	<path
+   fill="#706A6A"
+   d="M 15.018,4.85 10.736,0.217 c -0.08,-0.08 -0.178,-0.12 -0.29,-0.12 -0.104,0 -0.197,0.04 -0.277,0.12 L 5.946,4.85 C 5.842,4.979 5.821,5.12 5.886,5.272 5.95,5.425 6.067,5.501 6.236,5.501 h 3.392 v 15.055 c 0,0.113 0.036,0.205 0.109,0.277 0.072,0.072 0.164,0.108 0.277,0.108 h 0.937 c 0.112,0 0.205,-0.036 0.276,-0.108 0.073,-0.072 0.109,-0.164 0.109,-0.277 V 5.501 h 3.392 c 0.161,0 0.277,-0.076 0.35,-0.229 0.064,-0.154 0.044,-0.293 -0.06,-0.422 z"
+   id="path14340"
+   style="fill:#686464;fill-opacity:1;stroke:#ffffff;stroke-width:2.1875;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke markers fill" />
+</g>
+</svg>

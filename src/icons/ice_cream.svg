@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="12.092403"
+   height="18.703302"
+   viewBox="0 0 12.092403 18.703302"
+   id="ice-cream"
+   version="1.1"
+   sodipodi:docname="ice-cream.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)">
+  <metadata
+     id="metadata76098">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs76096" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1213"
+     inkscape:window-height="754"
+     id="namedview76094"
+     showgrid="false"
+     inkscape:zoom="36.933333"
+     inkscape:cx="4.8707989"
+     inkscape:cy="9.849111"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="ice-cream" />
+  <path
+     d="m 3.842403,10.635857 a 3.8203,3.8203 0 0 0 2.2,-0.693 3.85,3.85 0 0 0 1.716,0.66 h 0.484 l -1.584,6.116 a 0.55,0.55 0 0 1 -1.012,0 z m 6.6,-3.8203 a 2.2000002,2.2000002 0 0 1 -4.4,0 v 0 a 2.2,2.2 0 1 1 -2.2,-2.2 h 0.132 a 2.2,2.2 0 1 1 4.125,0 h 0.143 a 2.2,2.2 0 0 1 2.1989,2.2033 z"
+     id="path76091"
+     style="fill:#725a50;fill-opacity:1;stroke:#ffffff;stroke-width:3.3;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+</svg>

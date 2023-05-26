@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="parking-garage"
+   width="19.600592"
+   height="18.373537"
+   viewBox="0 0 19.600592 18.373537"
+   sodipodi:docname="parking_garage.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)">
+  <metadata
+     id="metadata98016">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs98014" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1049"
+     inkscape:window-height="677"
+     id="namedview98012"
+     showgrid="false"
+     inkscape:zoom="36.733333"
+     inkscape:cx="8.1480954"
+     inkscape:cy="9.5383764"
+     inkscape:window-x="79"
+     inkscape:window-y="58"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="parking-garage" />
+  <path
+     d="m 12.645398,12.477537 c -0.73007,0.52668 -1.62052,0.78331 -2.519,0.726 H 8.0363981 v 3.52 h -2.09 V 6.8235372 h 4.3119999 c 0.85811,-0.04554 1.70324,0.22451 2.376,0.759 0.63569,0.61545 0.9625,1.48313 0.891,2.365 0.11462,0.9341198 -0.21032,1.8686798 -0.88,2.5299998 z m -1.65,-3.5639998 c -0.3179,-0.23309 -0.70631,-0.34958 -1.0999999,-0.33 h -1.859 v 2.9149998 h 1.859 c 0.3973199,0.02101 0.7886999,-0.10417 1.0999999,-0.352 0.28149,-0.29425 0.42537,-0.69388 0.396,-1.1 0.05192,-0.4187698 -0.0946,-0.8377598 -0.396,-1.1329998 z m 5.951,-2.959 c 0.1254,-0.27346 0.0077,-0.59697 -0.264,-0.726 l -7.3369999,-3.41 -7.381,3.41 c -0.27643,0.1276 -0.3971,0.45507 -0.2695,0.7315 0.1276,0.27643 0.45507,0.3971 0.7315,0.2695 v 0 l 6.919,-3.201 6.9189999,3.19 c 0.27346,0.1254 0.59697,0.0077 0.726,-0.264 z"
+     id="path98009"
+     style="fill:#725a50;fill-opacity:1;stroke:#ffffff;stroke-width:3.3;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+</svg>

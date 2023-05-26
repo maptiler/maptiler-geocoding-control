@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   id="picnic-site"
+   width="16.5"
+   height="14.288354"
+   viewBox="0 0 16.5 14.288354"
+   sodipodi:docname="picnic-site.svg"
+   inkscape:version="1.0.2 (e86c8708, 2021-01-15)">
+  <metadata
+     id="metadata98007">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs98005" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1097"
+     inkscape:window-height="763"
+     id="namedview98003"
+     showgrid="false"
+     inkscape:zoom="36.733333"
+     inkscape:cx="7.011343"
+     inkscape:cy="6.6494706"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="picnic-site" />
+  <path
+     id="rect4760"
+     d="m 4.4,1.65 c -0.6094,0 -1.1,0.4906 -1.1,1.1 0,0.6094 0.4906,1.1 1.1,1.1 H 5.82659 L 5.11753,6.05 H 2.75 c -0.6094,0 -1.1,0.4906 -1.1,1.1 0,0.6094 0.4906,1.1 1.1,1.1 H 4.41078 L 3.3451,11.56078 c -0.14124,0.43329 0.09548,0.89903 0.52877,1.04027 0.43329,0.14124 0.89903,-0.09548 1.04027,-0.52877 5.5e-4,-0.0014 9.9e-4,-0.003 0.00143,-0.0044 L 6.14449,8.25 h 4.21091 l 1.22892,3.81777 c 0.14003,0.43373 0.60511,0.67177 1.03873,0.53174 0.43362,-0.14003 0.67177,-0.60511 0.53174,-1.03873 v 0 L 12.08922,8.25 H 13.75 c 0.6094,0 1.1,-0.4906 1.1,-1.1 0,-0.6094 -0.4906,-1.1 -1.1,-1.1 H 11.38247 L 10.67341,3.85 H 12.1 c 0.6094,0 1.1,-0.4906 1.1,-1.1 0,-0.6094 -0.4906,-1.1 -1.1,-1.1 z m 3.1603,2.2 h 1.3794 l 0.70895,2.2 h -2.7973 z"
+     style="fill:#725a50;fill-opacity:1;stroke:#ffffff;stroke-width:3.3;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;paint-order:stroke fill markers" />
+</svg>

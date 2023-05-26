@@ -621,7 +621,7 @@
       on:mouseleave={() => (selectedItemIndex = -1)}
       on:blur={() => undefined}
     >
-      {#each listFeatures as feature, i}
+      {#each listFeatures as feature, i (feature.id)}
         <FeatureItem
           {feature}
           {showPlaceType}
