@@ -1,5 +1,4 @@
 <script lang="ts">
-  import MarkerIcon from "./MarkerIcon.svelte";
   import type { Feature } from "./types";
 
   export let feature: Feature;
