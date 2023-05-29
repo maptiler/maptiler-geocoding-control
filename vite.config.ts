@@ -9,6 +9,7 @@ export default defineConfig({
       preprocess: preprocess(),
     }),
   ],
+  publicDir: "public",
   build: {
     sourcemap: true,
     emptyOutDir: false,

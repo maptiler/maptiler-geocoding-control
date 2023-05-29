@@ -5,23 +5,38 @@
   export let selected = false;
   export let showPlaceType = false;
 
-  const category = feature.properties?.categories?.[0];
+  const categories = feature.properties?.categories;
 
-  let imageUrl: URL | undefined;
+  $: index = (categories?.length ?? 0) - 1;
 
-  if (category) {
-    imageUrl = new URL(
-      `../icons/${category.replace(/ /g, "_")}.svg`,
-      import.meta.url
-    );
+  $: category = categories?.[index];
+
+  $: imageUrl = category
+    ? `/icons/${category.replace(/ /g, "_")}.svg`
+    : undefined;
+
+  $: {
+    console.log(index, category, imageUrl);
+  }
+
+  function handleImgError(e: Element) {
+    if (index > -1) {
+      index--;
+    } else {
+      (e as HTMLImageElement).style.visibility = "hidden";
+    }
   }
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
   <!-- <MarkerIcon displayIn="list" /> -->
-  {#if imageUrl && imageUrl.pathname !== "/undefined"}
-    <img src={imageUrl.href} alt={category} />
+  {#if imageUrl}
+    <img
+      src={imageUrl}
+      alt={category}
+      on:error={(e) => handleImgError(e.currentTarget)}
+    />
   {:else}
     <span />
   {/if}
@@ -32,7 +47,7 @@
         {feature.place_name.replace(/,.*/, "")}
       </span>
 
-      {#if !feature.properties?.categories}
+      {#if !categories}
         <span class="secondary">
           {feature.place_name.replace(/[^,]*,?\s*/, "")}
         </span>

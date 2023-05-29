@@ -31,7 +31,11 @@ export type MapController = {
 
   flyTo(center: [number, number], zoom: number): void;
 
-  fitBounds(bbox: [number, number, number, number], padding: number): void;
+  fitBounds(
+    bbox: [number, number, number, number],
+    padding: number,
+    maxZoom: number
+  ): void;
 
   indicateReverse(reverse: boolean): void;
 
@@ -145,6 +149,14 @@ export type ControlOptions = {
    * @default 16
    */
   zoom?: number;
+
+  /**
+   * On geocoded result what max zoom level should the map animate to when a bbox isn't found in the response. Used for small features.
+   * If a bbox is found the map will fit to the bbox.
+   *
+   * @default 18
+   */
+  maxZoom?: number;
 
   /**
    * If `true`, the geocoder control will collapse until hovered or in focus.

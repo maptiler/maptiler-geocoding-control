@@ -78,6 +78,8 @@
 
   export let zoom = 16;
 
+  export let maxZoom = 18;
+
   export let fetchParameters: RequestInit = {};
 
   export function focus() {
@@ -149,9 +151,14 @@
       !picked.bbox ||
       (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
     ) {
-      mapController.flyTo(picked.center, zoom);
+      mapController.flyTo(
+        picked.center,
+        picked.id.startsWith("poi.") || picked.id.startsWith("address.")
+          ? maxZoom
+          : zoom
+      );
     } else {
-      mapController.fitBounds(unwrapBbox(picked.bbox), 50);
+      mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
     }
 
     listFeatures = undefined;
@@ -453,7 +460,7 @@
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
         mapController.flyTo(picked.center, zoom);
       } else {
-        mapController.fitBounds(unwrapBbox(bbox), 50);
+        mapController.fitBounds(unwrapBbox(bbox), 50, maxZoom);
       }
     }
   }
