@@ -212,11 +212,14 @@ export type ControlOptions = {
   clearButtonTitle?: string;
 
   /**
-   * Set to `true` to show place type.
+   * Set to `false` to hide place/POI type. If set to `"always"` then type is shown for all items.
+   * If set to `"ifNeeded"` then type is shown only for places/POIs not determined from the icon.
    *
-   * @default false
+   * @default "ifNeeded"
    */
-  showPlaceType?: boolean;
+  showPlaceType?: false | "always" | "ifNeeded";
+
+  showIcons?: boolean;
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.

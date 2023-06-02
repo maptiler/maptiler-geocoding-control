@@ -27,8 +27,8 @@
       new GeocodingControl({
         apiKey,
         enableReverse: "always",
-        showPlaceType: true,
         collapsed: true,
+        limit: 20,
       })
     );
 

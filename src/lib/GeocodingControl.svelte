@@ -68,7 +68,7 @@
 
   export let showFullGeometry = true;
 
-  export let showPlaceType = false;
+  export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
 
   export let showResultsWhileTyping = true;
 
@@ -356,7 +356,7 @@
       sp.set("fuzzyMatch", String(fuzzyMatch));
     }
 
-    if (limit !== undefined) {
+    if (limit !== undefined && (!isReverse || types?.length === 1)) {
       sp.set("limit", String(limit));
     }
 

@@ -350,7 +350,7 @@ export function createMapLibreGlMapController(
             marker.togglePopup();
           });
 
-          element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+          // element.classList.toggle("marker-fuzzy", !!feature.matching_text);
 
           markers.push(marker);
         }

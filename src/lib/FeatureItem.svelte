@@ -2,8 +2,10 @@
   import type { Feature } from "./types";
 
   export let feature: Feature;
+
   export let selected = false;
-  export let showPlaceType = false;
+
+  export let showPlaceType: false | "always" | "ifNeeded";
 
   const categories = feature.properties?.categories;
 
@@ -15,9 +17,9 @@
     ? `/icons/${category.replace(/ /g, "_")}.svg`
     : undefined;
 
-  $: {
-    console.log(index, category, imageUrl);
-  }
+  $: placeType = feature.id.startsWith("poi.")
+    ? feature.properties?.categories?.join(" ,")
+    : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
 
   function handleImgError(e: Element) {
     if (index > -1) {
@@ -30,15 +32,24 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
-  <!-- <MarkerIcon displayIn="list" /> -->
   {#if imageUrl}
     <img
       src={imageUrl}
       alt={category}
       on:error={(e) => handleImgError(e.currentTarget)}
     />
+  {:else if feature.address}
+    <img src="/icons/housenumber.svg" alt={placeType} />
+  {:else if feature.properties?.kind === "road" || feature.properties?.kind === "road_relation"}
+    <img src="/icons/road.svg" alt={placeType} />
+  {:else if feature.id.startsWith("address.")}
+    <img src="/icons/street.svg" alt={placeType} />
+  {:else if feature.id.startsWith("postal_code.")}
+    <img src="/icons/postal_code.svg" alt={placeType} />
+  {:else if feature.id.startsWith("poi.")}
+    <img src="/icons/poi.svg" alt={placeType} />
   {:else}
-    <span />
+    <img src="/icons/area.svg" alt={placeType} />
   {/if}
 
   <span class="texts">
@@ -47,22 +58,16 @@
         {feature.place_name.replace(/,.*/, "")}
       </span>
 
-      {#if !categories}
+      {#if showPlaceType === "always" || (showPlaceType && !feature.address && feature.properties?.kind !== "road" && feature.properties?.kind !== "road_relation" && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl))}
         <span class="secondary">
-          {feature.place_name.replace(/[^,]*,?\s*/, "")}
+          {placeType}
         </span>
       {/if}
     </span>
 
-    {#if feature.properties?.categories}
-      <span class="line2">
-        {feature.place_name.replace(/[^,]*,?\s*/, "")}
-      </span>
-    {:else if showPlaceType}
-      <span class="line2">
-        {feature.properties?.place_type_name?.[0] ?? feature.place_type[0]}
-      </span>
-    {/if}
+    <span class="line2">
+      {feature.place_name.replace(/[^,]*,?\s*/, "")}
+    </span>
   </span>
 </li>
 
@@ -101,6 +106,7 @@
     & > img {
       align-self: center;
       justify-self: center;
+      opacity: 0.75;
     }
   }
 
