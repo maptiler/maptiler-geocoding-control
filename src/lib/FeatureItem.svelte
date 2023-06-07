@@ -18,7 +18,7 @@
     : undefined;
 
   $: placeType = feature.id.startsWith("poi.")
-    ? feature.properties?.categories?.join(" ,")
+    ? feature.properties?.categories?.join(", ")
     : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
 
   function handleImgError(e: Element) {
