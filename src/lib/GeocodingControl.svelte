@@ -133,6 +133,8 @@
 
   let focusedDelayed: boolean;
 
+  let prevIdToFly: string | undefined;
+
   const dispatch = createEventDispatcher<DispatcherType>();
 
   $: if (!trackProximity) {
@@ -148,24 +150,28 @@
     search(picked.id, { byId: true }).catch((err) => (error = err));
   }
 
-  $: if (mapController && picked && flyTo) {
-    if (
-      !picked.bbox ||
-      (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
-    ) {
-      mapController.flyTo(
-        picked.center,
-        picked.id.startsWith("poi.") || picked.id.startsWith("address.")
-          ? maxZoom
-          : zoom
-      );
-    } else {
-      mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
+  $: {
+    if (mapController && picked && picked.id !== prevIdToFly && flyTo) {
+      if (
+        !picked.bbox ||
+        (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
+      ) {
+        mapController.flyTo(
+          picked.center,
+          picked.id.startsWith("poi.") || picked.id.startsWith("address.")
+            ? maxZoom
+            : zoom
+        );
+      } else {
+        mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
+      }
+
+      listFeatures = undefined;
+      markedFeatures = undefined;
+      selectedItemIndex = -1;
     }
 
-    listFeatures = undefined;
-    markedFeatures = undefined;
-    selectedItemIndex = -1;
+    prevIdToFly = picked?.id;
   }
 
   $: if (markedFeatures !== listFeatures) {
