@@ -80,6 +80,8 @@
 
   export let maxZoom = 18;
 
+  export let apiUrl: string = import.meta.env.VITE_API_URL;
+
   export let fetchParameters: RequestInit = {};
 
   export function focus() {
@@ -363,11 +365,7 @@
     sp.set("key", apiKey);
 
     const url =
-      import.meta.env.VITE_API_URL +
-      "/" +
-      encodeURIComponent(searchValue) +
-      ".json?" +
-      sp.toString();
+      apiUrl + "/" + encodeURIComponent(searchValue) + ".json?" + sp.toString();
 
     if (url === lastSearchUrl) {
       if (byId) {

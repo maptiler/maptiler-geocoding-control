@@ -28,7 +28,9 @@
         apiKey,
         enableReverse: "always",
         collapsed: true,
-        limit: 20,
+        // limit: 20,
+        // types: ["poi"],
+        fetchParameters: { credentials: "include" },
       })
     );
 
