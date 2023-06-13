@@ -27,8 +27,10 @@
       new GeocodingControl({
         apiKey,
         enableReverse: "always",
-        showPlaceType: true,
         collapsed: true,
+        // limit: 20,
+        // types: ["poi"],
+        fetchParameters: { credentials: "include" },
       })
     );
 

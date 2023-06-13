@@ -58,7 +58,7 @@
     cursor: pointer !important;
   }
 
-  :global(.marker-fuzzy) svg path {
+  /* :global(.marker-fuzzy) svg path {
     fill: silver;
     stroke: gray;
   }
@@ -66,7 +66,7 @@
   :global(.marker-fuzzy.marker-selected) svg path {
     fill: #ddd;
     stroke: silver;
-  }
+  } */
 
   :global(.maptiler-gc-popup > .maplibregl-popup-content) {
     padding: 2px 8px;

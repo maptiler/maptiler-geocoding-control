@@ -68,7 +68,7 @@
 
   export let showFullGeometry = true;
 
-  export let showPlaceType = false;
+  export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
 
   export let showResultsWhileTyping = true;
 
@@ -77,6 +77,10 @@
   export let types: string[] | undefined = undefined;
 
   export let zoom = 16;
+
+  export let maxZoom = 18;
+
+  export let apiUrl: string = import.meta.env.VITE_API_URL;
 
   export let fetchParameters: RequestInit = {};
 
@@ -129,6 +133,10 @@
 
   let focusedDelayed: boolean;
 
+  let prevIdToFly: string | undefined;
+
+  const missingIconsCache = new Set<string>();
+
   const dispatch = createEventDispatcher<DispatcherType>();
 
   $: if (!trackProximity) {
@@ -144,19 +152,28 @@
     search(picked.id, { byId: true }).catch((err) => (error = err));
   }
 
-  $: if (mapController && picked && flyTo) {
-    if (
-      !picked.bbox ||
-      (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
-    ) {
-      mapController.flyTo(picked.center, zoom);
-    } else {
-      mapController.fitBounds(unwrapBbox(picked.bbox), 50);
+  $: {
+    if (mapController && picked && picked.id !== prevIdToFly && flyTo) {
+      if (
+        !picked.bbox ||
+        (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
+      ) {
+        mapController.flyTo(
+          picked.center,
+          picked.id.startsWith("poi.") || picked.id.startsWith("address.")
+            ? maxZoom
+            : zoom
+        );
+      } else {
+        mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
+      }
+
+      listFeatures = undefined;
+      markedFeatures = undefined;
+      selectedItemIndex = -1;
     }
 
-    listFeatures = undefined;
-    markedFeatures = undefined;
-    selectedItemIndex = -1;
+    prevIdToFly = picked?.id;
   }
 
   $: if (markedFeatures !== listFeatures) {
@@ -349,18 +366,14 @@
       sp.set("fuzzyMatch", String(fuzzyMatch));
     }
 
-    if (limit !== undefined) {
+    if (limit !== undefined && (!isReverse || types?.length === 1)) {
       sp.set("limit", String(limit));
     }
 
     sp.set("key", apiKey);
 
     const url =
-      import.meta.env.VITE_API_URL +
-      "/" +
-      encodeURIComponent(searchValue) +
-      ".json?" +
-      sp.toString();
+      apiUrl + "/" + encodeURIComponent(searchValue) + ".json?" + sp.toString();
 
     if (url === lastSearchUrl) {
       if (byId) {
@@ -453,7 +466,7 @@
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
         mapController.flyTo(picked.center, zoom);
       } else {
-        mapController.fitBounds(unwrapBbox(bbox), 50);
+        mapController.fitBounds(unwrapBbox(bbox), 50, maxZoom);
       }
     }
   }
@@ -621,13 +634,14 @@
       on:mouseleave={() => (selectedItemIndex = -1)}
       on:blur={() => undefined}
     >
-      {#each listFeatures as feature, i}
+      {#each listFeatures as feature, i (feature.id + (feature.address ? "," + feature.address : ""))}
         <FeatureItem
           {feature}
           {showPlaceType}
           selected={selectedItemIndex === i}
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
+          {missingIconsCache}
         />
       {/each}
     </ul>

@@ -31,7 +31,11 @@ export type MapController = {
 
   flyTo(center: [number, number], zoom: number): void;
 
-  fitBounds(bbox: [number, number, number, number], padding: number): void;
+  fitBounds(
+    bbox: [number, number, number, number],
+    padding: number,
+    maxZoom: number
+  ): void;
 
   indicateReverse(reverse: boolean): void;
 
@@ -147,6 +151,14 @@ export type ControlOptions = {
   zoom?: number;
 
   /**
+   * On geocoded result what max zoom level should the map animate to when a bbox isn't found in the response. Used for small features.
+   * If a bbox is found the map will fit to the bbox.
+   *
+   * @default 18
+   */
+  maxZoom?: number;
+
+  /**
    * If `true`, the geocoder control will collapse until hovered or in focus.
    *
    * @default false
@@ -200,11 +212,14 @@ export type ControlOptions = {
   clearButtonTitle?: string;
 
   /**
-   * Set to `true` to show place type.
+   * Set to `false` to hide place/POI type. If set to `"always"` then type is shown for all items.
+   * If set to `"ifNeeded"` then type is shown only for places/POIs not determined from the icon.
    *
-   * @default false
+   * @default "ifNeeded"
    */
-  showPlaceType?: boolean;
+  showPlaceType?: false | "always" | "ifNeeded";
+
+  showIcons?: boolean;
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
@@ -226,6 +241,20 @@ export type ControlOptions = {
    * @default undefined all available feature types are returned
    */
   types?: string[];
+
+  /**
+   * Geocoding API URL.
+   *
+   * @default MapTiler Geocoding API URL
+   */
+  apiUrl?: string;
+
+  /**
+   * Extra fetch parameters.
+   *
+   * @default undefined
+   */
+  fetchParameters?: RequestInit;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

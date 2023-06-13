@@ -39,7 +39,6 @@
     new GeocodingControl({
       apiKey,
       enableReverse: "always",
-      showPlaceType: true,
       // collapsed: true,
     }).addTo(map);
   });
