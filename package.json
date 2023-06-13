@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.91-git.0d6ecd",
+  "version": "0.0.91",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
