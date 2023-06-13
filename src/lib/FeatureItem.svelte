@@ -7,26 +7,38 @@
 
   export let showPlaceType: false | "always" | "ifNeeded";
 
+  export let missingIconsCache: Set<string>;
+
   const categories = feature.properties?.categories;
 
-  $: index = (categories?.length ?? 0) - 1;
+  let category: string | undefined;
 
-  $: category = categories?.[index];
+  let imageUrl: string | undefined;
 
-  $: imageUrl = category
-    ? `/icons/${category.replace(/ /g, "_")}.svg`
-    : undefined;
+  $: index = categories?.length ?? 0;
+
+  $: {
+    do {
+      index--;
+
+      category = categories?.[index];
+
+      imageUrl = category
+        ? `/icons/${category.replace(/ /g, "_")}.svg`
+        : undefined;
+    } while (index > -1 && (!imageUrl || missingIconsCache.has(imageUrl)));
+  }
 
   $: placeType = feature.id.startsWith("poi.")
     ? feature.properties?.categories?.join(", ")
     : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
 
   function handleImgError(e: Element) {
-    if (index > -1) {
-      index--;
-    } else {
-      (e as HTMLImageElement).style.visibility = "hidden";
+    if (imageUrl) {
+      missingIconsCache.add(imageUrl);
     }
+
+    index--;
   }
 </script>
 

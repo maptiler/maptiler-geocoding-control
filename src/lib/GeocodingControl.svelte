@@ -135,6 +135,8 @@
 
   let prevIdToFly: string | undefined;
 
+  const missingIconsCache = new Set<string>();
+
   const dispatch = createEventDispatcher<DispatcherType>();
 
   $: if (!trackProximity) {
@@ -639,6 +641,7 @@
           selected={selectedItemIndex === i}
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
+          {missingIconsCache}
         />
       {/each}
     </ul>
