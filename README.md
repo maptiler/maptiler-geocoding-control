@@ -1,19 +1,53 @@
+<p align="center">
+<a href="https://www.maptiler.com/cloud/geocoding/">official page →</a><br>
+  <img src="images/maptiler-logo.svg" width="350px">
+</p>
+
+<p align="center" style="color: #AAA">
+  The Javascript & TypeScript Map Control component for <a href="https://www.maptiler.com/cloud/geocoding">MapTiler Geocoding</a> service! Easy to be integrated into any JavaScript mapping application.
+</p>
+
+<p align="center">
+  <img src="images/JS-logo.svg" width="20px">
+  <img src="images/TS-logo.svg" width="20px">
+  <img src="images/react-logo.svg" width="20px">
+  <img src="images/svelte-logo.svg" width="20px">
+  <img src="https://img.shields.io/npm/v/@maptiler/geocoding-control"></img>
+  <img src="https://img.shields.io/twitter/follow/maptiler?style=social"></img>
+</p>
+
 # MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS and Leaflet
 
-A geocoding control for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
+## What?
+
+A *Geocoding control* for [MapTiler
+SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL
+JS](https://github.com/maplibre/maplibre-gl-js) and
+[Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding
+API](https://www.maptiler.com/cloud/geocoding/). With this control, users of
+mapping application can find any place on Earth (States, Cities, Streets, POIs, ...) down
+to the address level, restrict the search area to a specific country, highlight
+searched results on the map, autocomplete words while typing, and much more.
 
 The component can be used as an ES module or UMD module.
 
 Geocoding control is also provided as [React component](#react-component) and a [Svelte component](#svelte-component).
 
-## Usage
+## Install & Use
 
-### Example for MapTiler SDK using module bundler
+Installation and use examples do cover following topics:
+
+* [With MapTiler SDK](#install-with-maptiler-sdk-using-module-bundler)
+* [With MapLibre GL](#install-with-maplibre-gl-js-using-module-bundler)
+* [With Leaflet](#install-with-leaflet-using-module-bundler)
+
+### Install with MapTiler SDK using module bundler
 
 ```
 npm install --save @maptiler/geocoding-control @maptiler/sdk
 ```
 
+### Usage with MapTiler SDK
 ```js
 import * as maptilersdk from "@maptiler/sdk";
 import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
@@ -31,11 +65,13 @@ const gc = new GeocodingControl();
 map.addControl(gc);
 ```
 
-### Example for MapLibre GL JS using module bundler
+### Install with MapLibre GL JS using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control maplibre-gl
 ```
+
+### Use with MapLibre GL JS
 
 ```js
 import maplibregl from "maplibre-gl";
@@ -57,11 +93,13 @@ const gc = new GeocodingControl({ apiKey, maplibregl });
 map.addControl(gc);
 ```
 
-### Example for Leaflet using module bundler
+### Install with Leaflet using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control leaflet
 ```
+
+### Use with Leaflet
 
 ```js
 import * as L from "leaflet";
