@@ -84,6 +84,8 @@
 
   export let fetchParameters: RequestInit = {};
 
+  export let iconsBaseUrl = "icons/";
+
   export function focus() {
     input.focus();
   }
@@ -642,6 +644,7 @@
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
           {missingIconsCache}
+          {iconsBaseUrl}
         />
       {/each}
     </ul>

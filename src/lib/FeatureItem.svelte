@@ -9,6 +9,8 @@
 
   export let missingIconsCache: Set<string>;
 
+  export let iconsBaseUrl: string;
+
   const categories = feature.properties?.categories;
 
   let category: string | undefined;
@@ -24,7 +26,7 @@
       category = categories?.[index];
 
       imageUrl = category
-        ? `/icons/${category.replace(/ /g, "_")}.svg`
+        ? iconsBaseUrl + category.replace(/ /g, "_") + ".svg"
         : undefined;
     } while (index > -1 && (!imageUrl || missingIconsCache.has(imageUrl)));
   }
@@ -51,17 +53,17 @@
       on:error={(e) => handleImgError(e.currentTarget)}
     />
   {:else if feature.address}
-    <img src="/icons/housenumber.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "housenumber.svg"} alt={placeType} />
   {:else if feature.properties?.kind === "road" || feature.properties?.kind === "road_relation"}
-    <img src="/icons/road.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "road.svg"} alt={placeType} />
   {:else if feature.id.startsWith("address.")}
-    <img src="/icons/street.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "street.svg"} alt={placeType} />
   {:else if feature.id.startsWith("postal_code.")}
-    <img src="/icons/postal_code.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "postal_code.svg"} alt={placeType} />
   {:else if feature.id.startsWith("poi.")}
-    <img src="/icons/poi.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "poi.svg"} alt={placeType} />
   {:else}
-    <img src="/icons/area.svg" alt={placeType} />
+    <img src={iconsBaseUrl + "area.svg"} alt={placeType} />
   {/if}
 
   <span class="texts">

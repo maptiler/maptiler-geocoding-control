@@ -245,7 +245,7 @@ export type ControlOptions = {
   /**
    * Geocoding API URL.
    *
-   * @default MapTiler Geocoding API URL
+   * @default MapTiler Geocoding API URL.
    */
   apiUrl?: string;
 
@@ -255,6 +255,13 @@ export type ControlOptions = {
    * @default undefined
    */
   fetchParameters?: RequestInit;
+
+  /**
+   * Base URL for POI icons.
+   *
+   * @default "icons/"
+   */
+  iconsBaseUrl?: string;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

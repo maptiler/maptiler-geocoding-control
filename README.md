@@ -128,6 +128,9 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `limit`: `number` - Maximum number of results to show. Default `5`.
 - `country`: `string | string[]` - Limit search to specified country(ies). Default `undefined` (use all countries). Specify as [alpha-2 ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) lowercase code.
 - `types`: `string[]` - Filter of feature types to return. Default `undefined` (all available feature types are returned).
+- `apiUrl`: `string` - Geocoding API URL. Default MapTiler Geocoding API URL.
+- `fetchParameters`: `RequestInit` - Extra fetch parameters. Default `undefined`.
+- `iconsBaseUrl`: `string` - Base URL for POI icons. Default `"icons/"`.
 
 ### Methods
 
