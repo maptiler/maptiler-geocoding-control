@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { onDestroy } from "svelte/internal";
+  import { createEventDispatcher, onDestroy } from "svelte";
   import ClearIcon from "./ClearIcon.svelte";
   import FailIcon from "./FailIcon.svelte";
   import FeatureItem from "./FeatureItem.svelte";

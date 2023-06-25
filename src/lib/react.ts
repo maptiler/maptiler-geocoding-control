@@ -119,16 +119,15 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   for (const eventName of eventNames) {
     const eventHandlerFn = props[getEventFnName(eventName)];
 
-    useEffect(() => {
-      controlRef.current?.$on(
-        eventName,
-        !eventHandlerFn
-          ? undefined
-          : (e) => {
-              (eventHandlerFn as any)(e.detail);
-            }
-      );
-    }, [eventHandlerFn]);
+    useEffect(
+      () =>
+        eventHandlerFn &&
+        controlRef.current?.$on(eventName, (e) => {
+          (eventHandlerFn as any)(e.detail);
+        }),
+
+      [eventHandlerFn]
+    );
   }
 
   useImperativeHandle(ref, () => ({

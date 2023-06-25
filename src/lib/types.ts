@@ -259,7 +259,7 @@ export type ControlOptions = {
   /**
    * Base URL for POI icons.
    *
-   * @default "icons/"
+   * @default "icons/" for Svelte apps, otherwise `https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`
    */
   iconsBaseUrl?: string;
 
@@ -271,12 +271,12 @@ export type ControlOptions = {
 };
 
 export type DispatcherType = {
-  featuresListed: Feature[];
-  featuresMarked: Feature[];
+  featuresListed: Feature[] | undefined;
+  featuresMarked: Feature[] | undefined;
   optionsVisibilityChange: boolean;
-  pick: Feature;
+  pick: Feature | undefined;
   queryChange: string;
   response: { url: string; featureCollection: FeatureCollection };
   reverseToggle: boolean;
-  select: Feature;
+  select: Feature | undefined;
 };

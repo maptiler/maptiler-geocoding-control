@@ -130,7 +130,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `types`: `string[]` - Filter of feature types to return. Default `undefined` (all available feature types are returned).
 - `apiUrl`: `string` - Geocoding API URL. Default MapTiler Geocoding API URL.
 - `fetchParameters`: `RequestInit` - Extra fetch parameters. Default `undefined`.
-- `iconsBaseUrl`: `string` - Base URL for POI icons. Default `"icons/"`.
+- `iconsBaseUrl`: `string` - Base URL for POI icons. Default `"icons/"` for Svelte apps, otherwise <code>`https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`</code>.
 
 ### Methods
 
@@ -160,6 +160,16 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
   console.log("Options visible:", e.detail);
 });
 ```
+
+## POI icons and bundlers
+
+(Skip if the component is used within Svelte webapp.)
+
+POI icons are served from CDN per default.
+If there is an requirement to serve them from a different location and the control is used in the application which is build with Web Application bundler (like Webpack, Vite) then it is necessary to do some extra cponfiguration.
+Icons are bundled in the library and you can find them in `node_modules/@maptiler/geocoding-control/icons`.
+Configure your bundler and/or provide `iconsBaseUrl` option for the icons to be properly resolved.
+You can also copy icons from that directory to your _`public`_ directory.
 
 ## React component
 
