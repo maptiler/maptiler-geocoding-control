@@ -8,7 +8,7 @@ import type {
   Map,
   MarkerOptions,
 } from "maplibre-gl";
-import type { SvelteComponentTyped } from "svelte";
+import type { SvelteComponent } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createMapLibreGlMapController } from "./maplibregl-controller";
 import type { ControlOptions } from "./types";
@@ -53,9 +53,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
   };
 };
 
-export type Props<T> = T extends SvelteComponentTyped<infer P, any, any>
-  ? P
-  : never;
+export type Props<T> = T extends SvelteComponent<infer P, any, any> ? P : never;
 
 export abstract class MapLibreBasedGeocodingControl<
     T extends MapLibreBaseControlOptions
