@@ -15,42 +15,42 @@ export default defineConfig({
     emptyOutDir: false,
     lib:
       // simplify after https://github.com/vitejs/vite/pull/10609 is released
-      process.env.VITE_FLAVOUR === "leaflet"
+      process.env.FLAVOUR === "leaflet"
         ? {
             fileName: "leaflet",
             entry: ["src/lib/leaflet.ts"],
             name: "leafletMaptilerGeocoder",
             formats: ["es", "umd"],
           }
-        : process.env.VITE_FLAVOUR === "maplibre"
+        : process.env.FLAVOUR === "maplibre"
         ? {
             fileName: "maplibregl",
             entry: ["src/lib/maplibregl.ts"],
             name: "maplibreglMaptilerGeocoder",
             formats: ["es", "umd"],
           }
-        : process.env.VITE_FLAVOUR === "maptilersdk"
+        : process.env.FLAVOUR === "maptilersdk"
         ? {
             fileName: "maptilersdk",
             entry: ["src/lib/maptilersdk.ts"],
             name: "maptilersdkMaptilerGeocoder",
             formats: ["es", "umd"],
           }
-        : process.env.VITE_FLAVOUR === "react"
+        : process.env.FLAVOUR === "react"
         ? {
             fileName: "react",
             entry: ["src/lib/react.ts"],
             name: "MapTilerGeocoder",
             formats: ["es", "umd"],
           }
-        : process.env.VITE_FLAVOUR === "leaflet-controller"
+        : process.env.FLAVOUR === "leaflet-controller"
         ? {
             fileName: "leaflet-controller",
             entry: ["src/lib/leaflet-controller.ts"],
             name: "leafletMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
-        : process.env.VITE_FLAVOUR === "maplibregl-controller"
+        : process.env.FLAVOUR === "maplibregl-controller"
         ? {
             fileName: "maplibregl-controller",
             entry: ["src/lib/maplibregl-controller.ts"],

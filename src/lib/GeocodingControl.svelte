@@ -83,11 +83,10 @@
 
   export let fetchParameters: RequestInit = {};
 
-  export let iconsBaseUrl = import.meta.env.VITE_FLAVOUR
-    ? "https://cdn.maptiler.com/maptiler-geocoding-control/v" +
-      import.meta.env.VITE_LIB_VERSION +
-      "/icons/"
-    : "icons/";
+  export let iconsBaseUrl =
+    "https://cdn.maptiler.com/maptiler-geocoding-control/v" +
+    import.meta.env.VITE_LIB_VERSION +
+    "/icons/";
 
   export function focus() {
     input.focus();

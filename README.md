@@ -163,8 +163,6 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 
 ## POI icons and bundlers
 
-(Skip if the component is used within Svelte webapp.)
-
 POI icons are served from CDN per default.
 If there is an requirement to serve them from a different location and the control is used in the application which is build with Web Application bundler (like Webpack, Vite) then it is necessary to do some extra cponfiguration.
 Icons are bundled in the library and you can find them in `node_modules/@maptiler/geocoding-control/icons`.

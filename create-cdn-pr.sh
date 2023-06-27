@@ -26,4 +26,4 @@ git reset maptiler-geocoding-control/v$VERSION/*.tgz
 
 git commit -m "Add maptiler-geocoding-control v$VERSION"
 
-gh pr create --base main --fill --repo maptiler/cdn.maptiler.com --reviewer "@petrsloup"
+gh pr create --base main --fill --repo maptiler/cdn.maptiler.com
