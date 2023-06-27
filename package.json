@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER,MAPLIB-C,LEAFLET ,LEAFLE-C,REACT   ,TYPES   \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-react\" \"npm run build-types\" && npm run cjs2js && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
-    "build-svelte": "svelte-package -o dist.svelte && VITE_LIB_VERSION=$npm_package_version node replace-env-vars.js",
+    "build-svelte": "svelte-package -o dist.svelte && VITE_FLAVOUR= VITE_LIB_VERSION=$npm_package_version node replace-env-vars.js",
     "build-maptilersdk": "VITE_FLAVOUR=maptilersdk vite build",
     "build-maplibre": "VITE_FLAVOUR=maplibre vite build",
     "build-maplibre-controller": "VITE_FLAVOUR=maplibregl-controller vite build",
