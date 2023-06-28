@@ -18,7 +18,7 @@ mkdir -p $BASE/v$VERSION
 
 cp -r dist/* $BASE/v$VERSION
 
-ln -sf v$VERSION $BASE/latest
+ln -sfn v$VERSION $BASE/latest
 
 git add maptiler-geocoding-control/v$VERSION maptiler-geocoding-control/latest
 
