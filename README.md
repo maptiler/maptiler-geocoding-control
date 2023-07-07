@@ -95,6 +95,55 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - MapLibre GL JS: `sensible-browser file://$(pwd)/demo-maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
 - Leaflet: `sensible-browser file://$(pwd)/demo-leaflet.html#key=YOUR_MAPTILER_API_KEY_HERE`
 
+### Example for vanilla JS using UMD
+
+```html
+<script src="https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/vanilla.js"></script>
+
+<link
+  href="https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/style.css"
+  rel="stylesheet"
+/>
+
+<div id="container"></div>
+
+<script>
+  const control = new maptilerGeocoder.GeocodingControl({
+    apiKey: "YOUR_MAPTILER_API_KEY_HERE",
+    target: document.getElementById("container"),
+  });
+
+  control.addEventListener("pick", (evt) => {
+    console.log("Picked:", evt.detail);
+  });
+</script>
+```
+
+This example doesn't use the map. To use it, you can include and use particular map controller (see `createLeafletMapController` or `createMapLibreGlMapController`).
+
+Note: replace `${version}` with the desired library version.
+
+## UMD global variables
+
+If you import script from CDN using `<script src="https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/${Script filename}"></script>` then it creates a global variable according to the following table:
+
+| Script filename                | UMD global variable name                | Exports                                                            |
+| ------------------------------ | --------------------------------------- | ------------------------------------------------------------------ |
+| `leaflet.umd.js`               | `leafletMaptilerGeocoder`               | `class GeocodingControl`,`function createLeafletMapController`     |
+| `maplibregl.umd.js`            | `maplibreglMaptilerGeocoder`            | `class GeocodingControl`, `function createMapLibreGlMapController` |
+| `maptilersdk.umd.js`           | `maptilersdkMaptilerGeocoder`           | `class GeocodingControl`                                           |
+| `react.umd.js`                 | `reactMaptilerGeocoder`                 | `class GeocodingControl`                                           |
+| `vanilla.umd.js`               | `maptilerGeocoder`                      | `class GeocodingControl`                                           |
+| `leaflet-controller.umd.js`    | `leafletMaptilerGeocodingController`    | `function createLeafletMapController`                              |
+| `maplibregl-controller.umd.js` | `maplibreglMaptilerGeocodingController` | `function createMapLibreGlMapController`                           |
+
+The variable is an object with properties representing library-exported variables, for example `maplibreglMaptilerGeocoder.GeocodingControl`.
+
+Notes:
+
+- alternatively you can use different CDN, for example `https://www.unpkg.com/@maptiler/geocoding-control@${version}/maplibregl.umd.js`
+- replace `${version}` with the desired library version and `${Script filename}` with the script filename from the table above.
+
 ## API Documentation
 
 ### Options

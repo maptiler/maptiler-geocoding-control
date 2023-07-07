@@ -10,7 +10,7 @@ type Options = ControlOptions & { mapController?: MapController };
 export class GeocodingControl extends EventTarget {
   #gc: GC;
 
-  constructor({ target, options }: { target: HTMLElement; options: Options }) {
+  constructor({ target, ...options }: Options & { target: HTMLElement }) {
     super();
 
     this.#gc = new GC({

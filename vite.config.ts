@@ -40,14 +40,14 @@ export default defineConfig({
         ? {
             fileName: "react",
             entry: ["src/lib/react.ts"],
-            name: "MapTilerGeocoder",
+            name: "reactMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "vanilla"
         ? {
             fileName: "vanilla",
             entry: ["src/lib/vanilla.ts"],
-            name: "maptilerGeocodingController",
+            name: "maptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "leaflet-controller"
