@@ -198,6 +198,13 @@ export type ControlOptions = {
   enableReverse?: boolean | "always";
 
   /**
+   * Toggle reverse mode.
+   *
+   * @default false
+   */
+  reverseActive?: boolean;
+
+  /**
    * Reverse toggle button title.
    *
    * @default "toggle reverse geocoding"

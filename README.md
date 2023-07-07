@@ -101,6 +101,9 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 
 - `apiKey`<sup>\*</sup>: `string` - Maptiler API key. Not needed if used with MapTiler SDK.
 - `maplibregl`: `MapLibreGL` - A MapLibre GL JS instance to use when creating [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker). Used if `options.marker` is `true` with MapLibre GL JS library. If not provided it will be autodetected. Not needed if used with MapTiler SDK.
+- `apiUrl`: `string` - Geocoding API URL. Default MapTiler Geocoding API URL.
+- `fetchParameters`: `RequestInit` - Extra fetch parameters. Default `undefined`.
+- `iconsBaseUrl`: `string` - Base URL for POI icons. Default `"icons/"` for Svelte apps, otherwise <code>`https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`</code>.
 - `debounceSearch`: `number` - Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box. This parameter may be useful for reducing the total number of API calls made for a single query. Default `200`.
 - `proximity`: `[number, number]` - A proximity argument: this is a geographical point given as an object with latitude and longitude properties. Search results closer to this point will be given higher priority.
 - `placeholder`: `string` - Override the default placeholder attribute value. Default `"Search"`.
@@ -121,6 +124,7 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `class`: `string` - Class of the root element.
 - `enableReverse`: `boolean | "always""` - Set to `true` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active. Default `false`.
 - `reverseButtonTitle`: `string` - Reverse toggle button title. Default `"toggle reverse geocoding"`.
+- `reverseActive`: `boolean` - Set to `true` to programatically toggle reverse mode. Useful only if `enableReverse` is `true`.
 - `clearButtonTitle`: `string` - Clear button title. Default `"clear"`.
 - `showFullGeometry`: `boolean` - Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown. Default `true`.
 - `fullGeometryStyle`: `{ fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">; line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">; } | (L.PathOptions | L.StyleFunction)` - style of the full feature geometry. See Mapplibre GL JS or Leaflet documentation.
@@ -128,16 +132,12 @@ For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.h
 - `limit`: `number` - Maximum number of results to show. Default `5`.
 - `country`: `string | string[]` - Limit search to specified country(ies). Default `undefined` (use all countries). Specify as [alpha-2 ISO 3166](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) lowercase code.
 - `types`: `string[]` - Filter of feature types to return. Default `undefined` (all available feature types are returned).
-- `apiUrl`: `string` - Geocoding API URL. Default MapTiler Geocoding API URL.
-- `fetchParameters`: `RequestInit` - Extra fetch parameters. Default `undefined`.
-- `iconsBaseUrl`: `string` - Base URL for POI icons. Default `"icons/"` for Svelte apps, otherwise <code>`https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`</code>.
 
 ### Methods
 
 - `setQuery(value: string, submit = true): void` - set the query and optionally submit it
 - `focus(): void` - focus the query input box
 - `blur(): void` - blur the query input box
-- `setReverseMode(value: boolean | "always"): void` - set reverse mode
 - `setOptions(options: Partial<Options>): void` - change one or more options of existing control
 
 ### Events

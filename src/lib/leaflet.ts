@@ -122,10 +122,6 @@ export class GeocodingControl extends L.Control {
     this.#gc?.setQuery(value, submit);
   }
 
-  setReverseMode(value: boolean) {
-    this.#gc?.$set({ reverseActive: value });
-  }
-
   focus() {
     this.#gc?.focus();
   }

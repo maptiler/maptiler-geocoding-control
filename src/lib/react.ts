@@ -43,6 +43,7 @@ const propertyNames = [
   "country",
   "debounceSearch",
   "enableReverse",
+  "reverseActive",
   "errorMessage",
   "filter",
   "fuzzyMatch",
@@ -72,10 +73,14 @@ export type Props = ControlOptions &
   CallbackProperties<DispatcherType> &
   MapControllerProp;
 
-// not used because it does not integrate well with Svelte
-type MethodNames = "blur" | "focus" | "setQuery";
-
-export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+// defining the type explicitly otherwise compiled .d.ts refers to .svelte which is not good
+// type MethodNames = "blur" | "focus" | "setQuery";
+// export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+export type Methods = {
+  blur(): void;
+  focus(): void;
+  setQuery(value: string, submit?: boolean): void;
+};
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,

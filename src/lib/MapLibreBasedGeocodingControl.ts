@@ -65,7 +65,7 @@ export abstract class MapLibreBasedGeocodingControl<
 
   #options: T;
 
-  constructor(options: T) {
+  constructor(options: T = {} as T) {
     super();
 
     this.#options = options;
@@ -127,7 +127,7 @@ export abstract class MapLibreBasedGeocodingControl<
       "optionsVisibilityChange",
       "reverseToggle",
       "queryChange",
-    ]) {
+    ] as const) {
       this.#gc.$on(eventName, (event) => this.dispatchEvent(event));
     }
 

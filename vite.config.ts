@@ -43,6 +43,13 @@ export default defineConfig({
             name: "MapTilerGeocoder",
             formats: ["es", "umd"],
           }
+        : process.env.FLAVOUR === "vanilla"
+        ? {
+            fileName: "vanilla",
+            entry: ["src/lib/vanilla.ts"],
+            name: "maptilerGeocodingController",
+            formats: ["es", "umd"],
+          }
         : process.env.FLAVOUR === "leaflet-controller"
         ? {
             fileName: "leaflet-controller",
