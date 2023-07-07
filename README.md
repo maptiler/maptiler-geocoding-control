@@ -213,7 +213,7 @@ geocodingControl.addEventListener("optionsVisibilityChange", (e) => {
 ## POI icons and bundlers
 
 POI icons are served from CDN per default.
-If there is an requirement to serve them from a different location and the control is used in the application which is build with Web Application bundler (like Webpack, Vite) then it is necessary to do some extra cponfiguration.
+If there is an requirement to serve them from a different location and the control is used in the application which is build with Web Application bundler (like Webpack or Vite) then it is necessary to do some extra configuration.
 Icons are bundled in the library and you can find them in `node_modules/@maptiler/geocoding-control/icons`.
 Configure your bundler and/or provide `iconsBaseUrl` option for the icons to be properly resolved.
 You can also copy icons from that directory to your _`public`_ directory.
