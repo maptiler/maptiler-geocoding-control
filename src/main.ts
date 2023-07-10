@@ -1,4 +1,4 @@
-import App from "./AppMaplibregl.svelte";
+import App from "./AppOpenLayers.svelte";
 
 // import {
 //   createElement,

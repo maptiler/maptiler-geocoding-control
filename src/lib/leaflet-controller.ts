@@ -133,7 +133,7 @@ export function createLeafletMapController(
       map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates: [number, number]) {
+    setReverseMarker(coordinates?: [number, number]) {
       if (!marker) {
         return;
       }

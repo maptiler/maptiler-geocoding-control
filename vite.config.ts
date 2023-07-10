@@ -36,6 +36,13 @@ export default defineConfig({
             name: "maptilersdkMaptilerGeocoder",
             formats: ["es", "umd"],
           }
+        : process.env.FLAVOUR === "openlayers"
+        ? {
+            fileName: "openlayers",
+            entry: ["src/lib/openlayers.ts"],
+            name: "openlayersMaptilerGeocoder",
+            formats: ["es", "umd"],
+          }
         : process.env.FLAVOUR === "react"
         ? {
             fileName: "react",

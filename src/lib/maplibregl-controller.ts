@@ -191,7 +191,7 @@ export function createMapLibreGlMapController(
       map.getCanvasContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates: [number, number]) {
+    setReverseMarker(coordinates?: [number, number]) {
       if (!maplibregl || !marker) {
         return;
       }

@@ -1,10 +1,10 @@
-# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS and Leaflet
+# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
 
-A geocoding control for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js) and [Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
+A geocoding control for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [Leaflet](https://leafletjs.com) and [OpenLayers](https://openlayers.org) utilizes [MapTiler Cloud Geocoding API](https://www.maptiler.com/cloud/geocoding/). With this control, users of your application can find any place on Earth (States, Cities, Streets, ...) down to the address level and POIs, restrict the search area to a specific country, highlight searched results on the map, autocomplete words while typing, and much more.
 
-The component can be used as an ES module or UMD module.
+The component can be used as an ES module or UMD module with or without bundler.
 
-Geocoding control is also provided as [React component](#react-component) and a [Svelte component](#svelte-component).
+Geocoding control is also provided as [React component](#react-component) and [Svelte component](#svelte-component).
 
 ## Usage
 
@@ -65,6 +65,7 @@ npm install --save @maptiler/geocoding-control leaflet
 
 ```js
 import * as L from "leaflet";
+import "leaflet/dist/leaflet.css";
 import { GeocodingControl } from "@maptiler/geocoding-control/leaflet";
 import "@maptiler/geocoding-control/style.css";
 
@@ -88,6 +89,47 @@ L.tileLayer(
 ).addTo(map);
 
 L.control.maptilerGeocoding({ apiKey }).addTo(map);
+```
+
+### Example for OpenLayers using module bundler
+
+```bash
+npm install --save @maptiler/geocoding-control ol
+```
+
+```js
+import Map from "ol/Map";
+import View from "ol/View";
+import XYZ from "ol/source/XYZ";
+import { defaults as defaultControls } from "ol/control.js";
+import "ol/ol.css";
+import { GeocodingControl } from "@maptiler/geocoding-control/openlayers";
+import "@maptiler/geocoding-control/style.css";
+
+const apiKey = "YOUR_MAPTILER_API_KEY_HERE";
+
+const scale = devicePixelRatio > 1.5 ? "@2x" : "";
+
+new Map({
+  target: document.getElementById("map"),
+  layers: [
+    new TileLayer({
+      source: new XYZ({
+        url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}${scale}.png?key=${apiKey}`,
+        tileSize: 512,
+        attributions: [
+          '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>',
+          '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+        ],
+      }),
+    }),
+  ],
+  view: new View({
+    center: [0, 0],
+    zoom: 2,
+  }),
+  controls: defaultControls().extend([new GeocodingControl({ apiKey })]),
+});
 ```
 
 For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:

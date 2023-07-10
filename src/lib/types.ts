@@ -1,6 +1,10 @@
-import type { Feature as FeatureType } from "geojson";
+import type {
+  Feature as FeatureType,
+  GeoJsonProperties,
+  Geometry,
+} from "geojson";
 
-export type Feature = FeatureType & {
+export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   id: string;
   text: string;
   place_name: string;
@@ -11,9 +15,9 @@ export type Feature = FeatureType & {
   matching_text?: string;
 };
 
-export type FeatureCollection = {
+export type FeatureCollection<T extends Geometry = Geometry> = {
   type: "FeatureCollection";
-  features: Feature[];
+  features: Feature<T>[];
 };
 
 export type MapEvent =
