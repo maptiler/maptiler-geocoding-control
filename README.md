@@ -174,11 +174,11 @@ If you import script from CDN using `<script src="https://cdn.maptiler.com/mapti
 | `leaflet.umd.js`               | `leafletMaptilerGeocoder`               | `class GeocodingControl`,`function createLeafletMapController`     |
 | `maplibregl.umd.js`            | `maplibreglMaptilerGeocoder`            | `class GeocodingControl`, `function createMapLibreGlMapController` |
 | `maptilersdk.umd.js`           | `maptilersdkMaptilerGeocoder`           | `class GeocodingControl`                                           |
+| `openlayers.umd.js`            | `openlayersMaptilerGeocoder`            | `class GeocodingControl`                                           |
 | `react.umd.js`                 | `reactMaptilerGeocoder`                 | `class GeocodingControl`                                           |
 | `vanilla.umd.js`               | `maptilerGeocoder`                      | `class GeocodingControl`                                           |
 | `leaflet-controller.umd.js`    | `leafletMaptilerGeocodingController`    | `function createLeafletMapController`                              |
 | `maplibregl-controller.umd.js` | `maplibreglMaptilerGeocodingController` | `function createMapLibreGlMapController`                           |
-| `leaflet-controller.umd.js`    | `leafletMaptilerGeocodingController`    | `function createLeafletMapController`                              |
 | `openlayers-controller.umd.js` | `openlayersMaptilerGeocodingController` | `function createOpenLayersMapController`                           |
 
 The variable is an object with properties representing library-exported variables, for example `maplibreglMaptilerGeocoder.GeocodingControl`.
