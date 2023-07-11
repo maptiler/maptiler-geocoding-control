@@ -1,9 +1,8 @@
 <script lang="ts">
-  import "leaflet/dist/leaflet.css";
-
   import * as L from "leaflet";
+  import "leaflet/dist/leaflet.css";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/leaflet";
+  import { GeocodingControl } from "../../src/leaflet";
 
   let containerElement: HTMLElement;
 
@@ -40,6 +39,7 @@
       apiKey,
       enableReverse: "always",
       // collapsed: true,
+      iconsBaseUrl: "/icons/",
     }).addTo(map);
   });
 </script>

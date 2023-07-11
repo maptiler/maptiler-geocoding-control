@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.97",
+  "version": "0.0.98-alpha.1",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -32,7 +32,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER,MAPLIB-C,LEAFLET ,LEAFLE-C,OL      ,OL-C    ,REACT   ,TYPES   ,VANILLA \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-openlayers\" \"npm run build-openlayers-controller\" \"npm run build-react\" \"npm run build-vanilla\" \"npm run build-types\" && npm run cjs2js && cp dist.svelte/*.svelte* LICENSE README.md package.json dist",
-    "build-svelte": "svelte-package -o dist.svelte && VITE_LIB_VERSION=$npm_package_version node replace-env-vars.js",
+    "build-svelte": "svelte-package -i src -o dist.svelte && VITE_LIB_VERSION=$npm_package_version node replace-env-vars.js",
     "build-maptilersdk": "FLAVOUR=maptilersdk vite build",
     "build-maplibre": "FLAVOUR=maplibre vite build",
     "build-maplibre-controller": "FLAVOUR=maplibregl-controller vite build",
@@ -42,7 +42,7 @@
     "build-openlayers-controller": "FLAVOUR=openlayers-controller vite build",
     "build-react": "FLAVOUR=react vite build",
     "build-vanilla": "FLAVOUR=vanilla vite build",
-    "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly",
+    "build-types": "tsc --outDir dist --declaration --emitDeclarationOnly -p tsconfig.dist.json",
     "cjs2js": "renamer --find '/\\bcjs\\b/' --replace js dist/*cjs*",
     "clean": "rm -rf dist dist.svelte",
     "pack": "npm run clean && npm run build && cd dist && npm pack",
@@ -126,9 +126,9 @@
     "@maptiler/sdk": "^1",
     "leaflet": "^1.9 || ^1.8",
     "maplibre-gl": "^2 || ^3.0.0-alpha || ^3",
+    "ol": "^7.4.0",
     "react": "^17 || ^18",
-    "svelte": "^3.50",
-    "ol": "^7.4.0"
+    "svelte": "^3.50"
   },
   "peerDependenciesMeta": {
     "@maptiler/sdk": {
@@ -146,6 +146,5 @@
     "ol": {
       "optional": true
     }
-  },
-  "dependencies": {}
+  }
 }

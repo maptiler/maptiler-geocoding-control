@@ -5,9 +5,8 @@ import type {
   Polygon,
   Position,
   Feature as TurfFeature,
-  FeatureCollection as TurfFeatureCollection,
 } from "@turf/helpers";
-import type { FeatureCollection, GeoJSON } from "geojson";
+import type { FeatureCollection } from "geojson";
 
 // see https://maplibre.org/maplibre-gl-js-docs/example/line-across-180th-meridian/
 function fixRing(ring: Position[]) {

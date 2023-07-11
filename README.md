@@ -132,10 +132,11 @@ new Map({
 });
 ```
 
-For examples without using bundler see `demo-maplibregl.html` or `demo-leaflet.html`. After building this library (`npm install && npm run build`) you can open it in the browser:
+For examples without using bundler see `examples/standalone/maplibregl.html` or `examples/standalone/leaflet.html`.
+After building this library (`npm install && npm run clean && npm run build`) you can open it in the browser:
 
-- MapLibre GL JS: `sensible-browser file://$(pwd)/demo-maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
-- Leaflet: `sensible-browser file://$(pwd)/demo-leaflet.html#key=YOUR_MAPTILER_API_KEY_HERE`
+- MapLibre GL JS: `sensible-browser file://$(pwd)/examples/standalone/maplibregl.html#key=YOUR_MAPTILER_API_KEY_HERE`
+- Leaflet: `sensible-browser file://$(pwd)/examples/standalone/leaflet.html#key=YOUR_MAPTILER_API_KEY_HERE`
 
 ### Example for vanilla JS using UMD
 
@@ -371,3 +372,5 @@ You will find compilation result in `dist` directory.
 ```bash
 npm install && VITE_API_KEY=YOUR_MAPTILER_API_KEY_HERE npm run dev
 ```
+
+Afterwards you can open the printed URL in your browser to see the examples and/or to do the development.

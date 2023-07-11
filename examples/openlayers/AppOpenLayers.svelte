@@ -4,10 +4,9 @@
   import { defaults as defaultControls } from "ol/control.js";
   import TileLayer from "ol/layer/Tile";
   import "ol/ol.css";
-  import TileJSON from "ol/source/TileJSON";
   import XYZ from "ol/source/XYZ";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/openlayers";
+  import { GeocodingControl } from "../../src/openlayers";
 
   let containerElement: HTMLElement;
 
@@ -47,6 +46,7 @@
           apiKey,
           enableReverse: "always",
           // collapsed: true,
+          iconsBaseUrl: "/icons/",
         }),
       ]),
     });
@@ -59,5 +59,11 @@
   #main {
     position: absolute;
     inset: 0;
+  }
+
+  :global(.ol-search) {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
   }
 </style>
