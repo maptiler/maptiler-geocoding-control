@@ -1,0 +1,10 @@
+body {
+  font-family: Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.control-bar {
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+}
