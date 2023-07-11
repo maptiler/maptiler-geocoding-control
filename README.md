@@ -173,8 +173,8 @@ If you import script from CDN using `<script src="https://cdn.maptiler.com/mapti
 | ------------------------------ | --------------------------------------- | ------------------------------------------------------------------ |
 | `leaflet.umd.js`               | `leafletMaptilerGeocoder`               | `class GeocodingControl`,`function createLeafletMapController`     |
 | `maplibregl.umd.js`            | `maplibreglMaptilerGeocoder`            | `class GeocodingControl`, `function createMapLibreGlMapController` |
-| `maptilersdk.umd.js`           | `maptilersdkMaptilerGeocoder`           | `class GeocodingControl`                                           |
-| `openlayers.umd.js`            | `openlayersMaptilerGeocoder`            | `class GeocodingControl`                                           |
+| `maptilersdk.umd.js`           | `maptilersdkMaptilerGeocoder`           | `class GeocodingControl`, `function createMapLibreGlMapController` |
+| `openlayers.umd.js`            | `openlayersMaptilerGeocoder`            | `class GeocodingControl`, `function createOpenLayersMapController` |
 | `react.umd.js`                 | `reactMaptilerGeocoder`                 | `class GeocodingControl`                                           |
 | `vanilla.umd.js`               | `maptilerGeocoder`                      | `class GeocodingControl`                                           |
 | `leaflet-controller.umd.js`    | `leafletMaptilerGeocodingController`    | `function createLeafletMapController`                              |

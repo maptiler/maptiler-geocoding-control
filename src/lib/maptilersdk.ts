@@ -7,6 +7,7 @@ import {
   type MapLibreBaseControlOptions,
   type Props,
 } from "./MapLibreBasedGeocodingControl";
+export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBaseControlOptions> {
   getMapLibreGl(): typeof maplibregl {
