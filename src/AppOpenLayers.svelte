@@ -42,7 +42,13 @@
         center: [0, 0],
         zoom: 2,
       }),
-      controls: defaultControls().extend([new GeocodingControl({ apiKey })]),
+      controls: defaultControls().extend([
+        new GeocodingControl({
+          apiKey,
+          enableReverse: "always",
+          // collapsed: true,
+        }),
+      ]),
     });
   });
 </script>

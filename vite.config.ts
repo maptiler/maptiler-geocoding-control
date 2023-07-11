@@ -71,6 +71,13 @@ export default defineConfig({
             name: "maplibreglMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
+        : process.env.FLAVOUR === "openlayers-controller"
+        ? {
+            fileName: "openlayers-controller",
+            entry: ["src/lib/openlayers-controller.ts"],
+            name: "openlayersMaptilerGeocodingController",
+            formats: ["es", "umd"],
+          }
         : undefined,
     rollupOptions: {
       external: [

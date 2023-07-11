@@ -95,7 +95,7 @@ export class GeocodingControl extends L.Control {
       "optionsVisibilityChange",
       "reverseToggle",
       "queryChange",
-    ]) {
+    ] as const) {
       this.#gc.$on(eventName, (event) =>
         map.fire(eventName.toLowerCase(), event.detail)
       );

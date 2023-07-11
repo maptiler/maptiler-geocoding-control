@@ -64,7 +64,7 @@ function defaultStyle(feature: FeatureLike) {
       }.svg`,
       anchor: [0.5, 1],
     }),
-    zIndex: properties.isSelected ? 2 : isMask ? 0 : 1,
+    zIndex: properties.isSelected ? 2 : properties.isReverse ? 0 : 1,
     text:
       properties.isSelected && properties.tooltip
         ? new Text({
@@ -84,8 +84,6 @@ function defaultStyle(feature: FeatureLike) {
 
 export function createOpenLayersMapController(
   map: Map,
-  marker: boolean | L.MarkerOptions = true,
-  showResultMarkers: boolean | L.MarkerOptions = true,
   flyToOptions: AnimationOptions = {},
   flyToBounds: FitOptions = {},
   fullGeometryStyle: StyleLike | FlatStyleLike = defaultStyle
@@ -202,7 +200,7 @@ export function createOpenLayersMapController(
 
     flyTo(center: [number, number], zoom: number) {
       map.getView().animate({
-        center,
+        center: fromLonLat(center, map.getView().getProjection()),
         zoom,
         duration: 2000,
         ...flyToOptions,
@@ -231,10 +229,6 @@ export function createOpenLayersMapController(
     },
 
     setReverseMarker(coordinates?: [number, number]) {
-      if (!marker) {
-        return;
-      }
-
       if (reverseMarker) {
         if (!coordinates) {
           source.removeFeature(reverseMarker);
@@ -262,10 +256,6 @@ export function createOpenLayersMapController(
       markedFeatures: FeatureType[] | undefined,
       picked: FeatureType | undefined
     ): void {
-      if (!marker) {
-        return;
-      }
-
       function setData(data?: FeatureCollection<Polygon | MultiPolygon>) {
         if (!data) {
           return;
@@ -368,37 +358,39 @@ export function createOpenLayersMapController(
         source.addFeature(new Feature(fromWgs84(new Point(picked.center))));
       }
 
-      if (showResultMarkers) {
-        for (const feature of markedFeatures ?? []) {
-          if (feature === picked) {
-            continue;
-          }
-
-          const marker = new Feature(
-            new Point(fromLonLat(feature.center, map.getView().getProjection()))
-          );
-
-          marker.setId(feature.id);
-
-          marker.setProperties({
-            fuzzy: !!feature.matching_text,
-            tooltip: feature.place_name.replace(/,.*/, ""),
-          });
-
-          source.addFeature(marker);
+      for (const feature of markedFeatures ?? []) {
+        if (feature === picked) {
+          continue;
         }
+
+        const marker = new Feature(
+          new Point(fromLonLat(feature.center, map.getView().getProjection()))
+        );
+
+        marker.setId(feature.id);
+
+        marker.setProperties({
+          fuzzy: !!feature.matching_text,
+          tooltip: feature.place_name.replace(/,.*/, ""),
+        });
+
+        source.addFeature(marker);
       }
     },
 
     setSelectedMarker(index: number): void {
+      const features = source.getFeatures();
+
+      const offset = features[0]?.getProperties().isReverse ? 1 : 0;
+
       if (prevSelected > -1) {
-        source.getFeatures()[prevSelected]?.setProperties({
+        features[prevSelected + offset]?.setProperties({
           isSelected: false,
         });
       }
 
       if (index > -1) {
-        source.getFeatures()[index]?.setProperties({
+        features[index + offset]?.setProperties({
           isSelected: true,
         });
       }
