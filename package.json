@@ -61,6 +61,14 @@
       "import": "./leaflet-controller.js",
       "require": "./leaflet-controller.umd.js"
     },
+    "./openlayers": {
+      "import": "./openlayers.js",
+      "require": "./openlayers.umd.js"
+    },
+    "./openlayers-controller": {
+      "import": "./openlayers-controller.js",
+      "require": "./openlayers-controller.umd.js"
+    },
     "./maplibregl": {
       "import": "./maplibregl.js",
       "require": "./maplibregl.umd.js"
