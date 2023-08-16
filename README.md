@@ -18,14 +18,14 @@
 
 # MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS and Leaflet
 
-## What?
+## About
 
 A *Geocoding control* for [MapTiler
 SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL
 JS](https://github.com/maplibre/maplibre-gl-js) and
 [Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding
 API](https://www.maptiler.com/cloud/geocoding/). With this control, users of
-mapping application can find any place on Earth (States, Cities, Streets, POIs, ...) down
+mapping application can find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
 to the address level, restrict the search area to a specific country, highlight
 searched results on the map, autocomplete words while typing, and much more.
 
@@ -33,7 +33,7 @@ The component can be used as an ES module or UMD module.
 
 Geocoding control is also provided as [React component](#react-component) and a [Svelte component](#svelte-component).
 
-## Install & Use
+## Installation & Usage
 
 Installation and use examples do cover following topics:
 
@@ -41,13 +41,14 @@ Installation and use examples do cover following topics:
 * [With MapLibre GL](#install-with-maplibre-gl-js-using-module-bundler)
 * [With Leaflet](#install-with-leaflet-using-module-bundler)
 
-### Install with MapTiler SDK using module bundler
+### MapTiler SDK
+#### Installation using module bundler
 
 ```
 npm install --save @maptiler/geocoding-control @maptiler/sdk
 ```
 
-### Usage with MapTiler SDK
+#### Use with MapTiler SDK
 ```js
 import * as maptilersdk from "@maptiler/sdk";
 import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
@@ -65,13 +66,14 @@ const gc = new GeocodingControl();
 map.addControl(gc);
 ```
 
-### Install with MapLibre GL JS using module bundler
+### MapLibre GL JS
+#### Installation using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control maplibre-gl
 ```
 
-### Use with MapLibre GL JS
+#### Use with MapLibre GL JS
 
 ```js
 import maplibregl from "maplibre-gl";
@@ -93,13 +95,14 @@ const gc = new GeocodingControl({ apiKey, maplibregl });
 map.addControl(gc);
 ```
 
-### Install with Leaflet using module bundler
+### Leaflet
+#### Install using module bundler
 
 ```bash
 npm install --save @maptiler/geocoding-control leaflet
 ```
 
-### Use with Leaflet
+#### Use with Leaflet
 
 ```js
 import * as L from "leaflet";
