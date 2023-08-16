@@ -80,9 +80,33 @@ In addition to the details and examples provided in this `README` and our docume
 * [complete Geocoding service API documentation](https://docs.maptiler.com/cloud/api/geocoding/)
 * [complete Geocoding Control API documentation](https://docs.maptiler.com/sdk-js/modules/geocoding/)
 
+## UMD global variables
+
+If you import script from CDN using `<script src="https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/${Script filename}"></script>` then it creates a global variable according to the following table:
+
+| Script filename                | UMD global variable name                | Exports                                                            |
+| ------------------------------ | --------------------------------------- | ------------------------------------------------------------------ |
+| `leaflet.umd.js`               | `leafletMaptilerGeocoder`               | `class GeocodingControl`,`function createLeafletMapController`     |
+| `maplibregl.umd.js`            | `maplibreglMaptilerGeocoder`            | `class GeocodingControl`, `function createMapLibreGlMapController` |
+| `maptilersdk.umd.js`           | `maptilersdkMaptilerGeocoder`           | `class GeocodingControl`, `function createMapLibreGlMapController` |
+| `openlayers.umd.js`            | `openlayersMaptilerGeocoder`            | `class GeocodingControl`, `function createOpenLayersMapController` |
+| `react.umd.js`                 | `reactMaptilerGeocoder`                 | `class GeocodingControl`                                           |
+| `vanilla.umd.js`               | `maptilerGeocoder`                      | `class GeocodingControl`                                           |
+| `leaflet-controller.umd.js`    | `leafletMaptilerGeocodingController`    | `function createLeafletMapController`                              |
+| `maplibregl-controller.umd.js` | `maplibreglMaptilerGeocodingController` | `function createMapLibreGlMapController`                           |
+| `openlayers-controller.umd.js` | `openlayersMaptilerGeocodingController` | `function createOpenLayersMapController`                           |
+
+The variable is an object with properties representing library-exported variables, for example `maplibreglMaptilerGeocoder.GeocodingControl`.
+
+Notes:
+
+- alternatively you can use different CDN, for example `https://www.unpkg.com/@maptiler/geocoding-control@${version}/maplibregl.umd.js`
+- replace `${version}` with the desired library version and `${Script filename}` with the script filename from the table above.
 
 
-## Building
+## Development
+
+### Building
 
 ```bash
 npm install && npm run build
@@ -90,8 +114,11 @@ npm install && npm run build
 
 You will find compilation result in `dist` directory.
 
-## Running in dev mode
+### Running in dev mode
 
 ```bash
 npm install && VITE_API_KEY=YOUR_MAPTILER_API_KEY_HERE npm run dev
 ```
+
+### POI icons and bundlers
+POI icons are served from CDN per default. If there is an requirement to serve them from a different location and the control is used in the application which is build with Web Application bundler (like Webpack or Vite) then it is necessary to do some extra configuration. Icons are bundled in the library and you can find them in `node_modules/@maptiler/geocoding-control/icons``. Configure your bundler and/or provide `iconsBaseUrl`` option for the icons to be properly resolved. You can also copy icons from that directory to your `public`` directory.
