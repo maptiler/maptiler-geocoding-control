@@ -315,17 +315,19 @@ export function App() {
 
 ## Svelte component
 
-In addition to using the component as MapLibre GL JS or Leaflet Control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL JS or Leaflet integration.
+In addition to using the component as MapLibre GL JS, Leaflet or OpenLayers control it is also possible to use it stand-alone in Svelte projects with or without MapLibre GL JS, Leaflet or OpenLayers integration.
 
 Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
+
+Remember to import files from `@maptiler/geocoding-control/svelte/...`.
 
 ### Example for integration with MapLibre GL JS
 
 ```svelte
 <script lang="ts">
-  import GeocodingControl from "@maptiler/geocoding-control/GeocodingControl.svelte";
-  import { createMapLibreGlMapController } from "@maptiler/geocoding-control/maplibregl";
-  import type { MapController } from "@maptiler/geocoding-control/types";
+  import GeocodingControl from "@maptiler/geocoding-control/svelte/GeocodingControl.svelte";
+  import { createMapLibreGlMapController } from "@maptiler/geocoding-control/svelte/maplibregl";
+  import type { MapController } from "@maptiler/geocoding-control/svelte/types";
   import maplibregl from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
 
