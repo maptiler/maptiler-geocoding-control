@@ -22,7 +22,7 @@ export class GeocodingControl extends MapLibreBasedGeocodingControl<Options> {
 
   getExtraProps(
     _map: Map,
-    _div: HTMLElement
+    _div: HTMLElement,
   ): Partial<Props<GeocodingControlComponent>> {
     return {};
   }

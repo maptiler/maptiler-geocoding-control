@@ -25,7 +25,7 @@ function fixRing(ring: Position[]) {
 
 export function setMask(
   picked: TurfFeature<Polygon | MultiPolygon>,
-  setData: (data: FeatureCollection<Polygon | MultiPolygon>) => void
+  setData: (data: FeatureCollection<Polygon | MultiPolygon>) => void,
 ) {
   const diff = difference(
     {
@@ -40,7 +40,7 @@ export function setMask(
         ],
       ],
     },
-    picked
+    picked,
   );
 
   if (!diff) {

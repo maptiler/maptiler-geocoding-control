@@ -16,7 +16,7 @@ export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBase
 
   getExtraProps(
     map: Map,
-    div: HTMLElement
+    div: HTMLElement,
   ): Partial<Props<GeocodingControlComponent>> {
     const sdkConfig: { apiKey?: string; language?: string } = {};
 

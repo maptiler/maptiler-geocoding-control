@@ -38,14 +38,14 @@ export type MapController = {
   fitBounds(
     bbox: [number, number, number, number],
     padding: number,
-    maxZoom: number
+    maxZoom: number,
   ): void;
 
   indicateReverse(reverse: boolean): void;
 
   setMarkers(
     features: Feature[] | undefined,
-    picked: Feature | undefined
+    picked: Feature | undefined,
   ): void;
 
   setReverseMarker(coordinates?: [number, number]): void;

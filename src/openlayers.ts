@@ -87,27 +87,27 @@ export class GeocodingControl extends Control {
         switch (eventName) {
           case "select":
             this.dispatchEvent(
-              new SelectEvent(event.detail as Feature | undefined)
+              new SelectEvent(event.detail as Feature | undefined),
             );
             break;
           case "featuresListed":
             this.dispatchEvent(
-              new FeaturesListedEvent(event.detail as Feature[] | undefined)
+              new FeaturesListedEvent(event.detail as Feature[] | undefined),
             );
             break;
           case "featuresMarked":
             this.dispatchEvent(
-              new FeaturesMarkedEvent(event.detail as Feature[] | undefined)
+              new FeaturesMarkedEvent(event.detail as Feature[] | undefined),
             );
             break;
           case "optionsVisibilityChange":
             this.dispatchEvent(
-              new OptionsVisibilityChangeEvent(event.detail as boolean)
+              new OptionsVisibilityChangeEvent(event.detail as boolean),
             );
             break;
           case "pick":
             this.dispatchEvent(
-              new PickEvent(event.detail as Feature | undefined)
+              new PickEvent(event.detail as Feature | undefined),
             );
             break;
           case "queryChange":
@@ -119,8 +119,8 @@ export class GeocodingControl extends Control {
                 (event.detail as { url: string }).url,
                 (
                   event.detail as { featureCollection: FeatureCollection }
-                ).featureCollection
-              )
+                ).featureCollection,
+              ),
             );
             break;
           case "reverseToggle":
@@ -150,7 +150,7 @@ export class GeocodingControl extends Control {
         typeof flyTo === "boolean" ? undefined : flyTo,
         // marker,
         // showResultMarkers,
-        fullGeometryStyle
+        fullGeometryStyle,
       );
 
       this.#gc?.$set({ mapController });

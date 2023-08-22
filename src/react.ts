@@ -15,7 +15,7 @@ type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
 
 type CallbackProperties<T> = {
   [K in keyof T as EventHandlerFnName<Extract<K, EventNames>>]?: (
-    event: T[K]
+    event: T[K],
   ) => void;
 };
 
@@ -84,7 +84,7 @@ export type Methods = {
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
-  ref: Ref<Methods>
+  ref: Ref<Methods>,
 ) {
   const divRef = useRef<HTMLDivElement>();
 
@@ -131,7 +131,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
           (eventHandlerFn as any)(e.detail);
         }),
 
-      [eventHandlerFn]
+      [eventHandlerFn],
     );
   }
 

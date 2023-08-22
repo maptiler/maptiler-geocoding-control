@@ -60,7 +60,7 @@ export function createMapLibreGlMapController(
       },
       filter: ["!", ["has", "isMask"]],
     },
-  }
+  },
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -176,14 +176,14 @@ export function createMapLibreGlMapController(
     fitBounds(
       bbox: [number, number, number, number],
       padding: number,
-      maxZoom: number
+      maxZoom: number,
     ): void {
       map.fitBounds(
         [
           [bbox[0], bbox[1]],
           [bbox[2], bbox[3]],
         ],
-        { padding, maxZoom, ...fitBoundsOptions }
+        { padding, maxZoom, ...fitBoundsOptions },
       );
     },
 
@@ -219,7 +219,7 @@ export function createMapLibreGlMapController(
 
     setMarkers(
       markedFeatures: Feature[] | undefined,
-      picked: Feature | undefined
+      picked: Feature | undefined,
     ): void {
       if (!marker) {
         return;
@@ -247,7 +247,7 @@ export function createMapLibreGlMapController(
         if (picked.geometry.type === "GeometryCollection") {
           const geoms = picked.geometry.geometries.filter(
             (geometry) =>
-              geometry.type === "Polygon" || geometry.type === "MultiPolygon"
+              geometry.type === "Polygon" || geometry.type === "MultiPolygon",
           ) as (Polygon | MultiPolygon)[];
 
           if (geoms.length > 0) {
@@ -266,7 +266,7 @@ export function createMapLibreGlMapController(
             const geometries = picked.geometry.geometries.filter(
               (geometry) =>
                 geometry.type === "LineString" ||
-                geometry.type === "MultiLineString"
+                geometry.type === "MultiLineString",
             ) as (LineString | MultiLineString)[];
 
             if (geometries.length > 0) {
@@ -303,7 +303,7 @@ export function createMapLibreGlMapController(
               : createMarker()
             )
               .setLngLat(picked.center)
-              .addTo(map)
+              .addTo(map),
           );
         }
       }
@@ -326,7 +326,7 @@ export function createMapLibreGlMapController(
                 closeButton: false,
                 closeOnMove: true,
                 className: "maptiler-gc-popup",
-              }).setText(feature.place_name.replace(/,.*/, ""))
+              }).setText(feature.place_name.replace(/,.*/, "")),
             )
             .addTo(map);
 
