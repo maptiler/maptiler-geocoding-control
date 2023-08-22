@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "0.0.99",
+  "version": "0.0.99-rc2",
   "type": "module",
   "author": {
     "name": "Martin Ždila",
@@ -133,7 +133,7 @@
     "maplibre-gl": "^2 || ^3.0.0-alpha || ^3",
     "ol": "^7.4.0",
     "react": "^17 || ^18",
-    "svelte": "^3.50"
+    "svelte": "^4.2"
   },
   "peerDependenciesMeta": {
     "@maptiler/sdk": {

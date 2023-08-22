@@ -319,7 +319,7 @@ In addition to using the component as MapLibre GL JS, Leaflet or OpenLayers cont
 
 Component API matches API described above where options and events are exposed as component properties and methods are callable on the component reference.
 
-Remember to import files from `@maptiler/geocoding-control/svelte/...`.
+Remember to import files from `@maptiler/geocoding-control/svelte/...`. Also dependencies `@turf/union`, `@turf/buffer` and `@turf/difference` must be manually installed.
 
 ### Example for integration with MapLibre GL JS
 
