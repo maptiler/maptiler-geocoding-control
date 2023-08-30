@@ -31,7 +31,7 @@ searched results on the map, autocomplete words while typing, and much more.
 
 The component can be used as an ES module or UMD module with or without bundler.
 
-Geocoding control is also provided as [React component](#react-component) and [Svelte component](#svelte-component).
+Geocoding control is also provided as [React component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/) and [Svelte component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/) and [other libraries](#installation-and-more-usage-examples).
 
 ## Quick start
 
@@ -91,7 +91,7 @@ In addition to the details and examples provided in this `README.md` and our doc
 npm install && npm run build
 ```
 
-You will find compilation result in `dist` directory.
+You will find compilation result in the `dist` directory.
 
 ### Running in dev mode
 
