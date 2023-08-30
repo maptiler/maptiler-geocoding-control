@@ -84,6 +84,7 @@ In addition to the details and examples provided in this `README.md` and our doc
 * [UMD global variables](https://docs.maptiler.com/sdk-js/modules/geocoding/#umd-global-variables)
 
 
+
 ## Development
 
 ### Building
