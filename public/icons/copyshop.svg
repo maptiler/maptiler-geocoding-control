@@ -1,1 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M9.031-.031 1 0v10h3V9H2V1h6v2h1.031V-.031zM3 2v.5h4V2H3zm0 1v.5h1V3H3zm0 1v.5h1V4H3zm2 0v10h8V7.281L9.719 4H5zM3 5v.5h1V5H3zm3 0h3v3h3v5H6V5zm4 .688L11.313 7H10V5.687zM3 6v.5h1V6H3zm4 0v.5h1V6H7zM3 7v.5h1V7H3zm4 0v.5h1V7H7zm0 1v.5h1V8H7zm0 1v.5h4V9H7zm0 1v.5h4V10H7zm0 1v.5h4V11H7z"/></svg>
+<svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_6_773)">
+    <path fill-rule="evenodd" clip-rule="evenodd"
+      d="M9.031 -0.0310059L1 -5.85988e-06V9.99999H4V8.99999H2V0.999994H8V2.99999H9.031V-0.0310059ZM13 14V7.28099L9.719 3.99999H5V14H13ZM6 4.99999H9V7.99999H12V13H6V4.99999ZM10 5.68799L11.313 6.99999H10V5.68799ZM7 9.5V10H11V9.5H7ZM11 10.5V11H7V10.5H11ZM11 11.5V12H7V11.5H11ZM7 2.5H3V3H7V2.5ZM4 3.5H3V4H4V3.5ZM3 4.5H4V5H3V4.5ZM4 5.5H3V6H4V5.5ZM3 6.5H4V7H3V6.5Z"
+      fill="black" />
+  </g>
+  <defs>
+    <clipPath id="clip0_6_773">
+      <rect width="14" height="14" fill="white" />
+    </clipPath>
+  </defs>
+</svg>

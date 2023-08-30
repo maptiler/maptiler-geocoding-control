@@ -18,43 +18,64 @@ export default defineConfig({
       process.env.FLAVOUR === "leaflet"
         ? {
             fileName: "leaflet",
-            entry: ["src/lib/leaflet.ts"],
+            entry: ["src/leaflet.ts"],
             name: "leafletMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maplibre"
         ? {
             fileName: "maplibregl",
-            entry: ["src/lib/maplibregl.ts"],
+            entry: ["src/maplibregl.ts"],
             name: "maplibreglMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maptilersdk"
         ? {
             fileName: "maptilersdk",
-            entry: ["src/lib/maptilersdk.ts"],
+            entry: ["src/maptilersdk.ts"],
             name: "maptilersdkMaptilerGeocoder",
+            formats: ["es", "umd"],
+          }
+        : process.env.FLAVOUR === "openlayers"
+        ? {
+            fileName: "openlayers",
+            entry: ["src/openlayers.ts"],
+            name: "openlayersMaptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "react"
         ? {
             fileName: "react",
-            entry: ["src/lib/react.ts"],
-            name: "MapTilerGeocoder",
+            entry: ["src/react.ts"],
+            name: "reactMaptilerGeocoder",
+            formats: ["es", "umd"],
+          }
+        : process.env.FLAVOUR === "vanilla"
+        ? {
+            fileName: "vanilla",
+            entry: ["src/vanilla.ts"],
+            name: "maptilerGeocoder",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "leaflet-controller"
         ? {
             fileName: "leaflet-controller",
-            entry: ["src/lib/leaflet-controller.ts"],
+            entry: ["src/leaflet-controller.ts"],
             name: "leafletMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
         : process.env.FLAVOUR === "maplibregl-controller"
         ? {
             fileName: "maplibregl-controller",
-            entry: ["src/lib/maplibregl-controller.ts"],
+            entry: ["src/maplibregl-controller.ts"],
             name: "maplibreglMaptilerGeocodingController",
+            formats: ["es", "umd"],
+          }
+        : process.env.FLAVOUR === "openlayers-controller"
+        ? {
+            fileName: "openlayers-controller",
+            entry: ["src/openlayers-controller.ts"],
+            name: "openlayersMaptilerGeocodingController",
             formats: ["es", "umd"],
           }
         : undefined,

@@ -34,7 +34,7 @@ export function createLeafletMapController(
       dashArray: [weight, weight],
       lineCap: "butt",
     };
-  }
+  },
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -118,14 +118,14 @@ export function createLeafletMapController(
     fitBounds(
       bbox: [number, number, number, number],
       padding: number,
-      maxZoom: number
+      maxZoom: number,
     ): void {
       map.flyToBounds(
         [
           [bbox[1], bbox[0]],
           [bbox[3], bbox[2]],
         ],
-        { padding: [padding, padding], duration: 2, maxZoom, ...flyToBounds }
+        { padding: [padding, padding], duration: 2, maxZoom, ...flyToBounds },
       );
     },
 
@@ -133,7 +133,7 @@ export function createLeafletMapController(
       map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates: [number, number]) {
+    setReverseMarker(coordinates?: [number, number]) {
       if (!marker) {
         return;
       }
@@ -162,7 +162,7 @@ export function createLeafletMapController(
 
     setMarkers(
       markedFeatures: Feature[] | undefined,
-      picked: Feature | undefined
+      picked: Feature | undefined,
     ): void {
       if (!marker) {
         return;
@@ -190,7 +190,7 @@ export function createLeafletMapController(
         if (picked.geometry.type === "GeometryCollection") {
           const geoms = picked.geometry.geometries.filter(
             (geometry) =>
-              geometry.type === "Polygon" || geometry.type === "MultiPolygon"
+              geometry.type === "Polygon" || geometry.type === "MultiPolygon",
           ) as (Polygon | MultiPolygon)[];
 
           if (geoms.length > 0) {
@@ -209,7 +209,7 @@ export function createLeafletMapController(
             const geometries = picked.geometry.geometries.filter(
               (geometry) =>
                 geometry.type === "LineString" ||
-                geometry.type === "MultiLineString"
+                geometry.type === "MultiLineString",
             ) as (LineString | MultiLineString)[];
 
             if (geometries.length > 0) {
@@ -245,7 +245,7 @@ export function createLeafletMapController(
           (typeof marker === "object"
             ? new L.Marker(pos, marker)
             : createMarker(pos)
-          ).addTo(map)
+          ).addTo(map),
         );
       }
 

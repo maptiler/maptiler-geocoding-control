@@ -74,7 +74,7 @@ export class GeocodingControl extends L.Control {
       showResultMarkers,
       flyToOptions,
       flyToOptions,
-      fullGeometryStyle
+      fullGeometryStyle,
     );
 
     this.#gc = new GeocodingControlComponent({
@@ -95,9 +95,9 @@ export class GeocodingControl extends L.Control {
       "optionsVisibilityChange",
       "reverseToggle",
       "queryChange",
-    ]) {
+    ] as const) {
       this.#gc.$on(eventName, (event) =>
-        map.fire(eventName.toLowerCase(), event.detail)
+        map.fire(eventName.toLowerCase(), event.detail),
       );
     }
 
@@ -120,10 +120,6 @@ export class GeocodingControl extends L.Control {
 
   setQuery(value: string, submit = true) {
     this.#gc?.setQuery(value, submit);
-  }
-
-  setReverseMode(value: boolean) {
-    this.#gc?.$set({ reverseActive: value });
   }
 
   focus() {

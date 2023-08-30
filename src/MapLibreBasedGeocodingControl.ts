@@ -8,7 +8,7 @@ import type {
   Map,
   MarkerOptions,
 } from "maplibre-gl";
-import type { SvelteComponentTyped } from "svelte";
+import type { SvelteComponent } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createMapLibreGlMapController } from "./maplibregl-controller";
 import type { ControlOptions } from "./types";
@@ -53,12 +53,10 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
   };
 };
 
-export type Props<T> = T extends SvelteComponentTyped<infer P, any, any>
-  ? P
-  : never;
+export type Props<T> = T extends SvelteComponent<infer P, any, any> ? P : never;
 
 export abstract class MapLibreBasedGeocodingControl<
-    T extends MapLibreBaseControlOptions
+    T extends MapLibreBaseControlOptions,
   >
   extends EventTarget
   implements IControl
@@ -67,7 +65,7 @@ export abstract class MapLibreBasedGeocodingControl<
 
   #options: T;
 
-  constructor(options: T) {
+  constructor(options: T = {} as T) {
     super();
 
     this.#options = options;
@@ -75,7 +73,7 @@ export abstract class MapLibreBasedGeocodingControl<
 
   abstract getExtraProps(
     map: Map,
-    div: HTMLElement
+    div: HTMLElement,
   ): Partial<Props<GeocodingControlComponent>>;
 
   onAdd(map: Map) {
@@ -103,7 +101,7 @@ export abstract class MapLibreBasedGeocodingControl<
       showResultMarkers,
       flyToOptions,
       flyToOptions,
-      fullGeometryStyle
+      fullGeometryStyle,
     );
 
     const props = {
@@ -129,7 +127,7 @@ export abstract class MapLibreBasedGeocodingControl<
       "optionsVisibilityChange",
       "reverseToggle",
       "queryChange",
-    ]) {
+    ] as const) {
       this.#gc.$on(eventName, (event) => this.dispatchEvent(event));
     }
 

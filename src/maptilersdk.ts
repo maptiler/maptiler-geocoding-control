@@ -7,6 +7,7 @@ import {
   type MapLibreBaseControlOptions,
   type Props,
 } from "./MapLibreBasedGeocodingControl";
+export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBaseControlOptions> {
   getMapLibreGl(): typeof maplibregl {
@@ -15,7 +16,7 @@ export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBase
 
   getExtraProps(
     map: Map,
-    div: HTMLElement
+    div: HTMLElement,
   ): Partial<Props<GeocodingControlComponent>> {
     const sdkConfig: { apiKey?: string; language?: string } = {};
 

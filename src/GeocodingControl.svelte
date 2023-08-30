@@ -1,12 +1,4 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-  import { onDestroy } from "svelte/internal";
-  import ClearIcon from "./ClearIcon.svelte";
-  import FailIcon from "./FailIcon.svelte";
-  import FeatureItem from "./FeatureItem.svelte";
-  import LoadingIcon from "./LoadingIcon.svelte";
-  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
-  import SearchIcon from "./SearchIcon.svelte";
   import type {
     DispatcherType,
     Feature,
@@ -14,6 +6,13 @@
     MapController,
     Proximity,
   } from "./types";
+  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
+  import { createEventDispatcher, onDestroy } from "svelte";
+  import FeatureItem from "./FeatureItem.svelte";
+  import LoadingIcon from "./LoadingIcon.svelte";
+  import SearchIcon from "./SearchIcon.svelte";
+  import ClearIcon from "./ClearIcon.svelte";
+  import FailIcon from "./FailIcon.svelte";
 
   let className: string | undefined = undefined;
 
@@ -83,6 +82,11 @@
   export let apiUrl: string = import.meta.env.VITE_API_URL;
 
   export let fetchParameters: RequestInit = {};
+
+  export let iconsBaseUrl =
+    "https://cdn.maptiler.com/maptiler-geocoding-control/v" +
+    import.meta.env.VITE_LIB_VERSION +
+    "/icons/";
 
   export function focus() {
     input.focus();
@@ -642,6 +646,7 @@
           on:mouseenter={() => (selectedItemIndex = i)}
           on:focus={() => pick(feature)}
           {missingIconsCache}
+          {iconsBaseUrl}
         />
       {/each}
     </ul>

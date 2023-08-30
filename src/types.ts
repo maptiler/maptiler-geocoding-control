@@ -1,6 +1,10 @@
-import type { Feature as FeatureType } from "geojson";
+import type {
+  Feature as FeatureType,
+  GeoJsonProperties,
+  Geometry,
+} from "geojson";
 
-export type Feature = FeatureType & {
+export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   id: string;
   text: string;
   place_name: string;
@@ -11,9 +15,9 @@ export type Feature = FeatureType & {
   matching_text?: string;
 };
 
-export type FeatureCollection = {
+export type FeatureCollection<T extends Geometry = Geometry> = {
   type: "FeatureCollection";
-  features: Feature[];
+  features: Feature<T>[];
 };
 
 export type MapEvent =
@@ -34,14 +38,14 @@ export type MapController = {
   fitBounds(
     bbox: [number, number, number, number],
     padding: number,
-    maxZoom: number
+    maxZoom: number,
   ): void;
 
   indicateReverse(reverse: boolean): void;
 
   setMarkers(
     features: Feature[] | undefined,
-    picked: Feature | undefined
+    picked: Feature | undefined,
   ): void;
 
   setReverseMarker(coordinates?: [number, number]): void;
@@ -198,6 +202,13 @@ export type ControlOptions = {
   enableReverse?: boolean | "always";
 
   /**
+   * Toggle reverse mode.
+   *
+   * @default false
+   */
+  reverseActive?: boolean;
+
+  /**
    * Reverse toggle button title.
    *
    * @default "toggle reverse geocoding"
@@ -245,7 +256,7 @@ export type ControlOptions = {
   /**
    * Geocoding API URL.
    *
-   * @default MapTiler Geocoding API URL
+   * @default MapTiler Geocoding API URL.
    */
   apiUrl?: string;
 
@@ -256,6 +267,13 @@ export type ControlOptions = {
    */
   fetchParameters?: RequestInit;
 
+  /**
+   * Base URL for POI icons.
+   *
+   * @default "icons/" for Svelte apps, otherwise `https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`
+   */
+  iconsBaseUrl?: string;
+
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)
   // render // A function that specifies how the results should be rendered in the dropdown menu. This function should accepts a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
@@ -264,12 +282,12 @@ export type ControlOptions = {
 };
 
 export type DispatcherType = {
-  featuresListed: Feature[];
-  featuresMarked: Feature[];
+  featuresListed: Feature[] | undefined;
+  featuresMarked: Feature[] | undefined;
   optionsVisibilityChange: boolean;
-  pick: Feature;
+  pick: Feature | undefined;
   queryChange: string;
   response: { url: string; featureCollection: FeatureCollection };
   reverseToggle: boolean;
-  select: Feature;
+  select: Feature | undefined;
 };

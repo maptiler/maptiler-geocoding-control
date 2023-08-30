@@ -1,9 +1,8 @@
 <script lang="ts">
-  import "maplibre-gl/dist/maplibre-gl.css";
-
   import { Map, NavigationControl } from "maplibre-gl";
+  import "maplibre-gl/dist/maplibre-gl.css";
   import { onMount } from "svelte";
-  import { GeocodingControl } from "./lib/maplibregl";
+  import { GeocodingControl } from "../../src/maplibregl";
 
   let containerElement: HTMLElement;
 
@@ -30,7 +29,8 @@
         collapsed: true,
         // limit: 20,
         // types: ["poi"],
-        fetchParameters: { credentials: "include" },
+        // fetchParameters: { credentials: "include" },
+        iconsBaseUrl: "/icons/",
       })
     );
 

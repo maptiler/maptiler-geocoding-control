@@ -15,7 +15,7 @@ type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
 
 type CallbackProperties<T> = {
   [K in keyof T as EventHandlerFnName<Extract<K, EventNames>>]?: (
-    event: T[K]
+    event: T[K],
   ) => void;
 };
 
@@ -43,6 +43,7 @@ const propertyNames = [
   "country",
   "debounceSearch",
   "enableReverse",
+  "reverseActive",
   "errorMessage",
   "filter",
   "fuzzyMatch",
@@ -72,14 +73,18 @@ export type Props = ControlOptions &
   CallbackProperties<DispatcherType> &
   MapControllerProp;
 
-// not used because it does not integrate well with Svelte
-type MethodNames = "blur" | "focus" | "setQuery";
-
-export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+// defining the type explicitly otherwise compiled .d.ts refers to .svelte which is not good
+// type MethodNames = "blur" | "focus" | "setQuery";
+// export type Methods = { [T in MethodNames]: GeocodingControl[T] };
+export type Methods = {
+  blur(): void;
+  focus(): void;
+  setQuery(value: string, submit?: boolean): void;
+};
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
-  ref: Ref<Methods>
+  ref: Ref<Methods>,
 ) {
   const divRef = useRef<HTMLDivElement>();
 
@@ -119,16 +124,15 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   for (const eventName of eventNames) {
     const eventHandlerFn = props[getEventFnName(eventName)];
 
-    useEffect(() => {
-      controlRef.current?.$on(
-        eventName,
-        !eventHandlerFn
-          ? undefined
-          : (e) => {
-              (eventHandlerFn as any)(e.detail);
-            }
-      );
-    }, [eventHandlerFn]);
+    useEffect(
+      () =>
+        eventHandlerFn &&
+        controlRef.current?.$on(eventName, (e) => {
+          (eventHandlerFn as any)(e.detail);
+        }),
+
+      [eventHandlerFn],
+    );
   }
 
   useImperativeHandle(ref, () => ({

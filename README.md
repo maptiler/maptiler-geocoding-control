@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/twitter/follow/maptiler?style=social"></img>
 </p>
 
-# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS and Leaflet
+# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
 
 ## About
 
@@ -29,9 +29,9 @@ mapping application can find any place on Earth (States, Cities, Streets, Addres
 to the address level, restrict the search area to a specific country, highlight
 searched results on the map, autocomplete words while typing, and much more.
 
-The component can be used as an ES module or UMD module.
+The component can be used as an ES module or UMD module with or without bundler.
 
-Geocoding control is also provided as [React component](#react-component) and a [Svelte component](#svelte-component).
+Geocoding control is also provided as [React component](#react-component) and [Svelte component](#svelte-component).
 
 ## Quick start
 
@@ -61,6 +61,7 @@ map.addControl(gc);
 ```
 
 NOTE: Get your personal [MapTiler API key](https://docs.maptiler.com/cloud/api/authentication-key/) in the [MapTiler Cloud](https://cloud.maptiler.com)
+
 
 
 ## Installation and more usage examples 

@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg height="14" width="14" version="1.1" id="svg8" sodipodi:docname="guest_house.svg" inkscape:version="1.2.2 (b0a8486541, 2022-12-01)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg">
-  <defs id="defs12" />
-  <sodipodi:namedview id="namedview10" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" showgrid="false" inkscape:zoom="16.857143" inkscape:cx="7.029661" inkscape:cy="7.029661" inkscape:window-width="1863" inkscape:window-height="1062" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg8" />
-  <path d="M7 .853L1 5h2v8h3V8h2v5h3V5h2z" fill="gray" id="path4" />
-  <path d="M.5 6c-.277 0-.5.223-.5.5V14h1v-2h12v2h1V8.5a.499.499 0 10-1 0V11H1V6.5C1 6.223.777 6 .5 6zm3 1a1.5 1.5 0 100 3 1.5 1.5 0 000-3zM6 8v2h6c0-1-1.036-2-2-2z" id="path6" />
+<svg width="14" height="15" viewBox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g clip-path="url(#clip0_9_850)">
+    <path fill-rule="evenodd" clip-rule="evenodd"
+      d="M13 5.5625L7.0625 1.353L1.125 5.5625H13ZM1.125 14.125V6.0625H13V14.125H1.125ZM2.44141 7.25C2.24448 7.25 2.08594 7.40854 2.08594 7.60547V12.9375H2.79688V11.5156H11.3281V12.9375H12.0391V9.02734C12.0391 8.93307 12.0016 8.84265 11.9349 8.77599C11.8683 8.70933 11.7779 8.67188 11.6836 8.67188C11.5893 8.67188 11.4989 8.70933 11.4322 8.77599C11.3656 8.84265 11.3281 8.93307 11.3281 9.02734V10.8047H2.79688V7.60547C2.79688 7.40854 2.63834 7.25 2.44141 7.25ZM4.57422 7.96094C4.29139 7.96094 4.02015 8.07329 3.82016 8.27328C3.62017 8.47327 3.50781 8.74452 3.50781 9.02734C3.50781 9.31017 3.62017 9.58142 3.82016 9.78141C4.02015 9.9814 4.29139 10.0938 4.57422 10.0938C4.85705 10.0938 5.12829 9.9814 5.32828 9.78141C5.52827 9.58142 5.64062 9.31017 5.64062 9.02734C5.64062 8.74452 5.52827 8.47327 5.32828 8.27328C5.12829 8.07329 4.85705 7.96094 4.57422 7.96094ZM6.35156 8.67188V10.0938H10.6172C10.6172 9.38281 9.88066 8.67188 9.19531 8.67188H6.35156Z"
+      fill="black" />
+  </g>
+  <defs>
+    <clipPath id="clip0_9_850">
+      <rect width="14" height="14" fill="white" transform="translate(0 0.5)" />
+    </clipPath>
+  </defs>
 </svg>
