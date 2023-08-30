@@ -81,6 +81,7 @@ In addition to the details and examples provided in this `README.md` and our doc
 
 * [The complete Geocoding service API documentation](https://docs.maptiler.com/cloud/api/geocoding/)
 * [The complete Geocoding control reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/)
+* [UMD global variables](https://docs.maptiler.com/sdk-js/modules/geocoding/#umd-global-variables)
 
 
 ## Development
