@@ -17,7 +17,10 @@
   }
 
   onMount(() => {
-    const map = L.map(containerElement).setView([51.505, -0.09], 13);
+    const map = L.map(containerElement).fitBounds([
+      [-65, -160],
+      [65, 160],
+    ]);
 
     const scale = devicePixelRatio > 1.5 ? "@2x" : "";
 
@@ -32,7 +35,7 @@
           '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>, ' +
           '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
         crossOrigin: true,
-      }
+      },
     ).addTo(map);
 
     new GeocodingControl({

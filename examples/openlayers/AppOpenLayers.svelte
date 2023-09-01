@@ -20,15 +20,15 @@
     throw new Error(errMsg);
   }
 
+  const scale = devicePixelRatio > 1.5 ? "@2x" : "";
+
   onMount(() => {
     new Map({
       target: containerElement,
       layers: [
         new TileLayer({
           source: new XYZ({
-            url:
-              "https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}@2x.png?key=" +
-              apiKey,
+            url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}${scale}.png?key=${apiKey}`,
             tileSize: 512,
             attributions: [
               '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>',
@@ -39,7 +39,7 @@
       ],
       view: new View({
         center: [0, 0],
-        zoom: 2,
+        zoom: 0,
       }),
       controls: defaultControls().extend([
         new GeocodingControl({
