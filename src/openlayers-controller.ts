@@ -183,7 +183,7 @@ export function createOpenLayersMapController(
     });
   };
 
-  const ctrl: MapController = {
+  return {
     setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
       if (handler) {
         eventHandler = handler;
@@ -399,7 +399,5 @@ export function createOpenLayersMapController(
 
       prevSelected = index;
     },
-  };
-
-  return ctrl;
+  } satisfies MapController;
 }

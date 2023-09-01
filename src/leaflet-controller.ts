@@ -90,7 +90,7 @@ export function createLeafletMapController(
     });
   }
 
-  const ctrl: MapController = {
+  return {
     setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
       if (handler) {
         eventHandler = handler;
@@ -303,7 +303,5 @@ export function createLeafletMapController(
 
       selectedMarker?.getElement()?.classList.toggle("marker-selected", true);
     },
-  };
-
-  return ctrl;
+  } satisfies MapController;
 }
