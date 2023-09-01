@@ -1,4 +1,4 @@
-import { createElement, useEffect, useRef, useState } from "react";
+import { createElement, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { GeocodingControl, type Methods } from "../../src/react";
 
@@ -23,15 +23,27 @@ const root = createRoot(appElement);
 function App() {
   const ref = useRef<Methods>(null);
 
-  const consoleRef = useRef<HTMLPreElement | null>(null);
+  const consoleRef = useRef<HTMLDivElement | null>(null);
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
   const [clearOnBlur, setClearOnBlur] = useState<boolean>(false);
 
+  function log(action: string, data: unknown) {
+    const el = consoleRef.current;
+
+    if (!el) {
+      return;
+    }
+
+    console.log(action, data);
+    el.innerText += action + "\n";
+    el.scrollTo(0, el.scrollHeight);
+  }
+
   return (
-    <div>
-      <div className="control-bar">
+    <>
+      <div className="card control-bar">
         <GeocodingControl
           ref={ref}
           placeholder="What would you like to search?"
@@ -40,38 +52,16 @@ function App() {
           noResultsMessage="No such place found!"
           apiKey={apiKey}
           collapsed={collapsed}
-          onSelect={(data) => {
-            console.log("select", data);
-            consoleRef.current!.innerText += "select\n";
-          }}
-          onPick={(data) => {
-            console.log("pick", data);
-            consoleRef.current!.innerText += "pick\n";
-          }}
-          onFeaturesListed={(data) => {
-            console.log("featuresListed", data);
-            consoleRef.current!.innerText += "featuresListed\n";
-          }}
-          onFeaturesMarked={(data) => {
-            console.log("featuresMarked", data);
-            consoleRef.current!.innerText += "featuresMarked\n";
-          }}
-          onOptionsVisibilityChange={(data) => {
-            console.log("optionsVisibilityChange", data);
-            consoleRef.current!.innerText += "optionsVisibilityChange\n";
-          }}
-          onQueryChange={(data) => {
-            console.log("queryChange", data);
-            consoleRef.current!.innerText += "queryChange\n";
-          }}
-          onReverseToggle={(data) => {
-            console.log("reverseToggle", data);
-            consoleRef.current!.innerText += "reverseToggle\n";
-          }}
-          onResponse={(data) => {
-            console.log("response", data);
-            consoleRef.current!.innerText += "response\n";
-          }}
+          onSelect={(data) => log("select", data)}
+          onPick={(data) => log("pick", data)}
+          onFeaturesListed={(data) => log("featuresListed", data)}
+          onFeaturesMarked={(data) => log("featuresMarked", data)}
+          onOptionsVisibilityChange={(data) =>
+            log("optionsVisibilityChange", data)
+          }
+          onQueryChange={(data) => log("queryChange", data)}
+          onReverseToggle={(data) => log("reverseToggle", data)}
+          onResponse={(data) => log("response", data)}
           clearOnBlur={clearOnBlur}
           iconsBaseUrl="/icons/"
         />
@@ -82,7 +72,7 @@ function App() {
             checked={collapsed}
             onChange={(e) => setCollapsed(e.currentTarget.checked)}
           />
-          Collapse empty on blur
+          <span className="checkable">Collapse empty on blur</span>
         </label>
 
         <label>
@@ -91,7 +81,7 @@ function App() {
             checked={clearOnBlur}
             onChange={(e) => setClearOnBlur(e.currentTarget.checked)}
           />
-          Clear on blur
+          <span className="checkable">Clear on blur</span>
         </label>
 
         <button type="button" onClick={() => ref.current?.focus()}>
@@ -117,8 +107,8 @@ function App() {
         </button>
       </div>
 
-      <pre ref={consoleRef}></pre>
-    </div>
+      <div className="card console" ref={consoleRef} />
+    </>
   );
 }
 
