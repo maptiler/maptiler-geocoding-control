@@ -1,8 +1,4 @@
-import type {
-  Feature as FeatureType,
-  GeoJsonProperties,
-  Geometry,
-} from "geojson";
+import type { Feature as FeatureType, Geometry } from "geojson";
 
 export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   id: string;
@@ -21,10 +17,6 @@ export type FeatureCollection<T extends Geometry = Geometry> = {
 };
 
 export type MapEvent =
-  | {
-      type: "proximityChange";
-      proximity: [number, number] | undefined;
-    }
   | { type: "mapClick"; coordinates: [number, number] }
   | { type: "markerClick"; id: string }
   | { type: "markerMouseEnter"; id: string }
@@ -51,9 +43,36 @@ export type MapController = {
   setReverseMarker(coordinates?: [number, number]): void;
 
   setSelectedMarker(index: number): void;
+
+  getCenterAndZoom(): [zoom: number, lon: number, lat: number] | undefined;
 };
 
-export type Proximity = [number, number] | undefined;
+export type Proximity =
+  | {
+      /** fixed proximity */
+      type: "fixed";
+      /** coordinates of the fixed proximity */
+      coordinates: [number, number];
+    }
+  | {
+      /** use map center coordinates for the proximity */
+      type: "map-center";
+    }
+  | ((
+      | {
+          /** resolve proximity by geolocating IP of the geocoding API call */
+          type: "ip";
+        }
+      | ({
+          /** use browser's geolocation API for proximity */
+          type: "geolocation";
+          /** fallback to `"ip"`-based proximity in case of a browser unable to retrieve the geolocation */
+          fallbackToIp?: boolean;
+        } & PositionOptions)
+    ) & {
+      /** use `"map-center"` proximity if the current map zoom is equal or greater than this value */
+      mapCenterFromZoom?: number;
+    });
 
 export type ControlOptions = {
   /**
@@ -70,10 +89,9 @@ export type ControlOptions = {
   debounceSearch?: number;
 
   /**
-   * A proximity argument: this is a geographical point given as an object with latitude and longitude properties.
-   * Search results closer to this point will be given higher priority.
+   * Search results closer to the proximity point will be given higher priority.
    */
-  proximity?: [number, number];
+  proximity?: Proximity;
 
   /**
    * Override the default placeholder attribute value.
@@ -95,13 +113,6 @@ export type ControlOptions = {
    * @default "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"
    */
   noResultsMessage?: string;
-
-  /**
-   * If true, the geocoder proximity will automatically update based on the map view.
-   *
-   * @default true
-   */
-  trackProximity?: boolean;
 
   /**
    * Minimum number of characters to enter before results are shown.

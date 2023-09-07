@@ -162,17 +162,6 @@ export function createOpenLayersMapController(
     return geometry.transform(EPSG_4326, map.getView().getProjection());
   }
 
-  const handleMoveEnd = () => {
-    const center = map.getView().getCenter();
-
-    const proximity =
-      center && map.getView().getZoom()! > 10
-        ? (toLonLat(center, map.getView().getProjection()) as [number, number])
-        : undefined;
-
-    eventHandler?.({ type: "proximityChange", proximity });
-  };
-
   const handleMapClick = (e: MapBrowserEvent<PointerEvent>) => {
     eventHandler?.({
       type: "mapClick",
@@ -187,12 +176,8 @@ export function createOpenLayersMapController(
     setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
       if (handler) {
         eventHandler = handler;
-        map.on("moveend", handleMoveEnd);
-        handleMoveEnd();
         map.on("click", handleMapClick);
       } else {
-        map.un("moveend", handleMoveEnd);
-        eventHandler?.({ type: "proximityChange", proximity: undefined });
         eventHandler = undefined;
         map.un("click", handleMapClick);
       }
@@ -398,6 +383,23 @@ export function createOpenLayersMapController(
       }
 
       prevSelected = index;
+    },
+
+    getCenterAndZoom() {
+      const view = map.getView();
+
+      const center = view.getCenter();
+
+      const zoom = view.getZoom();
+
+      if (!center || zoom === undefined) {
+        return undefined;
+      }
+
+      return [
+        zoom,
+        ...(toLonLat(center, view.getProjection()) as [number, number]),
+      ];
     },
   } satisfies MapController;
 }

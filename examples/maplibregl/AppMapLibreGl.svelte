@@ -31,7 +31,11 @@
         // types: ["poi"],
         // fetchParameters: { credentials: "include" },
         iconsBaseUrl: "/icons/",
-      })
+        proximity: {
+          type: "geolocation",
+          fallbackToIp: true,
+        },
+      }),
     );
 
     map.addControl(new NavigationControl({}));

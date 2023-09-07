@@ -57,7 +57,6 @@ const propertyNames = [
   "showFullGeometry",
   "showPlaceType",
   "showResultsWhileTyping",
-  "trackProximity",
   "types",
   "zoom",
   "mapController",

@@ -13,7 +13,6 @@ import type {
   FlyToOptions,
   GeoJSONSource,
   LineLayerSpecification,
-  LngLat,
   Map,
   MapMouseEvent,
   Marker,
@@ -64,8 +63,6 @@ export function createMapLibreGlMapController(
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let prevProximity: Proximity = undefined;
-
   let markers: Marker[] = [];
 
   let selectedMarker: maplibregl.Marker | undefined;
@@ -114,21 +111,6 @@ export function createMapLibreGlMapController(
     });
   };
 
-  const handleMoveEnd = () => {
-    let c: LngLat;
-
-    const proximity =
-      map.getZoom() > 9
-        ? ([(c = map.getCenter().wrap()).lng, c.lat] as [number, number])
-        : undefined;
-
-    if (prevProximity !== proximity) {
-      prevProximity = proximity;
-
-      eventHandler?.({ type: "proximityChange", proximity });
-    }
-  };
-
   function createMarker(interactive = false) {
     if (!maplibregl) {
       throw new Error();
@@ -153,16 +135,8 @@ export function createMapLibreGlMapController(
       if (handler) {
         eventHandler = handler;
 
-        map.on("moveend", handleMoveEnd);
-
-        handleMoveEnd();
-
         map.on("click", handleMapClick);
       } else {
-        map.off("moveend", handleMoveEnd);
-
-        eventHandler?.({ type: "proximityChange", proximity: undefined });
-
         eventHandler = undefined;
 
         map.off("click", handleMapClick);
@@ -365,6 +339,12 @@ export function createMapLibreGlMapController(
       selectedMarker = index > -1 ? markers[index] : undefined;
 
       selectedMarker?.getElement().classList.toggle("marker-selected", true);
+    },
+
+    getCenterAndZoom() {
+      const c = map.getCenter();
+
+      return [map.getZoom(), c.lng, c.lat];
     },
   } satisfies MapController;
 }
