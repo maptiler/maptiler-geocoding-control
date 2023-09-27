@@ -11,7 +11,7 @@
     Feature,
     FeatureCollection,
     MapController,
-    Proximity,
+    ProximityRule,
   } from "./types";
 
   let className: string | undefined = undefined;
@@ -57,7 +57,7 @@
 
   export let placeholder = "Search";
 
-  export let proximity: Proximity | undefined = undefined;
+  export let proximity: ProximityRule[] | undefined = undefined;
 
   export let reverseActive = enableReverse === "always";
 
@@ -85,6 +85,8 @@
     "https://cdn.maptiler.com/maptiler-geocoding-control/v" +
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
+
+  export const adjustQuery = (sp: URLSearchParams) => {};
 
   export function focus() {
     input.focus();
@@ -136,6 +138,8 @@
   let focusedDelayed: boolean;
 
   let prevIdToFly: string | undefined;
+
+  let cachedLocation: { time: number; coords: undefined | string } | undefined;
 
   const missingIconsCache = new Set<string>();
 
@@ -354,71 +358,91 @@
       }
 
       if (!byId && !isReverse) {
-        const centerAndZoom = mapController?.getCenterAndZoom();
+        async function getProximity() {
+          const centerAndZoom = mapController?.getCenterAndZoom();
 
-        let useCenter = false;
+          for (const rule of proximity ?? []) {
+            if (
+              centerAndZoom &&
+              ((rule.minZoom != undefined && rule.minZoom > centerAndZoom[0]) ||
+                (rule.maxZoom != undefined && rule.maxZoom < centerAndZoom[0]))
+            ) {
+              continue;
+            }
 
-        function useMapCenter(mapCenterFromZoom: number | undefined) {
-          useCenter = true;
+            if (rule.type === "fixed") {
+              return rule.coordinates.join(",");
+            }
 
-          return (
-            mapCenterFromZoom !== undefined &&
-            centerAndZoom &&
-            centerAndZoom[0] >= mapCenterFromZoom
-          );
-        }
-
-        if (proximity?.type === "fixed") {
-          sp.set("proximity", proximity.coordinates.join(","));
-        } else if (
-          proximity?.type === "geolocation" &&
-          !useMapCenter(proximity.mapCenterFromZoom)
-        ) {
-          const proxi = proximity;
-
-          await new Promise<void>((resolve) => {
-            ac.signal.addEventListener("abort", () => {
-              resolve();
-            });
-
-            navigator.geolocation.getCurrentPosition(
-              (e) => {
-                sp.set(
-                  "proximity",
-                  [e.coords.longitude, e.coords.latitude]
-                    .map((c) => c.toFixed(6))
-                    .join(","),
-                );
-
-                resolve();
-              },
-              () => {
-                if (proxi.fallbackToIp) {
-                  sp.set("proximity", "ip");
+            cg: if (rule.type === "client-geolocation") {
+              if (
+                cachedLocation &&
+                rule.cachedLocationExpiry &&
+                cachedLocation.time + rule.cachedLocationExpiry > Date.now()
+              ) {
+                if (!cachedLocation.coords) {
+                  break cg;
                 }
 
-                resolve();
-              },
-              proxi,
-            );
-          });
+                return cachedLocation.coords;
+              }
 
-          if (ac.signal.aborted) {
-            return;
+              let coords: string | undefined;
+
+              try {
+                coords = await new Promise<string>((resolve, reject) => {
+                  ac.signal.addEventListener("abort", () => {
+                    reject(Error("aborted"));
+                  });
+
+                  navigator.geolocation.getCurrentPosition(
+                    (pos) => {
+                      resolve(
+                        [pos.coords.longitude, pos.coords.latitude]
+                          .map((c) => c.toFixed(6))
+                          .join(","),
+                      );
+                    },
+                    (err) => {
+                      reject(err);
+                    },
+                    rule,
+                  );
+                });
+
+                return coords;
+              } catch {
+                // ignore
+              } finally {
+                if (rule.cachedLocationExpiry) {
+                  cachedLocation = {
+                    time: Date.now(),
+                    coords,
+                  };
+                }
+              }
+
+              if (ac.signal.aborted) {
+                return;
+              }
+            }
+
+            if (rule.type === "server-geolocation") {
+              return "ip";
+            }
+
+            if (centerAndZoom && rule.type === "map-center") {
+              return (
+                centerAndZoom[1].toFixed(6) + "," + centerAndZoom[2].toFixed(6)
+              );
+            }
           }
-        } else if (
-          proximity?.type === "ip" &&
-          !useMapCenter(proximity.mapCenterFromZoom)
-        ) {
-          sp.set("proximity", "ip");
-        } else if (
-          centerAndZoom &&
-          (useCenter || proximity?.type === "map-center")
-        ) {
-          sp.set(
-            "proximity",
-            centerAndZoom[1].toFixed(6) + "," + centerAndZoom[2].toFixed(6),
-          );
+        }
+
+        const coords = await getProximity();
+
+        if (coords) {
+          sp.set("proximity", coords);
         }
 
         if (exact || !showResultsWhileTyping) {
@@ -433,6 +457,8 @@
       }
 
       sp.set("key", apiKey);
+
+      adjustQuery(sp);
 
       const url =
         apiUrl +

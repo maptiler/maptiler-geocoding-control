@@ -47,10 +47,17 @@ export type MapController = {
   getCenterAndZoom(): [zoom: number, lon: number, lat: number] | undefined;
 };
 
-export type Proximity =
+export type ProximityRule = {
+  /** minimal map zoom for the rule to be used */
+  minZoom?: number;
+
+  /** maximal map zoom for the rule to be used */
+  maxZoom?: number;
+} & (
   | {
       /** fixed proximity */
       type: "fixed";
+
       /** coordinates of the fixed proximity */
       coordinates: [number, number];
     }
@@ -58,21 +65,18 @@ export type Proximity =
       /** use map center coordinates for the proximity */
       type: "map-center";
     }
-  | ((
-      | {
-          /** resolve proximity by geolocating IP of the geocoding API call */
-          type: "ip";
-        }
-      | ({
-          /** use browser's geolocation API for proximity */
-          type: "geolocation";
-          /** fallback to `"ip"`-based proximity in case of a browser unable to retrieve the geolocation */
-          fallbackToIp?: boolean;
-        } & PositionOptions)
-    ) & {
-      /** use `"map-center"` proximity if the current map zoom is equal or greater than this value */
-      mapCenterFromZoom?: number;
-    });
+  | {
+      /** resolve proximity by geolocating IP of the geocoding API call */
+      type: "server-geolocation";
+    }
+  | ({
+      /** use browser's geolocation API for proximity. If it fails, following proximity rules are iterated. */
+      type: "client-geolocation";
+
+      /** how long should the geolocation result be cached, in milliseconds */
+      cachedLocationExpiry?: number;
+    } & PositionOptions)
+);
 
 export type ControlOptions = {
   /**
@@ -89,9 +93,11 @@ export type ControlOptions = {
   debounceSearch?: number;
 
   /**
-   * Search results closer to the proximity point will be given higher priority.
+   * Search results closer to the proximity point will be given higher priority. First matching rule from the array will be used.
+   *
+   * @default undefined
    */
-  proximity?: Proximity;
+  proximity?: ProximityRule[];
 
   /**
    * Override the default placeholder attribute value.
@@ -124,6 +130,8 @@ export type ControlOptions = {
   /**
    * A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY].
    * Search results will be limited to the bounding box.
+   *
+   * @default undefined
    */
   bbox?: [number, number, number, number];
 
@@ -139,6 +147,8 @@ export type ControlOptions = {
    * Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script.
    * More than one value can also be specified, separated by commas.
    * Defaults to the browser's language settings.
+   *
+   * @default undefined
    */
   language?: string | string[];
 
@@ -202,6 +212,8 @@ export type ControlOptions = {
 
   /**
    * Class of the root element.
+   *
+   * @default undefined
    */
   class?: string;
 
@@ -240,8 +252,6 @@ export type ControlOptions = {
    * @default "ifNeeded"
    */
   showPlaceType?: false | "always" | "ifNeeded";
-
-  showIcons?: boolean;
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
@@ -284,6 +294,13 @@ export type ControlOptions = {
    * @default "icons/" for Svelte apps, otherwise `https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`
    */
   iconsBaseUrl?: string;
+
+  /**
+   * Function to adjust URL search parameters.
+   *
+   * @default empty function
+   */
+  adjustQuery?: (sp: URLSearchParams) => void;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

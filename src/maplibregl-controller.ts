@@ -19,7 +19,7 @@ import type {
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
-import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
+import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 

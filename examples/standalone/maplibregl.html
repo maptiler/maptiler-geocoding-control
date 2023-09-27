@@ -46,6 +46,11 @@
     style: "https://api.maptiler.com/maps/streets/style.json?key=" + apiKey,
     center: [16.3, 49.2], // starting position [lng, lat]
     zoom: 7,
+    proximity: [
+      { type: "map-center", minZoom: 12 },
+      { type: "client-geolocation" },
+      { type: "server-geolocation" },
+    ],
   });
 
   const gc = new maplibreglMaptilerGeocoder.GeocodingControl({

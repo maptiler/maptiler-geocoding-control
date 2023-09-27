@@ -31,10 +31,11 @@
         // types: ["poi"],
         // fetchParameters: { credentials: "include" },
         iconsBaseUrl: "/icons/",
-        proximity: {
-          type: "geolocation",
-          fallbackToIp: true,
-        },
+        proximity: [
+          { type: "map-center", minZoom: 12 },
+          { type: "client-geolocation", minZoom: 8 },
+          { type: "server-geolocation", minZoom: 8 },
+        ],
       }),
     );
 
