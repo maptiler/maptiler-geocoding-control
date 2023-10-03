@@ -44,7 +44,7 @@
 
   export let fuzzyMatch = true;
 
-  export let language: string | string[] | undefined = undefined;
+  export let language: string | string[] | null | undefined = undefined;
 
   export let limit: number | undefined = undefined;
 
@@ -57,7 +57,9 @@
 
   export let placeholder = "Search";
 
-  export let proximity: ProximityRule[] | undefined = undefined;
+  export let proximity: ProximityRule[] | null | undefined = [
+    { type: "server-geolocation" },
+  ];
 
   export let reverseActive = enableReverse === "always";
 
@@ -86,7 +88,7 @@
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
 
-  export const adjustQuery = (sp: URLSearchParams) => {};
+  export let adjustQuery = (sp: URLSearchParams) => {};
 
   export function focus() {
     input.focus();
@@ -338,10 +340,10 @@
 
       const sp = new URLSearchParams();
 
-      if (language != undefined) {
+      if (language !== undefined) {
         sp.set(
           "language",
-          Array.isArray(language) ? language.join(",") : language,
+          Array.isArray(language) ? language.join(",") : language ?? "",
         );
       }
 

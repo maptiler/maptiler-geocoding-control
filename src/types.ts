@@ -94,10 +94,11 @@ export type ControlOptions = {
 
   /**
    * Search results closer to the proximity point will be given higher priority. First matching rule from the array will be used.
+   * Set to `undefined` or `null` to disable proximity.
    *
-   * @default undefined
+   * @default [{ type: "server-geolocation" }]
    */
-  proximity?: ProximityRule[];
+  proximity?: ProximityRule[] | null | undefined;
 
   /**
    * Override the default placeholder attribute value.
@@ -146,11 +147,12 @@ export type ControlOptions = {
    * Specify the language to use for response text and query result weighting.
    * Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script.
    * More than one value can also be specified, separated by commas.
+   * Set to `null` or empty string for disabling language-specific searching.
    * Defaults to the browser's language settings.
    *
    * @default undefined
    */
-  language?: string | string[];
+  language?: string | string[] | null;
 
   /**
    * If `false`, indicates that search will only occur on enter key press.
