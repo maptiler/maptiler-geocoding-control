@@ -88,7 +88,7 @@
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
 
-  export let adjustQuery = (sp: URLSearchParams) => {};
+  export let adjustUrlQuery = (sp: URLSearchParams) => {};
 
   export function focus() {
     input.focus();
@@ -113,6 +113,17 @@
         input.select();
       });
     }
+  }
+
+  export function clearList() {
+    listFeatures = undefined;
+    picked = undefined;
+    selectedItemIndex = -1;
+  }
+
+  export function clearMap() {
+    markedFeatures = [];
+    picked = undefined;
   }
 
   let focused = false;
@@ -460,7 +471,7 @@
 
       sp.set("key", apiKey);
 
-      adjustQuery(sp);
+      adjustUrlQuery(sp);
 
       const url =
         apiUrl +

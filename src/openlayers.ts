@@ -178,6 +178,14 @@ export class GeocodingControl extends Control {
     this.#gc?.setQuery(value, submit);
   }
 
+  clearMap() {
+    this.#gc?.clearMap();
+  }
+
+  clearList() {
+    this.#gc?.clearList();
+  }
+
   focus() {
     this.#gc?.focus();
   }

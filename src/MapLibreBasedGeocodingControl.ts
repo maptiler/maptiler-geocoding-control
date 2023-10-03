@@ -154,6 +154,14 @@ export abstract class MapLibreBasedGeocodingControl<
     this.#gc?.setQuery(value, submit);
   }
 
+  clearMap() {
+    this.#gc?.clearMap();
+  }
+
+  clearList() {
+    this.#gc?.clearList();
+  }
+
   setReverseMode(value: boolean) {
     this.#gc?.$set({ reverseActive: value });
   }
