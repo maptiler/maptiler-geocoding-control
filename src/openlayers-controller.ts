@@ -23,7 +23,13 @@ import Style, { type StyleLike } from "ol/style/Style";
 import Text from "ol/style/Text";
 import type { FlatStyleLike } from "ol/style/flat";
 import { setMask } from "./mask";
-import type { Feature as FeatureType, MapController, MapEvent } from "./types";
+import type {
+  BBox,
+  Feature as FeatureType,
+  MapController,
+  MapEvent,
+  Position,
+} from "./types";
 
 const EPSG_4326 = "EPSG:4326";
 
@@ -183,7 +189,7 @@ export function createOpenLayersMapController(
       }
     },
 
-    flyTo(center: [number, number], zoom: number) {
+    flyTo(center: Position, zoom: number) {
       map.getView().animate({
         center: fromLonLat(center, map.getView().getProjection()),
         zoom,
@@ -192,11 +198,7 @@ export function createOpenLayersMapController(
       });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map
         .getView()
         .fit(transformExtent(bbox, EPSG_4326, map.getView().getProjection()), {
@@ -213,7 +215,7 @@ export function createOpenLayersMapController(
       map.getTargetElement().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (reverseMarker) {
         if (!coordinates) {
           source.removeFeature(reverseMarker);
@@ -396,10 +398,7 @@ export function createOpenLayersMapController(
         return undefined;
       }
 
-      return [
-        zoom,
-        ...(toLonLat(center, view.getProjection()) as [number, number]),
-      ];
+      return [zoom, ...(toLonLat(center, view.getProjection()) as Position)];
     },
   } satisfies MapController;
 }

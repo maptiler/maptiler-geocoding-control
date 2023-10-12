@@ -19,6 +19,7 @@ import type {
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
+import type { BBox, Position } from "./types";
 import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
@@ -143,15 +144,11 @@ export function createMapLibreGlMapController(
       }
     },
 
-    flyTo(center: [number, number], zoom: number): void {
+    flyTo(center: Position, zoom: number): void {
       map.flyTo({ center, zoom, ...flyToOptions });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map.fitBounds(
         [
           [bbox[0], bbox[1]],
@@ -165,7 +162,7 @@ export function createMapLibreGlMapController(
       map.getCanvasContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (!maplibregl || !marker) {
         return;
       }

@@ -6,8 +6,10 @@
   import { default as LoadingIcon } from "./LoadingIcon.svelte";
   import { default as ReverseGeocodingIcon } from "./ReverseGeocodingIcon.svelte";
   import { default as SearchIcon } from "./SearchIcon.svelte";
+  import { unwrapBbox, wrapNum } from "./geoUtils";
   import { getProximity } from "./proximity";
   import type {
+    BBox,
     DispatcherType,
     Feature,
     FeatureCollection,
@@ -16,8 +18,6 @@
   } from "./types";
 
   let className: string | undefined = undefined;
-
-  type BBox = [number, number, number, number];
 
   export { className as class };
 
@@ -463,16 +463,18 @@
       return;
     }
 
-    const bbox: [number, number, number, number] = [180, 90, -180, -90];
+    const bbox: BBox = [180, 90, -180, -90];
 
     const fuzzyOnly = !markedFeatures.some((feature) => !feature.matching_text);
 
     for (const feature of markedFeatures) {
       if (fuzzyOnly || !feature.matching_text) {
-        bbox[0] = Math.min(bbox[0], feature.bbox?.[0] ?? feature.center[0]);
-        bbox[1] = Math.min(bbox[1], feature.bbox?.[1] ?? feature.center[1]);
-        bbox[2] = Math.max(bbox[2], feature.bbox?.[2] ?? feature.center[0]);
-        bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
+        for (const i of [0, 1, 2, 3] as const) {
+          bbox[i] = Math.max(
+            bbox[i],
+            feature.bbox?.[i] ?? feature.center[i % 2],
+          );
+        }
       }
     }
 
@@ -483,15 +485,6 @@
         mapController.fitBounds(unwrapBbox(bbox), 50, maxZoom);
       }
     }
-  }
-
-  // taken from Leaflet
-  function wrapNum(x: number, range: [number, number], includeMax: boolean) {
-    const max = range[1],
-      min = range[0],
-      d = max - min;
-
-    return x === max && includeMax ? x : ((((x - min) % d) + d) % d) + min;
   }
 
   function handleReverse(coordinates: [lng: number, lat: number]) {
@@ -558,16 +551,6 @@
     picked = feature;
     searchValue = feature.place_name;
     selectedItemIndex = -1;
-  }
-
-  function unwrapBbox(bbox0: BBox): BBox {
-    let bbox = [...bbox0] satisfies BBox;
-
-    if (bbox[2] < bbox[0]) {
-      bbox[2] += 360;
-    }
-
-    return bbox;
   }
 </script>
 

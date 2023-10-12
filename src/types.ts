@@ -1,12 +1,16 @@
 import type { Feature as FeatureType, Geometry } from "geojson";
 
+export type BBox = [minx: number, miny: number, maxx: number, maxy: number];
+
+export type Position = [x: number, y: number];
+
 export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   id: string;
   text: string;
   place_name: string;
   place_type: string[];
-  center: [number, number];
-  bbox: [number, number, number, number];
+  center: Position;
+  bbox: BBox;
   address?: string;
   matching_text?: string;
 };
@@ -17,7 +21,7 @@ export type FeatureCollection<T extends Geometry = Geometry> = {
 };
 
 export type MapEvent =
-  | { type: "mapClick"; coordinates: [number, number] }
+  | { type: "mapClick"; coordinates: Position }
   | { type: "markerClick"; id: string }
   | { type: "markerMouseEnter"; id: string }
   | { type: "markerMouseLeave"; id: string };
@@ -25,13 +29,9 @@ export type MapEvent =
 export type MapController = {
   setEventHandler(handler: undefined | ((e: MapEvent) => void)): void;
 
-  flyTo(center: [number, number], zoom: number): void;
+  flyTo(center: Position, zoom: number): void;
 
-  fitBounds(
-    bbox: [number, number, number, number],
-    padding: number,
-    maxZoom: number,
-  ): void;
+  fitBounds(bbox: BBox, padding: number, maxZoom: number): void;
 
   indicateReverse(reverse: boolean): void;
 
@@ -40,7 +40,7 @@ export type MapController = {
     picked: Feature | undefined,
   ): void;
 
-  setReverseMarker(coordinates?: [number, number]): void;
+  setReverseMarker(coordinates?: Position): void;
 
   setSelectedMarker(index: number): void;
 
@@ -59,7 +59,7 @@ export type ProximityRule = {
       type: "fixed";
 
       /** coordinates of the fixed proximity */
-      coordinates: [number, number];
+      coordinates: Position;
     }
   | {
       /** use map center coordinates for the proximity */
@@ -134,7 +134,7 @@ export type ControlOptions = {
    *
    * @default undefined
    */
-  bbox?: [number, number, number, number];
+  bbox?: BBox;
 
   /**
    * Maximum number of results to show.

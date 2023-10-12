@@ -9,7 +9,7 @@ import type { GeoJSON } from "geojson";
 import * as L from "leaflet";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
-import type { Feature, MapController, MapEvent } from "./types";
+import type { BBox, Feature, MapController, MapEvent, Position } from "./types";
 
 export function createLeafletMapController(
   map: L.Map,
@@ -86,15 +86,11 @@ export function createLeafletMapController(
       }
     },
 
-    flyTo(center: [number, number], zoom: number) {
+    flyTo(center: Position, zoom: number) {
       map.flyTo([center[1], center[0]], zoom, { duration: 2, ...flyToOptions });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map.flyToBounds(
         [
           [bbox[1], bbox[0]],
@@ -108,13 +104,13 @@ export function createLeafletMapController(
       map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (!marker) {
         return;
       }
 
       const latLng =
-        coordinates && ([coordinates[1], coordinates[0]] as [number, number]);
+        coordinates && ([coordinates[1], coordinates[0]] as Position);
 
       if (reverseMarker) {
         if (!latLng) {
