@@ -17,9 +17,13 @@
 
   let imageUrl: string | undefined;
 
+  let loadIconAttempt = 0;
+
   $: index = categories?.length ?? 0;
 
   $: {
+    loadIconAttempt;
+
     do {
       index--;
 
@@ -40,7 +44,7 @@
       missingIconsCache.add(imageUrl);
     }
 
-    index--;
+    loadIconAttempt++;
   }
 </script>
 
