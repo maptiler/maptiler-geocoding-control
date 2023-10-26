@@ -414,7 +414,6 @@
 
       const res = await fetch(url, {
         signal: ac.signal,
-        credentials: "include",
         ...fetchParameters,
       });
 
