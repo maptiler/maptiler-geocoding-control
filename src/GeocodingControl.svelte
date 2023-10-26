@@ -414,6 +414,7 @@
 
       const res = await fetch(url, {
         signal: ac.signal,
+        credentials: "include",
         ...fetchParameters,
       });
 
@@ -470,7 +471,7 @@
     for (const feature of markedFeatures) {
       if (fuzzyOnly || !feature.matching_text) {
         for (const i of [0, 1, 2, 3] as const) {
-          bbox[i] = Math.max(
+          bbox[i] = Math[i < 2 ? "min" : "max"](
             bbox[i],
             feature.bbox?.[i] ?? feature.center[i % 2],
           );
