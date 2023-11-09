@@ -42,6 +42,14 @@ export class GeocodingControl extends EventTarget {
     this.#gc?.setQuery(value, submit);
   }
 
+  clearMap() {
+    this.#gc?.clearMap();
+  }
+
+  clearList() {
+    this.#gc?.clearList();
+  }
+
   focus() {
     this.#gc?.focus();
   }

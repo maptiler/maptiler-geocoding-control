@@ -57,7 +57,7 @@ const propertyNames = [
   "showFullGeometry",
   "showPlaceType",
   "showResultsWhileTyping",
-  "trackProximity",
+  "adjustUrlQuery",
   "types",
   "zoom",
   "mapController",
@@ -80,6 +80,8 @@ export type Methods = {
   blur(): void;
   focus(): void;
   setQuery(value: string, submit?: boolean): void;
+  clearMap(): void;
+  clearList(): void;
 };
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
@@ -138,6 +140,8 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   useImperativeHandle(ref, () => ({
     setQuery: (value: string, submit = true) =>
       controlRef.current?.setQuery(value, submit),
+    clearMap: () => controlRef.current?.clearMap(),
+    clearList: () => controlRef.current?.clearList(),
     focus: () => controlRef.current?.focus(),
     blur: () => controlRef.current?.blur(),
   }));

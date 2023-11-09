@@ -9,7 +9,7 @@ import type { GeoJSON } from "geojson";
 import * as L from "leaflet";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
-import type { Feature, MapController, MapEvent, Proximity } from "./types";
+import type { BBox, Feature, MapController, MapEvent, Position } from "./types";
 
 export function createLeafletMapController(
   map: L.Map,
@@ -38,8 +38,6 @@ export function createLeafletMapController(
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let prevProximity: Proximity = undefined;
-
   let markers: L.Marker[] = [];
 
   let selectedMarker: L.Marker | undefined;
@@ -50,21 +48,6 @@ export function createLeafletMapController(
     style: fullGeometryStyle,
     interactive: false,
   }).addTo(map);
-
-  const handleMoveEnd = () => {
-    let c: L.LatLng;
-
-    const proximity =
-      map.getZoom() > 10
-        ? ([(c = map.getCenter().wrap()).lng, c.lat] as [number, number])
-        : undefined;
-
-    if (prevProximity !== proximity) {
-      prevProximity = proximity;
-
-      eventHandler?.({ type: "proximityChange", proximity });
-    }
-  };
 
   const handleMapClick = (e: L.LeafletMouseEvent) => {
     eventHandler?.({
@@ -95,31 +78,19 @@ export function createLeafletMapController(
       if (handler) {
         eventHandler = handler;
 
-        map.on("moveend", handleMoveEnd);
-
-        handleMoveEnd();
-
         map.on("click", handleMapClick);
       } else {
-        map.off("moveend", handleMoveEnd);
-
-        eventHandler?.({ type: "proximityChange", proximity: undefined });
-
         eventHandler = undefined;
 
         map.off("click", handleMapClick);
       }
     },
 
-    flyTo(center: [number, number], zoom: number) {
+    flyTo(center: Position, zoom: number) {
       map.flyTo([center[1], center[0]], zoom, { duration: 2, ...flyToOptions });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map.flyToBounds(
         [
           [bbox[1], bbox[0]],
@@ -133,13 +104,13 @@ export function createLeafletMapController(
       map.getContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (!marker) {
         return;
       }
 
       const latLng =
-        coordinates && ([coordinates[1], coordinates[0]] as [number, number]);
+        coordinates && ([coordinates[1], coordinates[0]] as Position);
 
       if (reverseMarker) {
         if (!latLng) {
@@ -302,6 +273,12 @@ export function createLeafletMapController(
       selectedMarker = index > -1 ? markers[index] : undefined;
 
       selectedMarker?.getElement()?.classList.toggle("marker-selected", true);
+    },
+
+    getCenterAndZoom() {
+      const c = map.getCenter();
+
+      return [map.getZoom(), c.lng, c.lat];
     },
   } satisfies MapController;
 }

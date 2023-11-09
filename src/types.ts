@@ -1,16 +1,16 @@
-import type {
-  Feature as FeatureType,
-  GeoJsonProperties,
-  Geometry,
-} from "geojson";
+import type { Feature as FeatureType, Geometry } from "geojson";
+
+export type BBox = [minx: number, miny: number, maxx: number, maxy: number];
+
+export type Position = [x: number, y: number];
 
 export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   id: string;
   text: string;
   place_name: string;
   place_type: string[];
-  center: [number, number];
-  bbox: [number, number, number, number];
+  center: Position;
+  bbox: BBox;
   address?: string;
   matching_text?: string;
 };
@@ -21,11 +21,7 @@ export type FeatureCollection<T extends Geometry = Geometry> = {
 };
 
 export type MapEvent =
-  | {
-      type: "proximityChange";
-      proximity: [number, number] | undefined;
-    }
-  | { type: "mapClick"; coordinates: [number, number] }
+  | { type: "mapClick"; coordinates: Position }
   | { type: "markerClick"; id: string }
   | { type: "markerMouseEnter"; id: string }
   | { type: "markerMouseLeave"; id: string };
@@ -33,13 +29,9 @@ export type MapEvent =
 export type MapController = {
   setEventHandler(handler: undefined | ((e: MapEvent) => void)): void;
 
-  flyTo(center: [number, number], zoom: number): void;
+  flyTo(center: Position, zoom: number): void;
 
-  fitBounds(
-    bbox: [number, number, number, number],
-    padding: number,
-    maxZoom: number,
-  ): void;
+  fitBounds(bbox: BBox, padding: number, maxZoom: number): void;
 
   indicateReverse(reverse: boolean): void;
 
@@ -48,12 +40,43 @@ export type MapController = {
     picked: Feature | undefined,
   ): void;
 
-  setReverseMarker(coordinates?: [number, number]): void;
+  setReverseMarker(coordinates?: Position): void;
 
   setSelectedMarker(index: number): void;
+
+  getCenterAndZoom(): [zoom: number, lon: number, lat: number] | undefined;
 };
 
-export type Proximity = [number, number] | undefined;
+export type ProximityRule = {
+  /** minimal map zoom for the rule to be used */
+  minZoom?: number;
+
+  /** maximal map zoom for the rule to be used */
+  maxZoom?: number;
+} & (
+  | {
+      /** fixed proximity */
+      type: "fixed";
+
+      /** coordinates of the fixed proximity */
+      coordinates: Position;
+    }
+  | {
+      /** use map center coordinates for the proximity */
+      type: "map-center";
+    }
+  | {
+      /** resolve proximity by geolocating IP of the geocoding API call */
+      type: "server-geolocation";
+    }
+  | ({
+      /** use browser's geolocation API for proximity. If it fails, following proximity rules are iterated. */
+      type: "client-geolocation";
+
+      /** how long should the geolocation result be cached, in milliseconds */
+      cachedLocationExpiry?: number;
+    } & PositionOptions)
+);
 
 export type ControlOptions = {
   /**
@@ -70,10 +93,12 @@ export type ControlOptions = {
   debounceSearch?: number;
 
   /**
-   * A proximity argument: this is a geographical point given as an object with latitude and longitude properties.
-   * Search results closer to this point will be given higher priority.
+   * Search results closer to the proximity point will be given higher priority. First matching rule from the array will be used.
+   * Set to `undefined` or `null` to disable proximity.
+   *
+   * @default [{ type: "server-geolocation" }]
    */
-  proximity?: [number, number];
+  proximity?: ProximityRule[] | null | undefined;
 
   /**
    * Override the default placeholder attribute value.
@@ -97,13 +122,6 @@ export type ControlOptions = {
   noResultsMessage?: string;
 
   /**
-   * If true, the geocoder proximity will automatically update based on the map view.
-   *
-   * @default true
-   */
-  trackProximity?: boolean;
-
-  /**
    * Minimum number of characters to enter before results are shown.
    *
    * @default 2
@@ -113,8 +131,10 @@ export type ControlOptions = {
   /**
    * A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY].
    * Search results will be limited to the bounding box.
+   *
+   * @default undefined
    */
-  bbox?: [number, number, number, number];
+  bbox?: BBox;
 
   /**
    * Maximum number of results to show.
@@ -127,9 +147,12 @@ export type ControlOptions = {
    * Specify the language to use for response text and query result weighting.
    * Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script.
    * More than one value can also be specified, separated by commas.
+   * Set to `null` or empty string for disabling language-specific searching.
    * Defaults to the browser's language settings.
+   *
+   * @default undefined
    */
-  language?: string | string[];
+  language?: string | string[] | null;
 
   /**
    * If `false`, indicates that search will only occur on enter key press.
@@ -191,6 +214,8 @@ export type ControlOptions = {
 
   /**
    * Class of the root element.
+   *
+   * @default undefined
    */
   class?: string;
 
@@ -229,8 +254,6 @@ export type ControlOptions = {
    * @default "ifNeeded"
    */
   showPlaceType?: false | "always" | "ifNeeded";
-
-  showIcons?: boolean;
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
@@ -273,6 +296,13 @@ export type ControlOptions = {
    * @default "icons/" for Svelte apps, otherwise `https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/`
    */
   iconsBaseUrl?: string;
+
+  /**
+   * Function to adjust URL search parameters.
+   *
+   * @default empty function
+   */
+  adjustUrlQuery?: (sp: URLSearchParams) => void;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

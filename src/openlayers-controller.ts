@@ -23,7 +23,13 @@ import Style, { type StyleLike } from "ol/style/Style";
 import Text from "ol/style/Text";
 import type { FlatStyleLike } from "ol/style/flat";
 import { setMask } from "./mask";
-import type { Feature as FeatureType, MapController, MapEvent } from "./types";
+import type {
+  BBox,
+  Feature as FeatureType,
+  MapController,
+  MapEvent,
+  Position,
+} from "./types";
 
 const EPSG_4326 = "EPSG:4326";
 
@@ -162,17 +168,6 @@ export function createOpenLayersMapController(
     return geometry.transform(EPSG_4326, map.getView().getProjection());
   }
 
-  const handleMoveEnd = () => {
-    const center = map.getView().getCenter();
-
-    const proximity =
-      center && map.getView().getZoom()! > 10
-        ? (toLonLat(center, map.getView().getProjection()) as [number, number])
-        : undefined;
-
-    eventHandler?.({ type: "proximityChange", proximity });
-  };
-
   const handleMapClick = (e: MapBrowserEvent<PointerEvent>) => {
     eventHandler?.({
       type: "mapClick",
@@ -187,18 +182,14 @@ export function createOpenLayersMapController(
     setEventHandler(handler: undefined | ((e: MapEvent) => void)): void {
       if (handler) {
         eventHandler = handler;
-        map.on("moveend", handleMoveEnd);
-        handleMoveEnd();
         map.on("click", handleMapClick);
       } else {
-        map.un("moveend", handleMoveEnd);
-        eventHandler?.({ type: "proximityChange", proximity: undefined });
         eventHandler = undefined;
         map.un("click", handleMapClick);
       }
     },
 
-    flyTo(center: [number, number], zoom: number) {
+    flyTo(center: Position, zoom: number) {
       map.getView().animate({
         center: fromLonLat(center, map.getView().getProjection()),
         zoom,
@@ -207,11 +198,7 @@ export function createOpenLayersMapController(
       });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map
         .getView()
         .fit(transformExtent(bbox, EPSG_4326, map.getView().getProjection()), {
@@ -228,7 +215,7 @@ export function createOpenLayersMapController(
       map.getTargetElement().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (reverseMarker) {
         if (!coordinates) {
           source.removeFeature(reverseMarker);
@@ -398,6 +385,20 @@ export function createOpenLayersMapController(
       }
 
       prevSelected = index;
+    },
+
+    getCenterAndZoom() {
+      const view = map.getView();
+
+      const center = view.getCenter();
+
+      const zoom = view.getZoom();
+
+      if (!center || zoom === undefined) {
+        return undefined;
+      }
+
+      return [zoom, ...(toLonLat(center, view.getProjection()) as Position)];
     },
   } satisfies MapController;
 }

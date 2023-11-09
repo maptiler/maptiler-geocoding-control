@@ -13,14 +13,14 @@ import type {
   FlyToOptions,
   GeoJSONSource,
   LineLayerSpecification,
-  LngLat,
   Map,
   MapMouseEvent,
   Marker,
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
-import type { Feature, MapController, MapEvent, Proximity } from "./types.js";
+import type { BBox, Position } from "./types";
+import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
@@ -63,8 +63,6 @@ export function createMapLibreGlMapController(
   },
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
-
-  let prevProximity: Proximity = undefined;
 
   let markers: Marker[] = [];
 
@@ -114,21 +112,6 @@ export function createMapLibreGlMapController(
     });
   };
 
-  const handleMoveEnd = () => {
-    let c: LngLat;
-
-    const proximity =
-      map.getZoom() > 9
-        ? ([(c = map.getCenter().wrap()).lng, c.lat] as [number, number])
-        : undefined;
-
-    if (prevProximity !== proximity) {
-      prevProximity = proximity;
-
-      eventHandler?.({ type: "proximityChange", proximity });
-    }
-  };
-
   function createMarker(interactive = false) {
     if (!maplibregl) {
       throw new Error();
@@ -153,31 +136,19 @@ export function createMapLibreGlMapController(
       if (handler) {
         eventHandler = handler;
 
-        map.on("moveend", handleMoveEnd);
-
-        handleMoveEnd();
-
         map.on("click", handleMapClick);
       } else {
-        map.off("moveend", handleMoveEnd);
-
-        eventHandler?.({ type: "proximityChange", proximity: undefined });
-
         eventHandler = undefined;
 
         map.off("click", handleMapClick);
       }
     },
 
-    flyTo(center: [number, number], zoom: number): void {
+    flyTo(center: Position, zoom: number): void {
       map.flyTo({ center, zoom, ...flyToOptions });
     },
 
-    fitBounds(
-      bbox: [number, number, number, number],
-      padding: number,
-      maxZoom: number,
-    ): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map.fitBounds(
         [
           [bbox[0], bbox[1]],
@@ -191,7 +162,7 @@ export function createMapLibreGlMapController(
       map.getCanvasContainer().style.cursor = reverse ? "crosshair" : "";
     },
 
-    setReverseMarker(coordinates?: [number, number]) {
+    setReverseMarker(coordinates?: Position) {
       if (!maplibregl || !marker) {
         return;
       }
@@ -365,6 +336,12 @@ export function createMapLibreGlMapController(
       selectedMarker = index > -1 ? markers[index] : undefined;
 
       selectedMarker?.getElement().classList.toggle("marker-selected", true);
+    },
+
+    getCenterAndZoom() {
+      const c = map.getCenter();
+
+      return [map.getZoom(), c.lng, c.lat];
     },
   } satisfies MapController;
 }

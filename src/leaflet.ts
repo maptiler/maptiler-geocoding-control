@@ -122,6 +122,14 @@ export class GeocodingControl extends L.Control {
     this.#gc?.setQuery(value, submit);
   }
 
+  clearMap() {
+    this.#gc?.clearMap();
+  }
+
+  clearList() {
+    this.#gc?.clearList();
+  }
+
   focus() {
     this.#gc?.focus();
   }

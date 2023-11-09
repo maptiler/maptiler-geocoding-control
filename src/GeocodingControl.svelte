@@ -1,22 +1,23 @@
 <script lang="ts">
+  import { createEventDispatcher, onDestroy } from "svelte";
+  import { default as ClearIcon } from "./ClearIcon.svelte";
+  import { default as FailIcon } from "./FailIcon.svelte";
+  import { default as FeatureItem } from "./FeatureItem.svelte";
+  import { default as LoadingIcon } from "./LoadingIcon.svelte";
+  import { default as ReverseGeocodingIcon } from "./ReverseGeocodingIcon.svelte";
+  import { default as SearchIcon } from "./SearchIcon.svelte";
+  import { unwrapBbox, wrapNum } from "./geoUtils";
+  import { getProximity } from "./proximity";
   import type {
+    BBox,
     DispatcherType,
     Feature,
     FeatureCollection,
     MapController,
-    Proximity,
+    ProximityRule,
   } from "./types";
-  import ReverseGeocodingIcon from "./ReverseGeocodingIcon.svelte";
-  import { createEventDispatcher, onDestroy } from "svelte";
-  import FeatureItem from "./FeatureItem.svelte";
-  import LoadingIcon from "./LoadingIcon.svelte";
-  import SearchIcon from "./SearchIcon.svelte";
-  import ClearIcon from "./ClearIcon.svelte";
-  import FailIcon from "./FailIcon.svelte";
 
   let className: string | undefined = undefined;
-
-  type BBox = [number, number, number, number];
 
   export { className as class };
 
@@ -44,7 +45,7 @@
 
   export let fuzzyMatch = true;
 
-  export let language: string | string[] | undefined = undefined;
+  export let language: string | string[] | null | undefined = undefined;
 
   export let limit: number | undefined = undefined;
 
@@ -57,7 +58,9 @@
 
   export let placeholder = "Search";
 
-  export let proximity: Proximity = undefined;
+  export let proximity: ProximityRule[] | null | undefined = [
+    { type: "server-geolocation" },
+  ];
 
   export let reverseActive = enableReverse === "always";
 
@@ -70,8 +73,6 @@
   export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
 
   export let showResultsWhileTyping = true;
-
-  export let trackProximity = true;
 
   export let types: string[] | undefined = undefined;
 
@@ -87,6 +88,8 @@
     "https://cdn.maptiler.com/maptiler-geocoding-control/v" +
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
+
+  export let adjustUrlQuery = (sp: URLSearchParams) => {};
 
   export function focus() {
     input.focus();
@@ -111,6 +114,17 @@
         input.select();
       });
     }
+  }
+
+  export function clearList() {
+    listFeatures = undefined;
+    picked = undefined;
+    selectedItemIndex = -1;
+  }
+
+  export function clearMap() {
+    markedFeatures = [];
+    picked = undefined;
   }
 
   let focused = false;
@@ -143,10 +157,6 @@
 
   const dispatch = createEventDispatcher<DispatcherType>();
 
-  $: if (!trackProximity) {
-    proximity = undefined;
-  }
-
   $: if (
     showFullGeometry &&
     picked &&
@@ -166,7 +176,7 @@
           picked.center,
           picked.id.startsWith("poi.") || picked.id.startsWith("address.")
             ? maxZoom
-            : zoom
+            : zoom,
         );
       } else {
         mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
@@ -220,7 +230,7 @@
     const m = /^(-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)$/.exec(searchValue);
 
     mapController?.setReverseMarker(
-      m ? [Number(m[1]), Number(m[2])] : undefined
+      m ? [Number(m[1]), Number(m[2])] : undefined,
     );
   }
 
@@ -251,14 +261,10 @@
           }
 
           break;
-        case "proximityChange":
-          proximity = trackProximity ? e.proximity : undefined;
-
-          break;
         case "markerClick":
           {
             const feature = listFeatures?.find(
-              (feature) => feature.id === e.id
+              (feature) => feature.id === e.id,
             );
 
             if (feature) {
@@ -329,69 +335,9 @@
     {
       byId = false,
       exact = false,
-    }: undefined | { byId?: boolean; exact?: boolean } = {}
+    }: undefined | { byId?: boolean; exact?: boolean } = {},
   ) {
     error = undefined;
-
-    const isReverse = isQuerReverse();
-
-    const sp = new URLSearchParams();
-
-    if (language != undefined) {
-      sp.set(
-        "language",
-        Array.isArray(language) ? language.join(",") : language
-      );
-    }
-
-    if (types) {
-      sp.set("types", types.join(","));
-    }
-
-    if (!isReverse) {
-      if (bbox) {
-        sp.set("bbox", bbox.map((c) => c.toFixed(6)).join(","));
-      }
-
-      if (country) {
-        sp.set("country", Array.isArray(country) ? country.join(",") : country);
-      }
-    }
-
-    if (!byId) {
-      if (proximity) {
-        sp.set("proximity", proximity.map((c) => c.toFixed(6)).join(","));
-      }
-
-      if (exact || !showResultsWhileTyping) {
-        sp.set("autocomplete", "false");
-      }
-
-      sp.set("fuzzyMatch", String(fuzzyMatch));
-    }
-
-    if (limit !== undefined && (!isReverse || types?.length === 1)) {
-      sp.set("limit", String(limit));
-    }
-
-    sp.set("key", apiKey);
-
-    const url =
-      apiUrl + "/" + encodeURIComponent(searchValue) + ".json?" + sp.toString();
-
-    if (url === lastSearchUrl) {
-      if (byId) {
-        listFeatures = undefined;
-
-        picked = cachedFeatures[0];
-      } else {
-        listFeatures = cachedFeatures;
-      }
-
-      return;
-    }
-
-    lastSearchUrl = url;
 
     abortController?.abort();
 
@@ -399,17 +345,101 @@
 
     abortController = ac;
 
-    let res: Response;
-
     try {
-      res = await fetch(url, {
+      const isReverse = isQuerReverse();
+
+      const sp = new URLSearchParams();
+
+      if (language !== undefined) {
+        sp.set(
+          "language",
+          Array.isArray(language) ? language.join(",") : language ?? "",
+        );
+      }
+
+      if (types) {
+        sp.set("types", types.join(","));
+      }
+
+      if (bbox) {
+        sp.set("bbox", bbox.map((c) => c.toFixed(6)).join(","));
+      }
+
+      if (country) {
+        sp.set("country", Array.isArray(country) ? country.join(",") : country);
+      }
+
+      if (!byId && !isReverse) {
+        const coords = await getProximity(mapController, proximity, ac);
+
+        if (coords) {
+          sp.set("proximity", coords);
+        }
+
+        if (exact || !showResultsWhileTyping) {
+          sp.set("autocomplete", "false");
+        }
+
+        sp.set("fuzzyMatch", String(fuzzyMatch));
+      }
+
+      if (limit !== undefined && (!isReverse || types?.length === 1)) {
+        sp.set("limit", String(limit));
+      }
+
+      sp.set("key", apiKey);
+
+      adjustUrlQuery(sp);
+
+      const url =
+        apiUrl +
+        "/" +
+        encodeURIComponent(searchValue) +
+        ".json?" +
+        sp.toString();
+
+      if (url === lastSearchUrl) {
+        if (byId) {
+          listFeatures = undefined;
+
+          picked = cachedFeatures[0];
+        } else {
+          listFeatures = cachedFeatures;
+        }
+
+        return;
+      }
+
+      lastSearchUrl = url;
+
+      const res = await fetch(url, {
         signal: ac.signal,
         ...fetchParameters,
-      }).finally(() => {
-        if (ac === abortController) {
-          abortController = undefined;
-        }
       });
+
+      if (!res.ok) {
+        throw new Error();
+      }
+
+      const featureCollection: FeatureCollection = await res.json();
+
+      dispatch("response", { url, featureCollection });
+
+      if (byId) {
+        listFeatures = undefined;
+
+        picked = featureCollection.features[0];
+
+        cachedFeatures = [picked];
+      } else {
+        listFeatures = featureCollection.features.filter(filter);
+
+        cachedFeatures = listFeatures;
+
+        if (isReverse) {
+          input.focus();
+        }
+      }
     } catch (e) {
       if (
         e &&
@@ -420,30 +450,10 @@
         return;
       }
 
-      throw new Error();
-    }
-
-    if (!res.ok) {
-      throw new Error();
-    }
-
-    const featureCollection: FeatureCollection = await res.json();
-
-    dispatch("response", { url, featureCollection });
-
-    if (byId) {
-      listFeatures = undefined;
-
-      picked = featureCollection.features[0];
-
-      cachedFeatures = [picked];
-    } else {
-      listFeatures = featureCollection.features.filter(filter);
-
-      cachedFeatures = listFeatures;
-
-      if (isReverse) {
-        input.focus();
+      throw e;
+    } finally {
+      if (ac === abortController) {
+        abortController = undefined;
       }
     }
   }
@@ -453,16 +463,18 @@
       return;
     }
 
-    const bbox: [number, number, number, number] = [180, 90, -180, -90];
+    const bbox: BBox = [180, 90, -180, -90];
 
     const fuzzyOnly = !markedFeatures.some((feature) => !feature.matching_text);
 
     for (const feature of markedFeatures) {
       if (fuzzyOnly || !feature.matching_text) {
-        bbox[0] = Math.min(bbox[0], feature.bbox?.[0] ?? feature.center[0]);
-        bbox[1] = Math.min(bbox[1], feature.bbox?.[1] ?? feature.center[1]);
-        bbox[2] = Math.max(bbox[2], feature.bbox?.[2] ?? feature.center[0]);
-        bbox[3] = Math.max(bbox[3], feature.bbox?.[3] ?? feature.center[1]);
+        for (const i of [0, 1, 2, 3] as const) {
+          bbox[i] = Math[i < 2 ? "min" : "max"](
+            bbox[i],
+            feature.bbox?.[i] ?? feature.center[i % 2],
+          );
+        }
       }
     }
 
@@ -475,22 +487,13 @@
     }
   }
 
-  // taken from Leaflet
-  function wrapNum(x: number, range: [number, number], includeMax: boolean) {
-    const max = range[1],
-      min = range[0],
-      d = max - min;
-
-    return x === max && includeMax ? x : ((((x - min) % d) + d) % d) + min;
-  }
-
   function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = enableReverse === "always";
 
     setQuery(
       wrapNum(coordinates[0], [-180, 180], true).toFixed(6) +
         "," +
-        coordinates[1].toFixed(6)
+        coordinates[1].toFixed(6),
     );
   }
 
@@ -536,7 +539,7 @@
         () => {
           search(sv).catch((err) => (error = err));
         },
-        debounce ? debounceSearch : 0
+        debounce ? debounceSearch : 0,
       );
     } else {
       listFeatures = undefined;
@@ -548,16 +551,6 @@
     picked = feature;
     searchValue = feature.place_name;
     selectedItemIndex = -1;
-  }
-
-  function unwrapBbox(bbox0: BBox): BBox {
-    let bbox = [...bbox0] satisfies BBox;
-
-    if (bbox[2] < bbox[0]) {
-      bbox[2] += 360;
-    }
-
-    return bbox;
   }
 </script>
 
