@@ -4,6 +4,7 @@
   import { default as FailIcon } from "./FailIcon.svelte";
   import { default as FeatureItem } from "./FeatureItem.svelte";
   import { default as LoadingIcon } from "./LoadingIcon.svelte";
+  import MarkerIcon from "./MarkerIcon.svelte";
   import { default as ReverseGeocodingIcon } from "./ReverseGeocodingIcon.svelte";
   import { default as SearchIcon } from "./SearchIcon.svelte";
   import { unwrapBbox, wrapNum } from "./geoUtils";
@@ -553,6 +554,11 @@
     selectedItemIndex = -1;
   }
 </script>
+
+{#if false}
+  <!-- This workaround is just to use marker styles. Bug in svlete/vite? Investigate. -->
+  <MarkerIcon displayIn="list" />
+{/if}
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <form
