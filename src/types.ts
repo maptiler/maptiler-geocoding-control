@@ -276,6 +276,14 @@ export type ControlOptions = {
    */
   types?: string[];
 
+
+  /**
+   * If set to `true` then use all types except for those listed in `types`.
+   *
+   * @default false
+   */
+  excludeTypes?: boolean;
+
   /**
    * Geocoding API URL.
    *

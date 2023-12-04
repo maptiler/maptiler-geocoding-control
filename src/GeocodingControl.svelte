@@ -77,6 +77,8 @@
 
   export let types: string[] | undefined = undefined;
 
+  export let excludeTypes = false;
+
   export let zoom = 16;
 
   export let maxZoom = 18;
@@ -360,6 +362,10 @@
 
       if (types) {
         sp.set("types", types.join(","));
+      }
+
+      if (excludeTypes) {
+        sp.set("excludeTypes", String(excludeTypes));
       }
 
       if (bbox) {

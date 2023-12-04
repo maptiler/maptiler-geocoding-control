@@ -59,6 +59,7 @@ const propertyNames = [
   "showResultsWhileTyping",
   "adjustUrlQuery",
   "types",
+  "excludeTypes",
   "zoom",
   "mapController",
 ] as const satisfies readonly (keyof (ControlOptions & MapControllerProp))[];
