@@ -20,8 +20,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
    * If the value is an object, the marker will be constructed using these options.
    * If `false`, no marker will be added to the map.
    * Requires that `options.maplibregl` also be set.
-   *
-   * @default true
+   * Default value is `true`.
    */
   marker?: boolean | MarkerOptions;
 
@@ -30,8 +29,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
    * If the value is an object, the marker will be constructed using these options.
    * If `false`, no marker will be added to the map.
    * Requires that `options.maplibregl` also be set.
-   *
-   * @default true
+   * Default value is `true`.
    */
   showResultMarkers?: boolean | MarkerOptions;
 
@@ -39,8 +37,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
    * If `false`, animating the map to a selected result is disabled.
    * If `true`, animating the map will use the default animation parameters.
    * If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition.
-   *
-   * @default true
+   * Default value is `true`.
    */
   flyTo?: boolean | (FlyToOptions & FitBoundsOptions);
 
