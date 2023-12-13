@@ -356,7 +356,7 @@
       markedFeatures = undefined;
       selectedItemIndex = -1;
     } else if (searchValue) {
-      const zoomTo = event || !isQuerReverse();
+      const zoomTo = event || !isQueryReverse();
 
       search(searchValue, { exact: true })
         .then(() => {
@@ -372,8 +372,14 @@
     }
   }
 
-  function isQuerReverse() {
-    return /^-?\d+(\.\d+)?,-?\d+(\.\d+)?$/.test(searchValue);
+  function isQueryReverse() {
+    try {
+      convert(searchValue, 6);
+
+      return true;
+    } catch {
+      return false;
+    }
   }
 
   async function search(
@@ -392,7 +398,7 @@
     abortController = ac;
 
     try {
-      const isReverse = isQuerReverse();
+      const isReverse = isQueryReverse();
 
       const sp = new URLSearchParams();
 
