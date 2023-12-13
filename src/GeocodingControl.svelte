@@ -75,6 +75,12 @@
 
   export let showResultsWhileTyping = true;
 
+  export let selectFirst = true;
+
+  export let flyToSelected = false;
+
+  export let markerOnSelected = true;
+
   export let types: string[] | undefined = undefined;
 
   export let excludeTypes = false;
@@ -193,6 +199,26 @@
     prevIdToFly = picked?.id;
   }
 
+  $: if (mapController && selected && flyTo && flyToSelected) {
+    mapController.flyTo(
+      selected.center,
+      selected.id.startsWith("poi.") || selected.id.startsWith("address.")
+        ? maxZoom
+        : zoom,
+    );
+  }
+
+  // if markerOnSelected was dynamically changed to false
+  $: if (!markerOnSelected) {
+    mapController?.setMarkers(undefined, undefined);
+  }
+
+  $: if (mapController && markerOnSelected && !markedFeatures) {
+    mapController.setMarkers(selected ? [selected] : undefined, undefined);
+
+    mapController.setSelectedMarker(selected ? 0 : -1);
+  }
+
   $: if (markedFeatures !== listFeatures) {
     markedFeatures = undefined;
   }
@@ -209,7 +235,9 @@
   }
 
   // highlight selected marker
-  $: mapController?.setSelectedMarker(selectedItemIndex);
+  $: if (markedFeatures && mapController) {
+    mapController.setSelectedMarker(selectedItemIndex);
+  }
 
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
@@ -220,8 +248,12 @@
     }
   });
 
+  $: if (selectFirst && listFeatures?.length) {
+    selectedItemIndex = 0;
+  }
+
   // clear selection on edit
-  $: {
+  $: if (!selectFirst) {
     searchValue;
 
     selectedItemIndex = -1;
@@ -277,13 +309,17 @@
 
           break;
         case "markerMouseEnter":
-          selectedItemIndex = !focusedDelayed
-            ? -1
-            : listFeatures?.findIndex((feature) => feature.id === e.id) ?? -1;
+          if (markedFeatures) {
+            selectedItemIndex = !focusedDelayed
+              ? -1
+              : listFeatures?.findIndex((feature) => feature.id === e.id) ?? -1;
+          }
 
           break;
         case "markerMouseLeave":
-          selectedItemIndex = -1;
+          if (markedFeatures) {
+            selectedItemIndex = -1;
+          }
 
           break;
       }
@@ -512,7 +548,7 @@
     let dir = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
 
     if (dir) {
-      if (selectedItemIndex === -1 && dir === -1) {
+      if (selectedItemIndex === (selectFirst ? 0 : -1) && dir === -1) {
         selectedItemIndex = listFeatures.length;
       }
 
@@ -522,9 +558,11 @@
         selectedItemIndex = -1;
       }
 
+      if (selectedItemIndex < 0 && selectFirst) {
+        selectedItemIndex = 0;
+      }
+
       e.preventDefault();
-    } else if (["ArrowLeft", "ArrowRight", "Home", "End"].includes(e.key)) {
-      selectedItemIndex = -1;
     }
   }
 
@@ -640,7 +678,11 @@
     </div>
   {:else if focusedDelayed && listFeatures?.length}
     <ul
-      on:mouseleave={() => (selectedItemIndex = -1)}
+      on:mouseleave={() => {
+        if (markedFeatures) {
+          selectedItemIndex = -1;
+        }
+      }}
       on:blur={() => undefined}
     >
       {#each listFeatures as feature, i (feature.id + (feature.address ? "," + feature.address : ""))}
