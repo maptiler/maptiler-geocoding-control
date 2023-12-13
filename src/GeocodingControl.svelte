@@ -9,6 +9,7 @@
   import { default as SearchIcon } from "./SearchIcon.svelte";
   import { unwrapBbox, wrapNum } from "./geoUtils";
   import { getProximity } from "./proximity";
+  import { convert } from "geo-coordinates-parser";
   import type {
     BBox,
     DispatcherType,
@@ -261,11 +262,17 @@
 
   $: selected = listFeatures?.[selectedItemIndex];
 
-  $: {
-    const m = /^(-?\d+(?:\.\d*)?),(-?\d+(?:\.\d*)?)$/.exec(searchValue);
+  $: if (mapController) {
+    let coords;
 
-    mapController?.setReverseMarker(
-      m ? [Number(m[1]), Number(m[2])] : undefined,
+    try {
+      coords = convert(searchValue, 6);
+    } catch {
+      //
+    }
+
+    mapController.setReverseMarker(
+      coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined,
     );
   }
 
@@ -434,12 +441,18 @@
 
       adjustUrlQuery(sp);
 
+      let query;
+
+      try {
+        const coords = convert(searchValue, 6);
+
+        query = coords.decimalLongitude + "," + coords.decimalLatitude;
+      } catch {
+        query = searchValue;
+      }
+
       const url =
-        apiUrl +
-        "/" +
-        encodeURIComponent(searchValue) +
-        ".json?" +
-        sp.toString();
+        apiUrl + "/" + encodeURIComponent(query) + ".json?" + sp.toString();
 
       if (url === lastSearchUrl) {
         if (byId) {
@@ -534,9 +547,9 @@
     reverseActive = enableReverse === "always";
 
     setQuery(
-      wrapNum(coordinates[0], [-180, 180], true).toFixed(6) +
-        "," +
-        coordinates[1].toFixed(6),
+      coordinates[1].toFixed(6) +
+        ", " +
+        wrapNum(coordinates[0], [-180, 180], true).toFixed(6),
     );
   }
 
