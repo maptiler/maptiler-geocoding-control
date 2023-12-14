@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Uploaded to: SVG Repo, www.svgrepo.com, Generator: SVG Repo Mixer Tools -->
-
-<svg version="1.1" width="16" height="16" viewBox="0 0 16 16" id="svg2" sodipodi:docname="playground.svg" inkscape:version="1.2.2 (b0a8486541, 2022-12-01)" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
-  <sodipodi:namedview id="namedview7" pagecolor="#ffffff" bordercolor="#666666" borderopacity="1.0" inkscape:showpageshadow="2" inkscape:pageopacity="0.0" inkscape:pagecheckerboard="0" inkscape:deskcolor="#d1d1d1" showgrid="false" inkscape:zoom="16.857143" inkscape:cx="4.3008475" inkscape:cy="7.029661" inkscape:window-width="1863" inkscape:window-height="1056" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="svg2" />
-  <metadata id="metadata8">
-    <rdf:RDF>
-      <cc:Work rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
-  <defs id="defs6" />
-  <rect width="15.999999" height="15.999999" x="4.7683716e-07" y="4.7683716e-07" id="canvas" style="visibility:hidden;fill:none;stroke:none;stroke-width:1" />
-  <path d="M 3.8928575,0.57286982 C 3.0315661,0.62680472 2.2840278,1.4241787 2.2857147,2.2871555 C 2.2860427,3.1845447 3.1026107,4.0008145 4.0000004,4.0008145 C 4.89739,4.0008145 5.713958,3.1845447 5.714286,2.2871555 C 5.7161146,1.3527035 4.8254837,0.51446472 3.8928575,0.57286982 Z M 13.035715,4.0014411 C 12.174422,4.0553756 11.426885,4.85275 11.428572,5.7157267 C 11.4289,6.613116 12.245468,7.4293858 13.142857,7.4293858 C 14.040246,7.4293858 14.856814,6.613116 14.857142,5.7157267 C 14.85897,4.7812748 13.968341,3.9430361 13.035715,4.0014411 Z M 3.4285718,4.5728697 C 1.7474404,4.5728697 1.296189,6.7139058 1.1785719,7.8585838 L 5e-7,7.4300124 V 8.5728695 L 6.8214288,11.001441 L 5.714286,15.430012 H 10.285715 L 9.2142859,11.858584 L 16,14.287155 V 13.144298 L 14.928572,12.751441 C 15.11607,11.767066 15.714285,8.001441 13.714285,8.001441 C 11.841758,8.001441 11.525475,10.566585 11.464285,11.537155 L 4.6785718,9.1085838 C 4.8971569,7.8157621 5.2731432,4.5728697 3.4285718,4.5728697 Z" id="playground" style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1" />
+<svg width="16" height="16" xmlns="http://www.w3.org/2000/svg">
+  <path
+    d="M3.8928575.57286982c-.8612914.0539349-1.6088297.85130888-1.6071428 1.71428568.000328.8973892.816896 1.713659 1.7142857 1.713659.8973896 0 1.7139576-.8162698 1.7142856-1.713659.0018286-.934452-.8888023-1.77269078-1.8214285-1.71428568ZM13.035715 4.0014411c-.861293.0539345-1.60883.8513089-1.607143 1.7142856.000328.8973893.816896 1.7136591 1.714285 1.7136591.897389 0 1.713957-.8162698 1.714285-1.7136591.001828-.9344519-.888801-1.7726906-1.821427-1.7142856Zm-9.6071432.5714286c-1.6811314 0-2.1323828 2.1410361-2.2499999 3.2857141L5e-7 7.4300124v1.1428571l6.8214283 2.4285715-1.1071428 4.428571h4.571429l-1.0714291-3.571428L16 14.287155v-1.142857l-1.071428-.392857c.187498-.984375.785713-4.75-1.214287-4.75-1.872527 0-2.18881 2.565144-2.25 3.535714L4.6785718 9.1085838c.2185851-1.2928217.5945714-4.5357141-1.25-4.5357141Z" />
 </svg>
