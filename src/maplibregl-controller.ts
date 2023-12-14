@@ -297,7 +297,11 @@ export function createMapLibreGlMapController(
                 closeButton: false,
                 closeOnMove: true,
                 className: "maptiler-gc-popup",
-              }).setText(feature.place_name.replace(/,.*/, "")),
+              }).setText(
+                feature.place_type[0] === "reverse"
+                  ? feature.place_name
+                  : feature.place_name.replace(/,.*/, ""),
+              ),
             )
             .addTo(map);
 

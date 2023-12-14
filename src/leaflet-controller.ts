@@ -23,8 +23,8 @@ export function createLeafletMapController(
     const weight = feature?.properties?.isMask
       ? 0
       : type === "LineString" || type === "MultiLineString"
-      ? 3
-      : 2;
+        ? 3
+        : 2;
 
     return {
       color: "#3170fe",
@@ -236,9 +236,16 @@ export function createLeafletMapController(
               ? new L.Marker(pos, showResultMarkers)
               : createMarker(pos, true);
 
-          marker.addTo(map).bindTooltip(feature.place_name.replace(/,.*/, ""), {
-            direction: "top",
-          });
+          marker
+            .addTo(map)
+            .bindTooltip(
+              feature.place_type[0] === "reverse"
+                ? feature.place_name
+                : feature.place_name.replace(/,.*/, ""),
+              {
+                direction: "top",
+              },
+            );
 
           const element = marker.getElement();
 

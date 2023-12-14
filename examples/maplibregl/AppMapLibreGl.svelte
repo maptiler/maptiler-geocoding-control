@@ -30,6 +30,7 @@
         // limit: 20,
         // types: ["poi"],
         // fetchParameters: { credentials: "include" },
+        // selectFirst: false,
         iconsBaseUrl: "/icons/",
         proximity: [
           { type: "map-center", minZoom: 12 },

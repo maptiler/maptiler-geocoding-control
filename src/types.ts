@@ -251,7 +251,6 @@ export type ControlOptions = {
    */
   types?: string[];
 
-
   /**
    * If set to `true` then use all types except for those listed in `types`.
    * Default value is `false`.
@@ -281,6 +280,27 @@ export type ControlOptions = {
    * Default value is empty function.
    */
   adjustUrlQuery?: (sp: URLSearchParams) => void;
+
+  /**
+   * Automatically select the first feature from the result list.
+   *
+   * Default value is `true`.
+   */
+  selectFirst?: boolean;
+
+  /**
+   * Fly to selected feature from the result list.
+   *
+   * Default value is `false`.
+   */
+  flyToSelected?: boolean;
+
+  /**
+   * Show marker on the selected feature from the result list.
+   *
+   * Default value is `true`.
+   */
+  markerOnSelected?: boolean;
 
   // TODO - missing but useful from maplibre-gl-geocoder
   // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)

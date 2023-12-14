@@ -171,7 +171,8 @@
     showFullGeometry &&
     picked &&
     !picked.address &&
-    picked.geometry.type === "Point"
+    picked.geometry.type === "Point" &&
+    picked.place_type[0] !== "reverse"
   ) {
     search(picked.id, { byId: true }).catch((err) => (error = err));
   }
@@ -263,13 +264,7 @@
   $: selected = listFeatures?.[selectedItemIndex];
 
   $: if (mapController) {
-    let coords;
-
-    try {
-      coords = convert(searchValue, 6);
-    } catch {
-      //
-    }
+    const coords = isQueryReverse(searchValue);
 
     mapController.setReverseMarker(
       coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined,
@@ -351,12 +346,19 @@
 
     if (selectedItemIndex > -1 && listFeatures) {
       picked = listFeatures[selectedItemIndex];
-      searchValue = picked.place_name.replace(/,.*/, "");
+
+      searchValue =
+        picked.place_type[0] === "reverse"
+          ? picked.place_name
+          : picked.place_name.replace(/,.*/, "");
+
       error = undefined;
+
       markedFeatures = undefined;
+
       selectedItemIndex = -1;
     } else if (searchValue) {
-      const zoomTo = event || !isQueryReverse();
+      const zoomTo = event || !isQueryReverse(searchValue);
 
       search(searchValue, { exact: true })
         .then(() => {
@@ -372,11 +374,9 @@
     }
   }
 
-  function isQueryReverse() {
+  function isQueryReverse(searchValue: string) {
     try {
-      convert(searchValue, 6);
-
-      return true;
+      return convert(searchValue, 6);
     } catch {
       return false;
     }
@@ -398,7 +398,7 @@
     abortController = ac;
 
     try {
-      const isReverse = isQueryReverse();
+      const isReverse = isQueryReverse(searchValue);
 
       const sp = new URLSearchParams();
 
@@ -447,18 +447,16 @@
 
       adjustUrlQuery(sp);
 
-      let query;
-
-      try {
-        const coords = convert(searchValue, 6);
-
-        query = coords.decimalLongitude + "," + coords.decimalLatitude;
-      } catch {
-        query = searchValue;
-      }
-
       const url =
-        apiUrl + "/" + encodeURIComponent(query) + ".json?" + sp.toString();
+        apiUrl +
+        "/" +
+        encodeURIComponent(
+          isReverse
+            ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude
+            : searchValue,
+        ) +
+        ".json?" +
+        sp.toString();
 
       if (url === lastSearchUrl) {
         if (byId) {
@@ -480,7 +478,7 @@
       });
 
       if (!res.ok) {
-        throw new Error();
+        throw new Error(await res.text());
       }
 
       const featureCollection: FeatureCollection = await res.json();
@@ -495,6 +493,36 @@
         cachedFeatures = [picked];
       } else {
         listFeatures = featureCollection.features.filter(filter);
+
+        if (isReverse) {
+          listFeatures.unshift({
+            type: "Feature",
+            properties: {},
+            id:
+              "reverse_" +
+              isReverse.decimalLongitude +
+              "_" +
+              isReverse.decimalLatitude,
+            text: isReverse.decimalLatitude + ", " + isReverse.decimalLongitude,
+            place_name:
+              isReverse.decimalLatitude + ", " + isReverse.decimalLongitude,
+            place_type: ["reverse"],
+            center: [isReverse.decimalLongitude, isReverse.decimalLatitude],
+            bbox: [
+              isReverse.decimalLongitude,
+              isReverse.decimalLatitude,
+              isReverse.decimalLongitude,
+              isReverse.decimalLatitude,
+            ],
+            geometry: {
+              type: "Point",
+              coordinates: [
+                isReverse.decimalLongitude,
+                isReverse.decimalLatitude,
+              ],
+            },
+          });
+        }
 
         cachedFeatures = listFeatures;
 
@@ -552,10 +580,15 @@
   function handleReverse(coordinates: [lng: number, lat: number]) {
     reverseActive = enableReverse === "always";
 
+    listFeatures = undefined;
+    picked = undefined;
+    selectedItemIndex = -1;
+
     setQuery(
       coordinates[1].toFixed(6) +
         ", " +
         wrapNum(coordinates[0], [-180, 180], true).toFixed(6),
+      false,
     );
   }
 
@@ -698,7 +731,7 @@
   {:else if focusedDelayed && listFeatures?.length}
     <ul
       on:mouseleave={() => {
-        if (markedFeatures) {
+        if (!selectFirst) {
           selectedItemIndex = -1;
         }
       }}
