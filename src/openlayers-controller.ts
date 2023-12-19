@@ -43,8 +43,8 @@ function defaultStyle(feature: FeatureLike) {
   const weight = isMask
     ? 0
     : type === "LineString" || type === "MultiLineString"
-    ? 3
-    : 2;
+      ? 3
+      : 2;
 
   return new Style({
     stroke: isMask
@@ -65,8 +65,8 @@ function defaultStyle(feature: FeatureLike) {
         properties.isReverse
           ? "reverse"
           : properties.isSelected
-          ? "selected"
-          : "unselected"
+            ? "selected"
+            : "unselected"
       }.svg`,
       anchor: [0.5, 1],
     }),
@@ -158,8 +158,8 @@ export function createOpenLayersMapController(
     map.getTargetElement().style.cursor = featureId
       ? "pointer"
       : indicatingReverse
-      ? "crosshair"
-      : "";
+        ? "crosshair"
+        : "";
 
     prevHovered = featureId;
   });
@@ -253,8 +253,8 @@ export function createOpenLayersMapController(
             f.geometry.type === "Polygon"
               ? new OlPolygon(f.geometry.coordinates)
               : f.geometry.type === "MultiPolygon"
-              ? new OlMultiPolygon(f.geometry.coordinates)
-              : null;
+                ? new OlMultiPolygon(f.geometry.coordinates)
+                : null;
 
           if (!geom) {
             continue;
@@ -286,8 +286,8 @@ export function createOpenLayersMapController(
               geometry.type === "Polygon"
                 ? new OlPolygon(geometry.coordinates)
                 : geometry.type === "MultiPolygon"
-                ? new OlMultiPolygon(geometry.coordinates)
-                : null,
+                  ? new OlMultiPolygon(geometry.coordinates)
+                  : null,
             )
             .filter(<T>(a: T | null): a is T => !!a);
 
@@ -360,7 +360,10 @@ export function createOpenLayersMapController(
 
         marker.setProperties({
           fuzzy: !!feature.matching_text,
-          tooltip: feature.place_name.replace(/,.*/, ""),
+          tooltip:
+            feature.place_type[0] === "reverse"
+              ? feature.place_name
+              : feature.place_name.replace(/,.*/, ""),
         });
 
         source.addFeature(marker);

@@ -19,6 +19,8 @@
 
   let loadIconAttempt = 0;
 
+  let isReverse = feature.place_type[0] === "reverse";
+
   $: index = categories?.length ?? 0;
 
   $: {
@@ -66,6 +68,8 @@
     <img src={iconsBaseUrl + "postal_code.svg"} alt={placeType} />
   {:else if feature.id.startsWith("poi.")}
     <img src={iconsBaseUrl + "poi.svg"} alt={placeType} />
+  {:else if isReverse}
+    <img src={iconsBaseUrl + "reverse.svg"} alt={placeType} />
   {:else}
     <img src={iconsBaseUrl + "area.svg"} alt={placeType} />
   {/if}
@@ -73,10 +77,10 @@
   <span class="texts">
     <span>
       <span class="primary">
-        {feature.place_name.replace(/,.*/, "")}
+        {isReverse ? feature.place_name : feature.place_name.replace(/,.*/, "")}
       </span>
 
-      {#if showPlaceType === "always" || (showPlaceType && !feature.address && feature.properties?.kind !== "road" && feature.properties?.kind !== "road_relation" && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl))}
+      {#if showPlaceType === "always" || (showPlaceType && !feature.address && feature.properties?.kind !== "road" && feature.properties?.kind !== "road_relation" && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl) && !isReverse)}
         <span class="secondary">
           {placeType}
         </span>
@@ -84,7 +88,7 @@
     </span>
 
     <span class="line2">
-      {feature.place_name.replace(/[^,]*,?\s*/, "")}
+      {isReverse ? "" : feature.place_name.replace(/[^,]*,?\s*/, "")}
     </span>
   </span>
 </li>
