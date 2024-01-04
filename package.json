@@ -87,7 +87,7 @@
       "require": "./react.umd.js"
     },
     "./vanilla": {
-      "types": "./vanilla.js",
+      "import": "./vanilla.js",
       "require": "./vanilla.umd.js"
     },
     "./style.css": {
@@ -98,7 +98,8 @@
       "types": "./svelte/GeocodingControl.svelte.d.ts",
       "svelte": "./svelte/GeocodingControl.svelte"
     },
-    "./svelte/*": "./svelte/*"
+    "./svelte/*": "./svelte/*",
+    "./types": "./types.d.ts"
   },
   "devDependencies": {
     "@maptiler/sdk": "^1.2.0",
