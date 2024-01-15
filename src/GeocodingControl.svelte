@@ -923,6 +923,11 @@
     flex-shrink: 0;
   }
 
+  :global(.maplibregl-ctrl-geocoder:not(.maptiler-ctrl) .search-button svg) {
+    width: 12px !important;
+    transform: translate(0.5px, 0);
+  }
+
   .clear-button-container {
     display: flex;
     display: none;
@@ -958,7 +963,7 @@
 
     & form {
       &.can-collapse {
-        max-width: 34px;
+        max-width: 33px;
       }
 
       &,
