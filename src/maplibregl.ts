@@ -15,9 +15,16 @@ type Options = MapLibreBaseControlOptions & {
   apiKey: string;
 };
 
-export class GeocodingControl extends MapLibreBasedGeocodingControl<Options> {
+export class GeocodingControl
+  extends MapLibreBasedGeocodingControl<Options>
+  implements maplibregl.IControl
+{
   getMapLibreGl(): typeof maplibregl {
     return maplibregl;
+  }
+
+  onAdd(map: Map): HTMLElement {
+    return super.onAddInt(map);
   }
 
   getExtraProps(
