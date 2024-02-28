@@ -9,9 +9,16 @@ import {
 } from "./MapLibreBasedGeocodingControl";
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
-export class GeocodingControl extends MapLibreBasedGeocodingControl<MapLibreBaseControlOptions> {
+export class GeocodingControl
+  extends MapLibreBasedGeocodingControl<MapLibreBaseControlOptions>
+  implements maptilersdk.IControl
+{
   getMapLibreGl(): typeof maplibregl {
     return maptilersdk as any;
+  }
+
+  onAdd(map: maptilersdk.Map): HTMLElement {
+    return super.onAddInt(map as unknown as maplibregl.Map);
   }
 
   getExtraProps(

@@ -3,7 +3,6 @@ import type {
   FillLayerSpecification,
   FitBoundsOptions,
   FlyToOptions,
-  IControl,
   LineLayerSpecification,
   Map,
   MarkerOptions,
@@ -53,11 +52,8 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
 export type Props<T> = T extends SvelteComponent<infer P, any, any> ? P : never;
 
 export abstract class MapLibreBasedGeocodingControl<
-    T extends MapLibreBaseControlOptions,
-  >
-  extends EventTarget
-  implements IControl
-{
+  T extends MapLibreBaseControlOptions,
+> extends EventTarget {
   #gc?: GeocodingControlComponent;
 
   #options: T;
@@ -73,7 +69,7 @@ export abstract class MapLibreBasedGeocodingControl<
     div: HTMLElement,
   ): Partial<Props<GeocodingControlComponent>>;
 
-  onAdd(map: Map) {
+  onAddInt(map: Map): HTMLElement {
     const div = document.createElement("div");
 
     div.className =
