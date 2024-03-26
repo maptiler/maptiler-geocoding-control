@@ -8,7 +8,7 @@ git checkout main
 
 git pull
 
-VERSION=$npm_package_version
+VERSION=GO-165 #$npm_package_version
 
 git checkout -b maptiler-geocoding-control-$VERSION
 

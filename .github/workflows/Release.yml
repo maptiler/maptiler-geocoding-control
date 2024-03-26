@@ -7,7 +7,6 @@ on:
     branches: GO-165_create-release-workflow
 
 env:
-  VERSION: GO-165 # ${{ github.event.release.tag_name }}
   WORKDIR: release
   GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
