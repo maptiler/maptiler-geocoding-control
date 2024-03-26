@@ -12,18 +12,41 @@ env:
   GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
 jobs:
-  release:
-    name: Build and release CDN
+  clone-cdn:
+    name: Git clone CDN repository
     runs-on: [ self-hosted, fernando ]
     defaults:
       run:
         working-directory: ${{ env.WORKDIR }}
 
     steps:
+      - name: Checkout CDN repo
+        uses: actions/checkout@main
+        with:
+          path: ${{ env.WORKDIR }}/cdn.maptiler.com
+          repository: maptiler/cdn.maptiler.com
+          token: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
+
+  release:
+    name: Build and release CDN
+    runs-on: [ self-hosted, fernando ]
+    needs: clone-cdn
+    defaults:
+      run:
+        working-directory: ${{ env.WORKDIR }}/maptiler-geocoding-control
+
+    steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          path: ${{ env.WORKDIR }}
+          path: ${{ env.WORKDIR }}/maptiler-geocoding-control
+
+      - name: Check out my other private repo
+        uses: actions/checkout@main
+        with:
+          path: ${{ env.WORKDIR }}/cdn.maptiler.com
+          repository: maptiler/cdn.maptiler.com
+          token: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
       - name: Install npm
         run: npm i
