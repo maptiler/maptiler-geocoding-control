@@ -1,0 +1,46 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: GO-165_create-release-workflow
+
+env:
+  WORKDIR: release
+  GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
+
+jobs:
+  release:
+    name: Build and release CDN
+    runs-on: [ self-hosted, fernando ]
+    defaults:
+      run:
+        working-directory: ${{ env.WORKDIR }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          path: ${{ env.WORKDIR }}
+
+      - name: Create pull request
+        run: npm run cdn-pr
+
+      # - name: Approve pull request
+      #   uses: juliangruber/approve-pull-request-action@v2
+      #   with:
+      #     github-token: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
+      #     number: ${{ env.PULL_REQUEST }}
+      #     repo: juliangruber/approve-pull-request-action
+
+      # - name: Merge pull request
+      #   uses: juliangruber/merge-pull-request-action@v1
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     number: ${{ env.PULL_REQUEST_NUMBER }}
+      #     method: squash # merge rebase
+      #     repo: juliangruber/octokit-action
+
+      # - name: Publish to CDN
+      #   run: npm run pub
