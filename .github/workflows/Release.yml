@@ -7,6 +7,7 @@ on:
     branches: GO-165_create-release-workflow
 
 env:
+  # VERSION: v1.2.2 # ${{ github.event.release.tag_name }}
   WORKDIR: release
   GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
@@ -23,6 +24,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.WORKDIR }}
+
+      - name: Install npm
+        run: npm i
 
       - name: Create pull request
         run: npm run cdn-pr
