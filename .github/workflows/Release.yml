@@ -8,8 +8,7 @@ on:
 
 env:
   WORKDIR: release
-  # GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }} # Variable needed for Git authentication
-  GH_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }} # Variable needed for GitHub CLI
+  GITHUB_TOKEN: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
 jobs:
   clone-cdn:
@@ -25,7 +24,7 @@ jobs:
         with:
           path: ${{ env.WORKDIR }}/cdn.maptiler.com
           repository: maptiler/cdn.maptiler.com
-          token: ${{ env.GH_TOKEN }}
+          token: ${{ env.GITHUB_TOKEN }}
 
   release:
     name: Build and release CDN
@@ -40,9 +39,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: ${{ env.WORKDIR }}/maptiler-geocoding-control
-
-      - name: GitHub CLI authentication
-        run: gh auth login --with-token
 
       - name: Install npm
         run: npm i
