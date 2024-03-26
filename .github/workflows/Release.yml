@@ -47,6 +47,9 @@ jobs:
           repository: maptiler/cdn.maptiler.com
           token: ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
 
+      - name: GitHub CLI authentication
+        run: gh auth login --with-token ${{ secrets.SYSADMIN_GEOCODING_CONTROL_CREDENTIALS }}
+
       - name: Install npm
         run: npm i
 
