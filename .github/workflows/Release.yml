@@ -26,6 +26,12 @@ jobs:
           repository: maptiler/cdn.maptiler.com
           token: ${{ env.GITHUB_TOKEN }}
 
+      - name: Configure Git
+        run: |
+          git config user.email "sysadmin@klokantech.com"
+          git config user.name "klokantechsysadmin"
+        working-directory: ${{ env.WORKDIR }}/cdn.maptiler.com
+
   release:
     name: Build and release CDN
     runs-on: [ self-hosted, fernando ]
