@@ -109,7 +109,7 @@
     input.blur();
   }
 
-  export function setQuery(value: string, submit = true) {
+  export function setQuery(value: string, submit = true, reverse = false) {
     searchValue = value;
 
     if (submit) {
@@ -117,7 +117,7 @@
 
       handleOnSubmit();
     } else {
-      handleInput();
+      handleInput(!reverse, reverse);
 
       setTimeout(() => {
         input.focus();
@@ -589,6 +589,7 @@
         ", " +
         wrapNum(coordinates[0], [-180, 180], true).toFixed(6),
       false,
+      true,
     );
   }
 
@@ -618,10 +619,10 @@
     }
   }
 
-  function handleInput(debounce = true) {
+  function handleInput(debounce = true, reverse = false) {
     error = undefined;
 
-    if (showResultsWhileTyping) {
+    if (showResultsWhileTyping || reverse) {
       if (searchTimeoutRef) {
         clearTimeout(searchTimeoutRef);
       }
