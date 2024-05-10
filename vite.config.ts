@@ -93,7 +93,7 @@ export default defineConfig({
         globals: {
           "@maptiler/sdk": "maptilersdk",
           "maplibre-gl": "maplibregl",
-          leaflet: "leaflet",
+          leaflet: "L",
           react: "React",
           "react-dom": "ReactDOM",
         },
