@@ -118,10 +118,6 @@ export function createMapLibreGlMapController(
     addFullGeometryLayer();
   });
 
-  setTimeout(() => {
-    map.setStyle("outdoor-v2");
-  }, 10000);
-
   const handleMapClick = (e: MapMouseEvent) => {
     eventHandler?.({
       type: "mapClick",
