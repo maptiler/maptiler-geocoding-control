@@ -70,15 +70,20 @@ export function createMapLibreGlMapController(
 
   let reverseMarker: maplibregl.Marker | undefined;
 
+  let savedData: GeoJSON; // used to restore features on style switch
+
   function addFullGeometryLayer() {
-    if (fullGeometryStyle?.fill || fullGeometryStyle?.line) {
+    if (
+      !map.getSource("full-geom") &&
+      (fullGeometryStyle?.fill || fullGeometryStyle?.line)
+    ) {
       map.addSource("full-geom", {
         type: "geojson",
         data: emptyGeojson,
       });
     }
 
-    if (fullGeometryStyle?.fill) {
+    if (!map.getLayer("full-geom-fill") && fullGeometryStyle?.fill) {
       map.addLayer({
         ...fullGeometryStyle?.fill,
         id: "full-geom-fill",
@@ -87,13 +92,17 @@ export function createMapLibreGlMapController(
       });
     }
 
-    if (fullGeometryStyle?.line) {
+    if (!map.getLayer("full-geom-line") && fullGeometryStyle?.line) {
       map.addLayer({
         ...fullGeometryStyle?.line,
         id: "full-geom-line",
         type: "line",
         source: "full-geom",
       });
+    }
+
+    if (savedData) {
+      setData(savedData);
     }
   }
 
@@ -104,6 +113,10 @@ export function createMapLibreGlMapController(
       addFullGeometryLayer();
     });
   }
+
+  map.on("styledata", () => {
+    addFullGeometryLayer();
+  });
 
   const handleMapClick = (e: MapMouseEvent) => {
     eventHandler?.({
@@ -129,6 +142,12 @@ export function createMapLibreGlMapController(
     });
 
     return new maplibregl.Marker({ element, offset: [1, -13] });
+  }
+
+  function setData(data: GeoJSON) {
+    savedData = data;
+
+    (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
   }
 
   return {
@@ -194,10 +213,6 @@ export function createMapLibreGlMapController(
     ): void {
       if (!marker) {
         return;
-      }
-
-      function setData(data: GeoJSON) {
-        (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
       }
 
       for (const marker of markers) {
