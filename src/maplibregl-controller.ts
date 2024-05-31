@@ -24,7 +24,7 @@ import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
-let emptyGeojson: FeatureCollection = {
+const emptyGeojson: FeatureCollection = {
   type: "FeatureCollection",
   features: [],
 };
@@ -64,7 +64,7 @@ export function createMapLibreGlMapController(
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let markers: Marker[] = [];
+  const markers: Marker[] = [];
 
   let selectedMarker: maplibregl.Marker | undefined;
 
@@ -236,9 +236,9 @@ export function createMapLibreGlMapController(
               geometry.type === "Polygon" || geometry.type === "MultiPolygon",
           ) as (Polygon | MultiPolygon)[];
 
-          if (geoms.length > 0) {
-            let geometry = geoms.pop()!;
+          let geometry = geoms.pop();
 
+          if (geometry) {
             for (const geom of geoms) {
               geometry = union(geometry, geom) as unknown as
                 | Polygon
@@ -272,7 +272,7 @@ export function createMapLibreGlMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setMask(picked as any, setData);
+          setMask(picked as Feature<Polygon | MultiPolygon>, setData);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"

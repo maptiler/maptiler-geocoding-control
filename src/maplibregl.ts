@@ -27,10 +27,7 @@ export class GeocodingControl
     return super.onAddInt(map);
   }
 
-  getExtraProps(
-    _map: Map,
-    _div: HTMLElement,
-  ): Partial<Props<GeocodingControlComponent>> {
+  getExtraProps(): Partial<Props<GeocodingControlComponent>> {
     return {};
   }
 }

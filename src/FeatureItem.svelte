@@ -41,7 +41,7 @@
     ? feature.properties?.categories?.join(", ")
     : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
 
-  function handleImgError(e: Element) {
+  function handleImgError() {
     if (imageUrl) {
       missingIconsCache.add(imageUrl);
     }
@@ -53,11 +53,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
   {#if imageUrl}
-    <img
-      src={imageUrl}
-      alt={category}
-      on:error={(e) => handleImgError(e.currentTarget)}
-    />
+    <img src={imageUrl} alt={category} on:error={() => handleImgError()} />
   {:else if feature.address}
     <img src={iconsBaseUrl + "housenumber.svg"} alt={placeType} />
   {:else if feature.properties?.kind === "road" || feature.properties?.kind === "road_relation"}
