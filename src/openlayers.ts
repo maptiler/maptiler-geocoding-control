@@ -151,13 +151,7 @@ export class GeocodingControl extends Control {
   setOptions(options: OpenLayersControlOptions) {
     this.#options = options;
 
-    const {
-      // marker,
-      // showResultMarkers,
-      flyTo,
-      // fullGeometryStyle,
-      ...restOptions
-    } = this.#options;
+    const { flyTo, fullGeometryStyle, ...restOptions } = this.#options;
 
     this.#gc?.$set({
       ...restOptions,
