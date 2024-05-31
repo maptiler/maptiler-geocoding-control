@@ -1,6 +1,5 @@
 import js from "@eslint/js";
 import tsParser from "@typescript-eslint/parser";
-// import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
 import eslintPluginSvelte from "eslint-plugin-svelte";
 import globals from "globals";
 import svelteParser from "svelte-eslint-parser";
@@ -11,7 +10,6 @@ export default [
   ...tsEslint.configs.strict,
   ...eslintPluginSvelte.configs["flat/recommended"],
   ...eslintPluginSvelte.configs["flat/prettier"],
-  // eslintPluginPrettierRecommended, // must be last to override conflicting rules.
   {
     rules: {
       "@typescript-eslint/no-unused-vars": [
@@ -45,12 +43,6 @@ export default [
         // project: true,
         extraFileExtensions: [".svelte"],
       },
-    },
-    rules: {
-      "svelte/no-target-blank": "error",
-      "svelte/no-at-debug-tags": "error",
-      "svelte/no-reactive-functions": "error",
-      "svelte/no-reactive-literals": "error",
     },
   },
 ];
