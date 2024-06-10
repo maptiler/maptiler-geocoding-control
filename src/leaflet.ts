@@ -151,5 +151,7 @@ if (
   typeof window.L === "object" &&
   typeof window.L.control === "function"
 ) {
-  (window.L.control as any).maptilerGeocoding = createControl;
+  (
+    window.L.control as unknown as { maptilerGeocoding: typeof createControl }
+  ).maptilerGeocoding = createControl;
 }

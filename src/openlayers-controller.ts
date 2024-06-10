@@ -322,9 +322,9 @@ export function createOpenLayersMapController(
         if (handled) {
           // nothing
         } else if (picked.geometry.type === "Polygon") {
-          setMask(picked as any, setData);
+          setMask(picked as FeatureType<Polygon>, setData);
         } else if (picked.geometry.type === "MultiPolygon") {
-          setMask(picked as any, setData);
+          setMask(picked as FeatureType<MultiPolygon>, setData);
         } else if (picked.geometry.type === "LineString") {
           source.addFeature(
             new Feature(

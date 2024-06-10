@@ -96,6 +96,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   const options = { ...props };
 
   for (const eventName of eventNames) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
     delete options[getEventFnName(eventName)];
   }
 
@@ -131,7 +132,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
       () =>
         eventHandlerFn &&
         controlRef.current?.$on(eventName, (e) => {
-          (eventHandlerFn as any)(e.detail);
+          eventHandlerFn(e.detail as never);
         }),
 
       [eventHandlerFn],
