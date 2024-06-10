@@ -14,7 +14,7 @@ export class GeocodingControl
   implements maptilersdk.IControl
 {
   getMapLibreGl(): typeof maplibregl {
-    return maptilersdk as any;
+    return maptilersdk as unknown as typeof maplibregl;
   }
 
   onAdd(map: maptilersdk.Map): HTMLElement {

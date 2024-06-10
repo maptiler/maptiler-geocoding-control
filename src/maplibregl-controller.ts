@@ -1,7 +1,6 @@
 import { feature, featureCollection } from "@turf/helpers";
 import union from "@turf/union";
 import type {
-  FeatureCollection,
   GeoJSON,
   LineString,
   MultiLineString,
@@ -26,7 +25,7 @@ import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
-let emptyGeojson = featureCollection([]);
+const emptyGeojson = featureCollection([]);
 
 export function createMapLibreGlMapController(
   map: Map,
@@ -63,7 +62,7 @@ export function createMapLibreGlMapController(
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let markers: Marker[] = [];
+  const markers: Marker[] = [];
 
   let selectedMarker: maplibregl.Marker | undefined;
 
@@ -235,13 +234,19 @@ export function createMapLibreGlMapController(
               geometry.type === "Polygon" || geometry.type === "MultiPolygon",
           );
 
-          if (geoms.length > 0) {
+          ok: if (geoms.length > 0) {
+            const unioned = union(
+              featureCollection(geoms.map((geom) => feature(geom))),
+            );
+
+            if (!unioned) {
+              break ok;
+            }
+
             setMask(
               {
                 ...picked,
-                geometry: union(
-                  featureCollection(geoms.map((geom) => feature(geom))),
-                )!.geometry,
+                geometry: unioned.geometry,
               },
               setData,
             );
@@ -271,7 +276,7 @@ export function createMapLibreGlMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setMask(picked as any, setData);
+          setMask(picked as Feature<Polygon | MultiPolygon>, setData);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"

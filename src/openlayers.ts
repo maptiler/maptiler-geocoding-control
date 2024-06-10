@@ -54,13 +54,7 @@ export class GeocodingControl extends Control {
       target: options.target,
     });
 
-    const {
-      // marker,
-      // showResultMarkers,
-      flyTo,
-      fullGeometryStyle,
-      ...restOptions
-    } = options;
+    const { flyTo, fullGeometryStyle, ...restOptions } = options;
 
     this.#gc = new GeocodingControlComponent({
       target: div,
@@ -157,13 +151,7 @@ export class GeocodingControl extends Control {
   setOptions(options: OpenLayersControlOptions) {
     this.#options = options;
 
-    const {
-      // marker,
-      // showResultMarkers,
-      flyTo,
-      fullGeometryStyle,
-      ...restOptions
-    } = this.#options;
+    const { flyTo, fullGeometryStyle, ...restOptions } = this.#options;
 
     this.#gc?.$set({
       ...restOptions,

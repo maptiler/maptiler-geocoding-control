@@ -51,7 +51,8 @@
     "pub-next": "npm run clean && npm run build && cd dist && npm publish --tag next",
     "cdn-pr": "npm run clean && npm run build && ./create-cdn-pr.sh",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "prepare": "husky"
   },
   "exports": {
     "./leaflet": {
@@ -115,9 +116,15 @@
     "@types/react-dom": "^18.3.0",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-svelte": "^2.39.0",
     "esm-env": "^1.0.0",
+    "globals": "^15.3.0",
+    "husky": "^9.0.11",
     "leaflet": "^1.9.4",
+    "lint-staged": "^15.2.5",
     "maplibre-gl": "^4.3.2",
+    "ol": "^7.5.2",
     "prettier": "^3.3.1",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-svelte": "^3.2.4",
@@ -131,6 +138,7 @@
     "svelte-preprocess": "^5.1.4",
     "tslib": "^2.6.3",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^7.11.0",
     "vite": "^5.2.13"
   },
   "peerDependencies": {
