@@ -25,22 +25,26 @@
       navigationControl: true,
     });
 
-    map.addControl(
-      new GeocodingControl({
-        enableReverse: "always",
-        collapsed: true,
-        // limit: 20,
-        // types: ["poi"],
-        // fetchParameters: { credentials: "include" },
-        // selectFirst: false,
-        iconsBaseUrl: "/icons/",
-        proximity: [
-          { type: "map-center", minZoom: 12 },
-          { type: "client-geolocation", minZoom: 8 },
-          { type: "server-geolocation", minZoom: 8 },
-        ],
-      }),
-    );
+    const gc = new GeocodingControl({
+      enableReverse: "always",
+      collapsed: false,
+      // limit: 20,
+      // types: ["poi"],
+      // fetchParameters: { credentials: "include" },
+      // selectFirst: false,
+      iconsBaseUrl: "/icons/",
+      proximity: [
+        { type: "map-center", minZoom: 12 },
+        { type: "client-geolocation", minZoom: 8 },
+        { type: "server-geolocation", minZoom: 8 },
+      ],
+    });
+
+    map.addControl(gc);
+
+    setTimeout(() => {
+      gc.setOptions({ enableReverse: true });
+    }, 5000);
   });
 </script>
 

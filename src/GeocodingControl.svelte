@@ -167,6 +167,10 @@
 
   const dispatch = createEventDispatcher<DispatcherType>();
 
+  $: {
+    reverseActive = enableReverse === "always";
+  }
+
   $: if (
     showFullGeometry &&
     picked &&
