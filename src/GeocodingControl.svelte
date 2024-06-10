@@ -99,7 +99,7 @@
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
 
-  export let adjustUrlQuery = (sp: URLSearchParams) => {};
+  export let adjustUrlQuery: (sp: URLSearchParams) => void = () => {};
 
   export function focus() {
     input.focus();

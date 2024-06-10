@@ -38,13 +38,13 @@ export function createLeafletMapController(
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let markers: L.Marker[] = [];
+  const markers: L.Marker[] = [];
 
   let selectedMarker: L.Marker | undefined;
 
   let reverseMarker: L.Marker | undefined;
 
-  let resultLayer = L.geoJSON(undefined, {
+  const resultLayer = L.geoJSON(undefined, {
     style: fullGeometryStyle,
     interactive: false,
   }).addTo(map);
@@ -164,9 +164,9 @@ export function createLeafletMapController(
               geometry.type === "Polygon" || geometry.type === "MultiPolygon",
           ) as (Polygon | MultiPolygon)[];
 
-          if (geoms.length > 0) {
-            let geometry = geoms.pop()!;
+          let geometry = geoms.pop();
 
+          if (geometry) {
             for (const geom of geoms) {
               geometry = union(geometry, geom) as unknown as
                 | Polygon
@@ -200,7 +200,7 @@ export function createLeafletMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setMask(picked as any, setData);
+          setMask(picked as Feature<Polygon | MultiPolygon>, setData);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"

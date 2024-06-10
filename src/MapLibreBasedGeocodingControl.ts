@@ -49,7 +49,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
   };
 };
 
-export type Props<T> = T extends SvelteComponent<infer P, any, any> ? P : never;
+export type Props<T> = T extends SvelteComponent<infer P> ? P : never;
 
 export abstract class MapLibreBasedGeocodingControl<
   T extends MapLibreBaseControlOptions,

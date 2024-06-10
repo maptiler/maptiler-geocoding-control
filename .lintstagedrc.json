@@ -1,0 +1,4 @@
+{
+  "*": ["prettier --check"],
+  "*.{ts,svelte}": ["eslint"]
+}

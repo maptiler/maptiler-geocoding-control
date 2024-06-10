@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "1.2.4",
+  "version": "1.2.5-rc1",
   "description": "The Javascript & TypeScript Map Control component for MapTiler Geocoding service. Easy to be integrated into any JavaScript mapping application.",
   "type": "module",
   "author": {
@@ -51,7 +51,8 @@
     "pub-next": "npm run clean && npm run build && cd dist && npm publish --tag next",
     "cdn-pr": "npm run clean && npm run build && ./create-cdn-pr.sh",
     "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json"
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "prepare": "husky"
   },
   "exports": {
     "./leaflet": {
@@ -104,34 +105,41 @@
   "devDependencies": {
     "@maptiler/sdk": "^2.0.3",
     "@sveltejs/package": "^2.3.1",
-    "@sveltejs/vite-plugin-svelte": "^3.1.0",
+    "@sveltejs/vite-plugin-svelte": "^3.1.1",
     "@tsconfig/svelte": "^5.0.4",
     "@turf/buffer": "^6.5.0",
     "@turf/difference": "^6.5.0",
     "@turf/union": "^6.5.0",
     "@types/geojson": "^7946.0.14",
     "@types/leaflet": "^1.9.12",
-    "@types/react": "^18.3.1",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "concurrently": "^8.2.2",
     "dotenv": "^16.4.5",
+    "eslint": "^8.57.0",
+    "eslint-plugin-svelte": "^2.39.0",
     "esm-env": "^1.0.0",
+    "globals": "^15.3.0",
+    "husky": "^9.0.11",
     "leaflet": "^1.9.4",
-    "maplibre-gl": "^4.2.0",
+    "lint-staged": "^15.2.5",
+    "maplibre-gl": "^4.3.2",
+    "ol": "^7.5.2",
     "prettier": "^3.2.5",
     "prettier-plugin-organize-imports": "^3.2.4",
     "prettier-plugin-svelte": "^3.2.3",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "renamer": "^5.0.0",
-    "replace-in-file": "^7.1.0",
-    "sass": "^1.77.0",
-    "svelte": "^4.2.16",
-    "svelte-check": "^3.7.1",
+    "replace-in-file": "^7.2.0",
+    "sass": "^1.77.4",
+    "svelte": "^4.2.17",
+    "svelte-check": "^3.8.0",
     "svelte-preprocess": "^5.1.4",
     "tslib": "^2.6.2",
     "typescript": "^5.4.5",
-    "vite": "^5.2.11"
+    "typescript-eslint": "^7.11.0",
+    "vite": "^5.2.12"
   },
   "peerDependencies": {
     "@maptiler/sdk": "^1 || ^2",
