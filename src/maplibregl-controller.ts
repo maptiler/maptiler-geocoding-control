@@ -1,11 +1,12 @@
+import { feature, featureCollection } from "@turf/helpers";
+import union from "@turf/union";
 import type {
+  GeoJSON,
   LineString,
   MultiLineString,
   MultiPolygon,
   Polygon,
-} from "@turf/helpers";
-import union from "@turf/union";
-import type { FeatureCollection, GeoJSON } from "geojson";
+} from "geojson";
 import type * as maplibregl from "maplibre-gl";
 import type {
   FillLayerSpecification,
@@ -24,10 +25,7 @@ import type { Feature, MapController, MapEvent } from "./types.js";
 
 type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
-const emptyGeojson: FeatureCollection = {
-  type: "FeatureCollection",
-  features: [],
-};
+const emptyGeojson = featureCollection([]);
 
 export function createMapLibreGlMapController(
   map: Map,
@@ -232,28 +230,34 @@ export function createMapLibreGlMapController(
 
         if (picked.geometry.type === "GeometryCollection") {
           const geoms = picked.geometry.geometries.filter(
-            (geometry) =>
+            (geometry): geometry is Polygon | MultiPolygon =>
               geometry.type === "Polygon" || geometry.type === "MultiPolygon",
-          ) as (Polygon | MultiPolygon)[];
+          );
 
-          let geometry = geoms.pop();
+          ok: if (geoms.length > 0) {
+            const unioned = union(
+              featureCollection(geoms.map((geom) => feature(geom))),
+            );
 
-          if (geometry) {
-            for (const geom of geoms) {
-              geometry = union(geometry, geom) as unknown as
-                | Polygon
-                | MultiPolygon; // union actually returns geometry
+            if (!unioned) {
+              break ok;
             }
 
-            setMask({ ...picked, geometry }, setData);
+            setMask(
+              {
+                ...picked,
+                geometry: unioned.geometry,
+              },
+              setData,
+            );
 
             handled = true;
           } else {
             const geometries = picked.geometry.geometries.filter(
-              (geometry) =>
+              (geometry): geometry is LineString | MultiLineString =>
                 geometry.type === "LineString" ||
                 geometry.type === "MultiLineString",
-            ) as (LineString | MultiLineString)[];
+            );
 
             if (geometries.length > 0) {
               setData({
