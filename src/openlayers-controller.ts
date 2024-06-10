@@ -1,5 +1,4 @@
-import type { MultiPolygon, Polygon } from "@turf/helpers";
-import type { FeatureCollection } from "geojson";
+import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import { Feature, MapBrowserEvent } from "ol";
 import type { FeatureLike } from "ol/Feature";
 import type Map from "ol/Map";

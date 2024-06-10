@@ -1,11 +1,12 @@
+import { feature, featureCollection } from "@turf/helpers";
+import union from "@turf/union";
 import type {
+  GeoJSON,
   LineString,
   MultiLineString,
   MultiPolygon,
   Polygon,
-} from "@turf/helpers";
-import union from "@turf/union";
-import type { GeoJSON } from "geojson";
+} from "geojson";
 import * as L from "leaflet";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
@@ -160,28 +161,28 @@ export function createLeafletMapController(
 
         if (picked.geometry.type === "GeometryCollection") {
           const geoms = picked.geometry.geometries.filter(
-            (geometry) =>
+            (geometry): geometry is Polygon | MultiPolygon =>
               geometry.type === "Polygon" || geometry.type === "MultiPolygon",
-          ) as (Polygon | MultiPolygon)[];
+          );
 
           if (geoms.length > 0) {
-            let geometry = geoms.pop()!;
-
-            for (const geom of geoms) {
-              geometry = union(geometry, geom) as unknown as
-                | Polygon
-                | MultiPolygon; // union actually returns geometry
-            }
-
-            setMask({ ...picked, geometry }, setData);
+            setMask(
+              {
+                ...picked,
+                geometry: union(
+                  featureCollection(geoms.map((geom) => feature(geom))),
+                )!.geometry,
+              },
+              setData,
+            );
 
             handled = true;
           } else {
             const geometries = picked.geometry.geometries.filter(
-              (geometry) =>
+              (geometry): geometry is LineString | MultiLineString =>
                 geometry.type === "LineString" ||
                 geometry.type === "MultiLineString",
-            ) as (LineString | MultiLineString)[];
+            );
 
             if (geometries.length > 0) {
               setData({
