@@ -1,4 +1,4 @@
-import App from "./AppMapLibreGl.svelte";
+import App from "./AppMapTilerSdk.svelte";
 
 const appElement = document.getElementById("app");
 
