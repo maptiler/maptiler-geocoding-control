@@ -31,15 +31,10 @@
 <script>
   addEventListener("hashchange", (event) => location.reload());
 
-  const apiKey = new URLSearchParams(location.hash.slice(1)).get("key");
-
-  if (!apiKey) {
-    const errMsg = "Missing #key=your_api_key in URL";
-
-    window.alert(errMsg);
-
-    throw new Error(errMsg);
-  }
+  const apiKey =
+    new URLSearchParams(location.hash.slice(1)).get("key") ||
+    prompt("Please provide your MapTiler API key") ||
+    "";
 
   const map = L.map(document.getElementById("map")).setView([49.2, 16.3], 6);
 
