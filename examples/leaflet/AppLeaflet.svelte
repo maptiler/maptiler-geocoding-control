@@ -6,15 +6,10 @@
 
   let containerElement: HTMLElement;
 
-  const apiKey = import.meta.env.VITE_API_KEY;
-
-  if (!apiKey) {
-    const errMsg = "missing VITE_API_KEY environment variable";
-
-    window.alert(errMsg);
-
-    throw new Error(errMsg);
-  }
+  const apiKey =
+    import.meta.env.VITE_API_KEY ||
+    prompt("Please provide your MapTiler API key") ||
+    "";
 
   onMount(() => {
     const map = L.map(containerElement).fitBounds([

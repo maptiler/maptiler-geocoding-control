@@ -1,0 +1,71 @@
+<!doctype html>
+<meta charset="utf-8" />
+
+<script src="https://cdn.jsdelivr.net/npm/ol@v9.1.0/dist/ol.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v9.2.4/ol.css" />
+
+<script src="../../dist/openlayers.umd.js" charset="UTF-8"></script>
+
+<link href="../../dist/style.css" rel="stylesheet" />
+
+<!--
+<script src="https://unpkg.com/@maptiler/geocoding-control@latest/openlayers.umd.js"></script>
+
+<link
+  href="https://unpkg.com/@maptiler/geocoding-control@latest/style.css"
+  rel="stylesheet"
+/>
+-->
+
+<style>
+  #map {
+    position: absolute;
+    inset: 0;
+  }
+
+  .ol-search {
+    position: absolute;
+    top: 0.5em;
+    right: 0.5em;
+  }
+</style>
+
+<div id="map"></div>
+
+<script>
+  addEventListener("hashchange", (event) => location.reload());
+
+  const apiKey =
+    new URLSearchParams(location.hash.slice(1)).get("key") ||
+    prompt("Please provide your MapTiler API key") ||
+    "";
+
+  const scale = devicePixelRatio > 1.5 ? "@2x" : "";
+
+  new ol.Map({
+    target: document.getElementById("map"),
+    layers: [
+      new ol.layer.Tile({
+        source: new ol.source.XYZ({
+          url: `https://api.maptiler.com/maps/basic-v2/{z}/{x}/{y}${scale}.png?key=${apiKey}`,
+          tileSize: 512,
+          attributions: [
+            '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a>',
+            '<a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+          ],
+        }),
+      }),
+    ],
+    view: new ol.View({
+      center: [0, 0],
+      zoom: 0,
+    }),
+    controls: ol.control.defaults.defaults().extend([
+      new openlayersMaptilerGeocoder.GeocodingControl({
+        apiKey,
+        enableReverse: "always",
+        iconsBaseUrl: "/icons/",
+      }),
+    ]),
+  });
+</script>
