@@ -13,7 +13,12 @@ import {
   Point,
 } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
-import { fromLonLat, toLonLat, transformExtent } from "ol/proj";
+import {
+  fromLonLat,
+  getUserProjection,
+  toLonLat,
+  transformExtent,
+} from "ol/proj";
 import VectorSource from "ol/source/Vector";
 import Fill from "ol/style/Fill";
 import Icon from "ol/style/Icon";
@@ -163,17 +168,18 @@ export function createOpenLayersMapController(
     prevHovered = featureId;
   });
 
+  function getProjection() {
+    return getUserProjection() ?? map.getView().getProjection();
+  }
+
   function fromWgs84(geometry: OlGeometry) {
-    return geometry.transform(EPSG_4326, map.getView().getProjection());
+    return geometry.transform(EPSG_4326, getProjection());
   }
 
   const handleMapClick = (e: MapBrowserEvent<PointerEvent>) => {
     eventHandler?.({
       type: "mapClick",
-      coordinates: toLonLat(e.coordinate, map.getView().getProjection()) as [
-        number,
-        number,
-      ],
+      coordinates: toLonLat(e.coordinate, getProjection()) as [number, number],
     });
   };
 
@@ -190,7 +196,7 @@ export function createOpenLayersMapController(
 
     flyTo(center: Position, zoom: number) {
       map.getView().animate({
-        center: fromLonLat(center, map.getView().getProjection()),
+        center: fromLonLat(center, getProjection()),
         zoom,
         duration: 2000,
         ...flyToOptions,
@@ -198,14 +204,12 @@ export function createOpenLayersMapController(
     },
 
     fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
-      map
-        .getView()
-        .fit(transformExtent(bbox, EPSG_4326, map.getView().getProjection()), {
-          padding: [padding, padding, padding, padding],
-          maxZoom,
-          duration: 2000,
-          ...flyToBounds,
-        });
+      map.getView().fit(transformExtent(bbox, EPSG_4326, getProjection()), {
+        padding: [padding, padding, padding, padding],
+        maxZoom,
+        duration: 2000,
+        ...flyToBounds,
+      });
     },
 
     indicateReverse(reverse: boolean): void {
@@ -224,12 +228,12 @@ export function createOpenLayersMapController(
           reverseMarker = undefined;
         } else {
           (reverseMarker.getGeometry() as Point).setCoordinates(
-            fromLonLat(coordinates, map.getView().getProjection()),
+            fromLonLat(coordinates, getProjection()),
           );
         }
       } else if (coordinates) {
         reverseMarker = new Feature(
-          new Point(fromLonLat(coordinates, map.getView().getProjection())),
+          new Point(fromLonLat(coordinates, getProjection())),
         );
 
         reverseMarker.setProperties({ isReverse: true });
@@ -352,7 +356,7 @@ export function createOpenLayersMapController(
         }
 
         const marker = new Feature(
-          new Point(fromLonLat(feature.center, map.getView().getProjection())),
+          new Point(fromLonLat(feature.center, getProjection())),
         );
 
         marker.setId(feature.id);
@@ -400,7 +404,7 @@ export function createOpenLayersMapController(
         return undefined;
       }
 
-      return [zoom, ...(toLonLat(center, view.getProjection()) as Position)];
+      return [zoom, ...(toLonLat(center, getProjection()) as Position)];
     },
   } satisfies MapController;
 }
