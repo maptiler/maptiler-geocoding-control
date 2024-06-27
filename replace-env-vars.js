@@ -1,7 +1,7 @@
 import "dotenv/config";
-import replace from "replace-in-file";
+import { replaceInFile } from "replace-in-file";
 
-replace({
+replaceInFile({
   files: ["dist.svelte/*.svelte", "dist.svelte/*.ts", "dist.svelte/*.js"],
   from: /\bimport\.meta\.env\.(\w+)/g,
   to: (_, name) => JSON.stringify(process.env[name]),
