@@ -8,6 +8,9 @@
   import { onMount } from "svelte";
   import { GeocodingControl } from "../../src/openlayers";
 
+  // import { useGeographic } from "ol/proj.js";
+  // useGeographic();
+
   let containerElement: HTMLElement;
 
   const apiKey =
