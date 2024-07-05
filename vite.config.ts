@@ -1,7 +1,7 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
 import process from "node:process";
 import { sveltePreprocess } from "svelte-preprocess";
-import { defineConfig } from "vite";
+import { BuildOptions, defineConfig } from "vite";
 
 const libs = {
   leaflet: {
@@ -51,17 +51,60 @@ const libs = {
   },
 };
 
+let lib: BuildOptions["lib"];
+
+let rollupOptions: BuildOptions["rollupOptions"];
+
 const flavour = process.env.FLAVOUR;
 
-if (!flavour) {
-  throw new Error("missing FLAVOUR environment variable");
-}
+if (flavour) {
+  if (!(flavour in libs)) {
+    throw new Error("invalid FLAVOUR");
+  }
 
-if (!(flavour in libs)) {
-  throw new Error("invalid FLAVOUR");
-}
+  lib = libs[flavour as keyof typeof libs];
 
-const lib = libs[flavour as keyof typeof libs];
+  rollupOptions = {
+    external: [
+      "@maptiler/sdk",
+      "maplibre-gl",
+      "leaflet",
+      "react",
+      "react-dom",
+      /^ol(\/.*)?/,
+    ],
+    output: [
+      {
+        format: "es",
+        entryFileNames: "[name].js",
+        chunkFileNames: "[name].js",
+        assetFileNames: "[name].[ext]",
+      },
+      {
+        name: lib.name,
+        format: "umd",
+        entryFileNames: "[name].umd.js",
+        chunkFileNames: "[name].umd.js",
+        assetFileNames: "[name].[ext]",
+
+        // Provide global variables to use in the UMD build for externalized deps
+        globals(name) {
+          const global = {
+            "@maptiler/sdk": "maptilersdk",
+            "maplibre-gl": "maplibregl",
+            leaflet: "L",
+            react: "React",
+            "react-dom": "ReactDOM",
+          }[name];
+
+          return (
+            global ?? (name.startsWith("ol") ? name.replace(/\//g, ".") : "")
+          );
+        },
+      },
+    ],
+  };
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -75,46 +118,6 @@ export default defineConfig({
     sourcemap: true,
     emptyOutDir: false,
     lib,
-    // simplify after https://github.com/vitejs/vite/pull/10609 is released
-    rollupOptions: {
-      external: [
-        "@maptiler/sdk",
-        "maplibre-gl",
-        "leaflet",
-        "react",
-        "react-dom",
-        /^ol(\/.*)?/,
-      ],
-      output: [
-        {
-          format: "es",
-          entryFileNames: "[name].js",
-          chunkFileNames: "[name].js",
-          assetFileNames: "[name].[ext]",
-        },
-        {
-          name: lib.name,
-          format: "umd",
-          entryFileNames: "[name].umd.js",
-          chunkFileNames: "[name].umd.js",
-          assetFileNames: "[name].[ext]",
-
-          // Provide global variables to use in the UMD build for externalized deps
-          globals(name) {
-            const global = {
-              "@maptiler/sdk": "maptilersdk",
-              "maplibre-gl": "maplibregl",
-              leaflet: "L",
-              react: "React",
-              "react-dom": "ReactDOM",
-            }[name];
-
-            return (
-              global ?? (name.startsWith("ol") ? name.replace(/\//g, ".") : "")
-            );
-          },
-        },
-      ],
-    },
+    rollupOptions,
   },
 });
