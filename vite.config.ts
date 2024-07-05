@@ -83,7 +83,7 @@ export default defineConfig({
         "leaflet",
         "react",
         "react-dom",
-        "ol",
+        /^ol(\/.*)?/,
       ],
       output: [
         {
@@ -100,13 +100,18 @@ export default defineConfig({
           assetFileNames: "[name].[ext]",
 
           // Provide global variables to use in the UMD build for externalized deps
-          globals: {
-            "@maptiler/sdk": "maptilersdk",
-            "maplibre-gl": "maplibregl",
-            leaflet: "L",
-            react: "React",
-            "react-dom": "ReactDOM",
-            ol: "ol",
+          globals(name) {
+            const global = {
+              "@maptiler/sdk": "maptilersdk",
+              "maplibre-gl": "maplibregl",
+              leaflet: "L",
+              react: "React",
+              "react-dom": "ReactDOM",
+            }[name];
+
+            return (
+              global ?? (name.startsWith("ol") ? name.replace(/\//g, ".") : "")
+            );
           },
         },
       ],
