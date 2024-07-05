@@ -130,7 +130,6 @@
     "prettier-plugin-svelte": "^3.2.5",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "renamer": "^5.0.1",
     "replace-in-file": "^8.0.1",
     "sass": "^1.77.6",
     "svelte": "^4.2.18",
