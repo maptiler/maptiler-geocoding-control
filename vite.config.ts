@@ -1,5 +1,6 @@
 import { svelte } from "@sveltejs/vite-plugin-svelte";
-import preprocess from "svelte-preprocess";
+import process from "node:process";
+import { sveltePreprocess } from "svelte-preprocess";
 import { defineConfig } from "vite";
 
 const libs = {
@@ -59,11 +60,15 @@ const libs = {
   },
 };
 
+if (!process.env.FLAVOUR) {
+  throw new Error("missing FLAVOUR environment variable");
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     svelte({
-      preprocess: preprocess(),
+      preprocess: sveltePreprocess(),
     }),
   ],
   publicDir: "public",
@@ -81,18 +86,30 @@ export default defineConfig({
         "react-dom",
         "ol",
       ],
-      output: {
-        // Provide global variables to use in the UMD build
-        // for externalized deps
-        globals: {
-          "@maptiler/sdk": "maptilersdk",
-          "maplibre-gl": "maplibregl",
-          leaflet: "L",
-          react: "React",
-          "react-dom": "ReactDOM",
-          ol: "ol",
+      output: [
+        {
+          format: "es",
+          entryFileNames: "[name].js",
+          chunkFileNames: "[name].js",
+          assetFileNames: "[name].[ext]",
         },
-      },
+        {
+          format: "cjs",
+          entryFileNames: "[name].umd.js",
+          chunkFileNames: "[name].umd.js",
+          assetFileNames: "[name].[ext]",
+
+          // Provide global variables to use in the UMD build for externalized deps
+          globals: {
+            "@maptiler/sdk": "maptilersdk",
+            "maplibre-gl": "maplibregl",
+            leaflet: "L",
+            react: "React",
+            "react-dom": "ReactDOM",
+            ol: "ol",
+          },
+        },
+      ],
     },
   },
 });
