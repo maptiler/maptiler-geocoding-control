@@ -24,6 +24,7 @@
   $: index = categories?.length ?? 0;
 
   $: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     loadIconAttempt;
 
     do {
@@ -39,7 +40,7 @@
 
   $: placeType = feature.id.startsWith("poi.")
     ? feature.properties?.categories?.join(", ")
-    : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
+    : (feature.properties?.place_type_name?.[0] ?? feature.place_type[0]);
 
   function handleImgError() {
     if (imageUrl) {
