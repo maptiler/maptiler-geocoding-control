@@ -106,7 +106,6 @@
     "@sveltejs/package": "^2.3.4",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
-    "@turf/buffer": "^7.1.0",
     "@turf/difference": "^7.1.0",
     "@turf/union": "^7.1.0",
     "@types/geojson": "^7946.0.14",
@@ -169,6 +168,7 @@
     }
   },
   "dependencies": {
+    "@turf/clone": "^7.1.0",
     "geo-coordinates-parser": "^1.7.3"
   }
 }

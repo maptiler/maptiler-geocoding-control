@@ -1,4 +1,4 @@
-import buffer from "@turf/buffer";
+import clone from "@turf/clone";
 import difference from "@turf/difference";
 import { featureCollection, polygon } from "@turf/helpers";
 import type {
@@ -49,7 +49,7 @@ export function setMask(
 
   diff.properties = { isMask: "y" };
 
-  const fixed = buffer(picked, 0);
+  const fixed = clone(picked);
 
   if (!fixed) {
     return;
