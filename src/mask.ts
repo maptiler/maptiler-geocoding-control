@@ -1,33 +1,19 @@
-import clone from "@turf/clone";
+import bbox from "@turf/bbox";
 import difference from "@turf/difference";
+import flatten from "@turf/flatten";
 import { featureCollection, polygon } from "@turf/helpers";
+import union from "@turf/union";
 import type {
   Feature,
   FeatureCollection,
   MultiPolygon,
   Polygon,
-  Position,
 } from "geojson";
-
-// see https://maplibre.org/maplibre-gl-js-docs/example/line-across-180th-meridian/
-function fixRing(ring: Position[]) {
-  let prev: Position | undefined = undefined;
-
-  for (const c of ring) {
-    if (prev && c[0] - prev[0] >= 180) {
-      c[0] -= 360;
-    } else if (prev && c[0] - prev[0] < -180) {
-      c[0] += 360;
-    }
-
-    prev = c;
-  }
-}
 
 export function setMask(
   picked: Feature<Polygon | MultiPolygon>,
-  setData: (data: FeatureCollection<Polygon | MultiPolygon>) => void,
-) {
+  setData: (data?: FeatureCollection<Polygon | MultiPolygon>) => void,
+): void {
   const diff = difference(
     featureCollection([
       polygon([
@@ -47,25 +33,28 @@ export function setMask(
     return;
   }
 
-  diff.properties = { isMask: "y" };
+  diff.properties = { isMask: true };
 
-  const fixed = clone(picked);
+  const flattened = flatten(picked);
 
-  if (!fixed) {
-    return;
-  }
+  if (flattened.features.length > 1) {
+    for (const poly of flattened.features) {
+      const b = bbox(poly);
 
-  if (fixed.geometry.type === "Polygon") {
-    for (const ring of fixed.geometry.coordinates) {
-      fixRing(ring);
-    }
-  } else {
-    for (const poly of fixed.geometry.coordinates) {
-      for (const ring of poly) {
-        fixRing(ring);
+      if (b[0] < -179.99999999) {
+        for (const ring of poly.geometry.coordinates) {
+          for (const pos of ring) {
+            pos[0] += 359.999999;
+          }
+        }
       }
     }
   }
 
-  setData(featureCollection([fixed, diff]));
+  setData(
+    featureCollection([
+      flattened.features.length < 2 ? picked : (union(flattened) ?? picked),
+      diff,
+    ]),
+  );
 }
