@@ -39,12 +39,15 @@ export function setMask(
 
   if (flattened.features.length > 1) {
     for (const poly of flattened.features) {
-      const b = bbox(poly);
+      const bb = bbox(poly);
 
-      if (b[0] < -179.99999999) {
+      // bigger features (continents, oceans) have bigger tolerance
+      const tolerance = (bb[2] - bb[0]) / 360 / 1_000;
+
+      if (bb[0] < -180 + tolerance) {
         for (const ring of poly.geometry.coordinates) {
-          for (const pos of ring) {
-            pos[0] += 359.999999;
+          for (const position of ring) {
+            position[0] += 360 - tolerance;
           }
         }
       }
