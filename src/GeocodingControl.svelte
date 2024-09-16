@@ -642,11 +642,7 @@
             },
             undefined as undefined | number,
           )
-        : undefined) ??
-      zoom[index] ??
-      (feature.properties?.kind
-        ? zoom[index + "." + feature.properties.kind]
-        : undefined)
+        : undefined) ?? zoom[index]
     );
   }
 

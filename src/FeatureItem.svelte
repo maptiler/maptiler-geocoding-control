@@ -58,7 +58,7 @@
     <img src={imageUrl} alt={category} on:error={() => handleImgError()} />
   {:else if feature.address}
     <img src={iconsBaseUrl + "housenumber.svg"} alt={placeType} />
-  {:else if feature.properties?.kind === "road" || feature.properties?.kind === "road_relation"}
+  {:else if feature.id.startsWith("road.")}
     <img src={iconsBaseUrl + "road.svg"} alt={placeType} />
   {:else if feature.id.startsWith("address.")}
     <img src={iconsBaseUrl + "street.svg"} alt={placeType} />
@@ -78,7 +78,7 @@
         {isReverse ? feature.place_name : feature.place_name.replace(/,.*/, "")}
       </span>
 
-      {#if showPlaceType === "always" || (showPlaceType && !feature.address && feature.properties?.kind !== "road" && feature.properties?.kind !== "road_relation" && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl) && !isReverse)}
+      {#if showPlaceType === "always" || (showPlaceType && !feature.address && !feature.id.startsWith("road.") && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl) && !isReverse)}
         <span class="secondary">
           {placeType}
         </span>

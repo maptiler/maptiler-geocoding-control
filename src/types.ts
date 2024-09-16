@@ -162,7 +162,7 @@ export type ControlOptions = {
    * On geocoded result what zoom level should the map animate to when a bbox in the response isn't present or is a point.
    * If a bbox is present and not a point then the map will fit to the bbox.
    *
-   * Value can be a number (deprecated) or key-value pairs, where key is a &lt;type&gt; or &lt;type&gt;.&lt;kind&gt; or &lt;type&gt;.&lt;categoy&gt; and value is the zoom level.
+   * Value can be a number (deprecated) or key-value pairs, where key is a &lt;type&gt; or &lt;type&gt;.&lt;categoy&gt; and value is the zoom level.
    *
    * Default value is `GeocodingControl.ZOOM_DEFAULTS`.
    */
