@@ -1,10 +1,10 @@
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
-import { Feature, MapBrowserEvent } from "ol";
+import { Feature, type MapBrowserEvent } from "ol";
 import type { FeatureLike } from "ol/Feature";
 import type Map from "ol/Map";
 import type { AnimationOptions, FitOptions } from "ol/View";
 import {
-  Geometry as OlGeometry,
+  type Geometry as OlGeometry,
   GeometryCollection as OlGeometryCollection,
   LineString as OlLineString,
   MultiLineString as OlMultiLineString,

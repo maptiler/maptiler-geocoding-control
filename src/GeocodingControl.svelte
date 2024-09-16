@@ -280,6 +280,7 @@
 
   // clear selection on edit
   $: if (!selectFirst) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     searchValue;
 
     selectedItemIndex = -1;
@@ -338,7 +339,8 @@
           if (markedFeatures) {
             selectedItemIndex = !focusedDelayed
               ? -1
-              : listFeatures?.findIndex((feature) => feature.id === e.id) ?? -1;
+              : (listFeatures?.findIndex((feature) => feature.id === e.id) ??
+                -1);
           }
 
           break;
@@ -429,7 +431,7 @@
       if (language !== undefined) {
         sp.set(
           "language",
-          Array.isArray(language) ? language.join(",") : language ?? "",
+          Array.isArray(language) ? language.join(",") : (language ?? ""),
         );
       }
 
@@ -950,6 +952,7 @@
     padding: 14px 24px 14px 16px;
     font-weight: 400;
     color: #6b7c93;
+    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
 
     :global(svg) {
       margin-top: 4px;
@@ -959,8 +962,6 @@
       width: 30px;
       height: 30px;
     }
-
-    box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
   }
 
   :global(.maplibregl-ctrl-bottom-left) ul,
