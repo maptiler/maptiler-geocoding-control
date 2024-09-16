@@ -19,6 +19,32 @@
     ProximityRule,
   } from "./types";
 
+  export const ZOOM_DEFAULTS: Record<string, number> = {
+    continental_marine: 4,
+    country: 4,
+    major_landform: 8,
+    region: 5,
+    subregion: 6,
+    county: 7,
+    joint_municipality: 8,
+    joint_submunicipality: 9,
+    municipality: 10,
+    municipal_district: 11,
+    locality: 12,
+    neighbourhood: 13,
+    place: 14,
+    postal_code: 14,
+    road: 16,
+    poi: 17,
+    address: 18,
+    "poi.peak": 15,
+    "poi.shop": 18,
+    "poi.cafe": 18,
+    "poi.restaurant": 18,
+    "poi.aerodrome": 13,
+    // TODO add many more
+  };
+
   let className: string | undefined = undefined;
 
   export { className as class };
@@ -86,9 +112,9 @@
 
   export let excludeTypes = false;
 
-  export let zoom = 16;
+  export let zoom: number | Record<string, number> = ZOOM_DEFAULTS;
 
-  export let maxZoom = 18;
+  export let maxZoom: number | undefined = undefined;
 
   export let apiUrl: string = import.meta.env.VITE_API_URL;
 
@@ -187,14 +213,13 @@
         !picked.bbox ||
         (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
       ) {
-        mapController.flyTo(
-          picked.center,
-          picked.id.startsWith("poi.") || picked.id.startsWith("address.")
-            ? maxZoom
-            : zoom,
-        );
+        mapController.flyTo(picked.center, computeZoom(picked));
       } else {
-        mapController.fitBounds(unwrapBbox(picked.bbox), 50, maxZoom);
+        mapController.fitBounds(
+          unwrapBbox(picked.bbox),
+          50,
+          computeZoom(picked),
+        );
       }
 
       listFeatures = undefined;
@@ -206,12 +231,7 @@
   }
 
   $: if (mapController && selected && flyTo && flyToSelected) {
-    mapController.flyTo(
-      selected.center,
-      selected.id.startsWith("poi.") || selected.id.startsWith("address.")
-        ? maxZoom
-        : zoom,
-    );
+    mapController.flyTo(selected.center, computeZoom(selected));
   }
 
   // if markerOnSelected was dynamically changed to false
@@ -561,7 +581,19 @@
 
     const fuzzyOnly = !markedFeatures.some((feature) => !feature.matching_text);
 
+    let allZoom: number | undefined;
+
     for (const feature of markedFeatures) {
+      const featZoom = computeZoom(feature);
+
+      allZoom =
+        maxZoom ??
+        (allZoom === undefined
+          ? featZoom
+          : featZoom === undefined
+            ? allZoom
+            : Math.max(allZoom, featZoom));
+
       if (fuzzyOnly || !feature.matching_text) {
         for (const i of [0, 1, 2, 3] as const) {
           bbox[i] = Math[i < 2 ? "min" : "max"](
@@ -574,11 +606,46 @@
 
     if (mapController && markedFeatures.length > 0) {
       if (picked && bbox[0] === bbox[2] && bbox[1] === bbox[3]) {
-        mapController.flyTo(picked.center, zoom);
+        mapController.flyTo(picked.center, computeZoom(picked));
       } else {
-        mapController.fitBounds(unwrapBbox(bbox), 50, maxZoom);
+        mapController.fitBounds(unwrapBbox(bbox), 50, allZoom);
       }
     }
+  }
+
+  function computeZoom(feature: Feature): number | undefined {
+    if (
+      !feature.bbox ||
+      (feature.bbox[0] !== feature.bbox[2] &&
+        feature.bbox[1] !== feature.bbox[3])
+    ) {
+      return undefined;
+    }
+
+    if (typeof zoom === "number") {
+      return feature.id.startsWith("poi.") || feature.id.startsWith("address.")
+        ? maxZoom
+        : zoom;
+    }
+
+    const index = feature.id.replace(/\..*/, "");
+
+    return (
+      (Array.isArray(feature.properties?.categories)
+        ? (feature.properties.categories as string[]).reduce(
+            (a, category) => {
+              const b = zoom[index + "." + category];
+
+              return a === undefined ? b : b === undefined ? a : Math.max(a, b);
+            },
+            undefined as undefined | number,
+          )
+        : undefined) ??
+      zoom[index] ??
+      (feature.properties?.kind
+        ? zoom[index + "." + feature.properties.kind]
+        : undefined)
+    );
   }
 
   function handleReverse(coordinates: [lng: number, lat: number]) {
@@ -779,6 +846,11 @@
 
     &.can-collapse {
       max-width: 29px;
+
+      & input::placeholder {
+        transition: opacity 0.25s;
+        opacity: 0;
+      }
     }
 
     &,
@@ -786,6 +858,10 @@
     &:hover {
       width: 270px;
       max-width: 270px;
+
+      & input::placeholder {
+        opacity: 1;
+      }
     }
   }
 

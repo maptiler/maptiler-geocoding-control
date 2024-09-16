@@ -87,17 +87,22 @@ export function createLeafletMapController(
       }
     },
 
-    flyTo(center: Position, zoom: number) {
+    flyTo(center: Position, zoom?: number) {
       map.flyTo([center[1], center[0]], zoom, { duration: 2, ...flyToOptions });
     },
 
-    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom?: number): void {
       map.flyToBounds(
         [
           [bbox[1], bbox[0]],
           [bbox[3], bbox[2]],
         ],
-        { padding: [padding, padding], duration: 2, maxZoom, ...flyToBounds },
+        {
+          padding: [padding, padding],
+          duration: 2,
+          ...(maxZoom ? { maxZoom } : {}),
+          ...flyToBounds,
+        },
       );
     },
 

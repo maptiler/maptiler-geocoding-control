@@ -37,9 +37,10 @@
     } while (index > -1 && (!imageUrl || missingIconsCache.has(imageUrl)));
   }
 
-  $: placeType = feature.id.startsWith("poi.")
-    ? feature.properties?.categories?.join(", ")
-    : feature.properties?.place_type_name?.[0] ?? feature.place_type[0];
+  $: placeType =
+    feature.properties?.categories?.join(", ") ??
+    feature.properties?.place_type_name?.[0] ??
+    feature.place_type[0];
 
   function handleImgError() {
     if (imageUrl) {
