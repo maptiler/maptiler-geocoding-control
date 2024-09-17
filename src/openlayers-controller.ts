@@ -197,7 +197,7 @@ export function createOpenLayersMapController(
     flyTo(center: Position, zoom: number) {
       map.getView().animate({
         center: fromLonLat(center, getProjection()),
-        zoom,
+        ...(zoom ? { zoom } : {}),
         duration: 2000,
         ...flyToOptions,
       });
@@ -206,7 +206,7 @@ export function createOpenLayersMapController(
     fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
       map.getView().fit(transformExtent(bbox, EPSG_4326, getProjection()), {
         padding: [padding, padding, padding, padding],
-        maxZoom,
+        ...(maxZoom ? { maxZoom } : {}),
         duration: 2000,
         ...flyToBounds,
       });

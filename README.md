@@ -20,10 +20,9 @@
 
 ## About
 
-A _Geocoding control_ for [MapTiler
-SDK](https://github.com/maptiler/maptiler-sdk-js), [MapLibre GL
-JS](https://github.com/maplibre/maplibre-gl-js) and
-[Leaflet](https://leafletjs.com) utilizes [MapTiler Cloud Geocoding
+A _Geocoding control_ for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js),
+[MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js),
+[Leaflet](https://leafletjs.com) and [OpenLayers](https://openlayers.org) utilizes [MapTiler Cloud Geocoding
 API](https://www.maptiler.com/cloud/geocoding/). With this control, users of
 mapping application can find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
 to the address level, restrict the search area to a specific country, highlight

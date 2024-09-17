@@ -29,9 +29,9 @@ export type MapEvent =
 export type MapController = {
   setEventHandler(handler: undefined | ((e: MapEvent) => void)): void;
 
-  flyTo(center: Position, zoom: number): void;
+  flyTo(center: Position, zoom?: number): void;
 
-  fitBounds(bbox: BBox, padding: number, maxZoom: number): void;
+  fitBounds(bbox: BBox, padding: number, maxZoom?: number): void;
 
   indicateReverse(reverse: boolean): void;
 
@@ -159,16 +159,22 @@ export type ControlOptions = {
   fuzzyMatch?: boolean;
 
   /**
-   * On geocoded result what zoom level should the map animate to when a bbox isn't found in the response.
-   * If a bbox is found the map will fit to the bbox.
-   * Default value is `16`
+   * On geocoded result what zoom level should the map animate to when a bbox in the response isn't present or is a point.
+   * If a bbox is present and not a point then the map will fit to the bbox.
+   *
+   * Value can be a number (deprecated) or key-value pairs, where key is a &lt;type&gt; or &lt;type&gt;.&lt;categoy&gt; and value is the zoom level.
+   *
+   * Default value is `GeocodingControl.ZOOM_DEFAULTS`.
    */
-  zoom?: number;
+  zoom?: number | Record<string, number>;
 
   /**
-   * On geocoded result what max zoom level should the map animate to when a bbox isn't found in the response. Used for small features.
-   * If a bbox is found the map will fit to the bbox.
-   * Default value is `18`.
+   * On geocoded result what max zoom level should the map animate to when a bbox in the response isn't present or is a point.
+   * Used for small features.
+   *
+   * If a bbox is present and not a point then the map will fit to the bbox.
+   *
+   * @deprecated use `zoom` option
    */
   maxZoom?: number;
 

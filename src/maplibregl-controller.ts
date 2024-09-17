@@ -165,17 +165,17 @@ export function createMapLibreGlMapController(
       }
     },
 
-    flyTo(center: Position, zoom: number): void {
-      map.flyTo({ center, zoom, ...flyToOptions });
+    flyTo(center: Position, zoom?: number): void {
+      map.flyTo({ center, ...(zoom ? { zoom } : {}), ...flyToOptions });
     },
 
-    fitBounds(bbox: BBox, padding: number, maxZoom: number): void {
+    fitBounds(bbox: BBox, padding: number, maxZoom?: number): void {
       map.fitBounds(
         [
           [bbox[0], bbox[1]],
           [bbox[2], bbox[3]],
         ],
-        { padding, maxZoom, ...fitBoundsOptions },
+        { padding, ...(maxZoom ? { maxZoom } : {}), ...fitBoundsOptions },
       );
     },
 
