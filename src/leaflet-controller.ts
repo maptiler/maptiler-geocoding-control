@@ -1,13 +1,18 @@
+import bbox from "@turf/bbox";
+import clone from "@turf/clone";
 import { feature, featureCollection } from "@turf/helpers";
 import union from "@turf/union";
 import type {
+  FeatureCollection,
   GeoJSON,
+  Position as GPosition,
   LineString,
   MultiLineString,
   MultiPolygon,
   Polygon,
 } from "geojson";
 import * as L from "leaflet";
+import { unwrapBbox } from "./geoUtils";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
 import type { BBox, Feature, MapController, MapEvent, Position } from "./types";
@@ -207,7 +212,31 @@ export function createLeafletMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setMask(picked as Feature<Polygon | MultiPolygon>, setData);
+          setMask(picked as Feature<Polygon | MultiPolygon>, (fc) => {
+            if (!fc) {
+              return;
+            }
+
+            // leaflet doesn't repeat features every 360 degrees along longitude
+            // so we clone it manually to the direction(s)
+            // which could be displayed when auto-zoomed on the feature
+
+            const features = [...fc.features];
+
+            const bb = unwrapBbox(bbox(picked) as BBox);
+
+            const span = bb[2] - bb[0];
+
+            if (bb[0] - span / 4 < -180) {
+              features.push(...shiftPolyCollection(fc, -360).features);
+            }
+
+            if (bb[2] + span / 4 > 180) {
+              features.push(...shiftPolyCollection(fc, 360).features);
+            }
+
+            setData(featureCollection(features));
+          });
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"
@@ -295,4 +324,31 @@ export function createLeafletMapController(
       return [map.getZoom(), c.lng, c.lat];
     },
   } satisfies MapController;
+}
+
+function shiftPolyCollection(
+  featureCollection: FeatureCollection<Polygon | MultiPolygon>,
+  distance: number,
+): FeatureCollection<Polygon | MultiPolygon> {
+  const cloned = clone(featureCollection);
+
+  for (const feature of cloned.features) {
+    if (feature.geometry.type == "MultiPolygon") {
+      for (const poly of feature.geometry.coordinates) {
+        shiftPolyCoords(poly, distance);
+      }
+    } else {
+      shiftPolyCoords(feature.geometry.coordinates, distance);
+    }
+  }
+
+  return cloned;
+}
+
+function shiftPolyCoords(coordinates: GPosition[][], distance: number) {
+  for (const ring of coordinates) {
+    for (const position of ring) {
+      position[0] += distance;
+    }
+  }
 }

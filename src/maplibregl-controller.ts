@@ -68,7 +68,7 @@ export function createMapLibreGlMapController(
 
   let reverseMarker: maplibregl.Marker | undefined;
 
-  let savedData: GeoJSON; // used to restore features on style switch
+  let savedData: GeoJSON | undefined; // used to restore features on style switch
 
   function addFullGeometryLayer() {
     if (
@@ -142,8 +142,12 @@ export function createMapLibreGlMapController(
     return new maplibregl.Marker({ element, offset: [1, -13] });
   }
 
-  function setData(data: GeoJSON) {
+  function setData(data?: GeoJSON) {
     savedData = data;
+
+    if (!data) {
+      return;
+    }
 
     (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
   }

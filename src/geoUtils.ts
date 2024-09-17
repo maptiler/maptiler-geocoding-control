@@ -17,7 +17,14 @@ export function unwrapBbox(bbox0: BBox): BBox {
   const bbox = [...bbox0] satisfies BBox;
 
   if (bbox[2] < bbox[0]) {
-    bbox[2] += 360;
+    if (
+      Math.abs((bbox[0] + bbox[2] + 360) / 2) >
+      Math.abs((bbox[0] - 360 + bbox[2]) / 2)
+    ) {
+      bbox[0] -= 360;
+    } else {
+      bbox[2] += 360;
+    }
   }
 
   return bbox;

@@ -1,16 +1,16 @@
 import type { FeatureCollection, MultiPolygon, Polygon } from "geojson";
-import { Feature, type MapBrowserEvent } from "ol";
+import { Feature as OlFeature, type MapBrowserEvent } from "ol";
 import type { FeatureLike } from "ol/Feature";
 import type Map from "ol/Map";
 import type { AnimationOptions, FitOptions } from "ol/View";
 import {
-  type Geometry as OlGeometry,
   GeometryCollection as OlGeometryCollection,
   LineString as OlLineString,
   MultiLineString as OlMultiLineString,
   MultiPolygon as OlMultiPolygon,
+  Point as OlPoint,
   Polygon as OlPolygon,
-  Point,
+  type Geometry as OlGeometry,
 } from "ol/geom";
 import VectorLayer from "ol/layer/Vector";
 import {
@@ -104,7 +104,7 @@ export function createOpenLayersMapController(
 
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
-  let reverseMarker: Feature | undefined;
+  let reverseMarker: OlFeature | undefined;
 
   let indicatingReverse = false;
 
@@ -227,13 +227,13 @@ export function createOpenLayersMapController(
 
           reverseMarker = undefined;
         } else {
-          (reverseMarker.getGeometry() as Point).setCoordinates(
+          (reverseMarker.getGeometry() as OlPoint).setCoordinates(
             fromLonLat(coordinates, getProjection()),
           );
         }
       } else if (coordinates) {
-        reverseMarker = new Feature(
-          new Point(fromLonLat(coordinates, getProjection())),
+        reverseMarker = new OlFeature(
+          new OlPoint(fromLonLat(coordinates, getProjection())),
         );
 
         reverseMarker.setProperties({ isReverse: true });
@@ -264,7 +264,7 @@ export function createOpenLayersMapController(
           }
 
           source.addFeature(
-            new Feature({
+            new OlFeature({
               isMask: !!f.properties?.isMask,
               geometry: fromWgs84(geom),
             }),
@@ -277,8 +277,6 @@ export function createOpenLayersMapController(
       if (reverseMarker) {
         source.addFeature(reverseMarker);
       }
-
-      setData();
 
       if (picked) {
         let handled = false;
@@ -296,7 +294,7 @@ export function createOpenLayersMapController(
 
           if (geoms.length > 0) {
             source.addFeature(
-              new Feature(fromWgs84(new OlGeometryCollection(geoms))),
+              new OlFeature(fromWgs84(new OlGeometryCollection(geoms))),
             );
 
             handled = true;
@@ -304,7 +302,7 @@ export function createOpenLayersMapController(
             for (const geometry of picked.geometry.geometries) {
               if (geometry.type === "LineString") {
                 source.addFeature(
-                  new Feature(
+                  new OlFeature(
                     fromWgs84(new OlLineString(geometry.coordinates)),
                   ),
                 );
@@ -312,7 +310,7 @@ export function createOpenLayersMapController(
                 handled = true;
               } else if (geometry.type === "MultiLineString") {
                 source.addFeature(
-                  new Feature(
+                  new OlFeature(
                     fromWgs84(new OlMultiLineString(geometry.coordinates)),
                   ),
                 );
@@ -331,7 +329,7 @@ export function createOpenLayersMapController(
           setMask(picked as FeatureType<MultiPolygon>, setData);
         } else if (picked.geometry.type === "LineString") {
           source.addFeature(
-            new Feature(
+            new OlFeature(
               fromWgs84(new OlLineString(picked.geometry.coordinates)),
             ),
           );
@@ -339,7 +337,7 @@ export function createOpenLayersMapController(
           return; // no pin for (multi)linestrings
         } else if (picked.geometry.type === "MultiLineString") {
           source.addFeature(
-            new Feature(
+            new OlFeature(
               fromWgs84(new OlMultiLineString(picked.geometry.coordinates)),
             ),
           );
@@ -347,7 +345,7 @@ export function createOpenLayersMapController(
           return; // no pin for (multi)linestrings
         }
 
-        source.addFeature(new Feature(fromWgs84(new Point(picked.center))));
+        source.addFeature(new OlFeature(fromWgs84(new OlPoint(picked.center))));
       }
 
       for (const feature of markedFeatures ?? []) {
@@ -355,8 +353,8 @@ export function createOpenLayersMapController(
           continue;
         }
 
-        const marker = new Feature(
-          new Point(fromLonLat(feature.center, getProjection())),
+        const marker = new OlFeature(
+          new OlPoint(fromLonLat(feature.center, getProjection())),
         );
 
         marker.setId(feature.id);
