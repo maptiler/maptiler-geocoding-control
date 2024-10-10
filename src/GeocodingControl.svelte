@@ -830,6 +830,7 @@
     background-color: #fff;
     z-index: 10;
     border-radius: 4px;
+    margin: 0;
     transition: max-width 0.25s;
     box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
     --color-text: #444952;
