@@ -93,10 +93,10 @@ export type ControlOptions = {
 
   /**
    * Search results closer to the proximity point will be given higher priority. First matching rule from the array will be used.
-   * Set to `undefined` or `null` to disable proximity.
+   * Set to `null` to disable the proximity.
    * Default value is `[{ type: "server-geolocation" }]`.
    */
-  proximity?: ProximityRule[] | null | undefined;
+  proximity?: ProximityRule[] | null;
 
   /**
    * Override the default placeholder attribute value.
