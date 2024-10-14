@@ -279,7 +279,7 @@
   }
 
   // clear selection on edit
-  $: if (!selectFirst) {
+  $: {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     searchValue;
 
