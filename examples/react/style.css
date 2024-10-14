@@ -7,7 +7,6 @@ main {
 
 main {
   padding: 1em;
-  gap: 1em;
   display: flex;
   flex-direction: column;
 }
@@ -19,7 +18,22 @@ main {
   flex-wrap: wrap;
 }
 
-.console {
+.flex-grow {
   flex-grow: 1;
+}
+
+.overflow-auto {
   overflow: auto;
+}
+
+.logs {
+  display: grid;
+  column-gap: 1em;
+  grid-template-columns: auto 1fr;
+  height: 0px; /* fixes overflow */
+}
+
+.logs > div:nth-child(2n) {
+  text-wrap: nowrap;
+  color: blue;
 }
