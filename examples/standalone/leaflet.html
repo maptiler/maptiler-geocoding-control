@@ -54,11 +54,14 @@
     },
   ).addTo(map);
 
-  L.control
+  const geocodingControl = L.control
     .maptilerGeocoding({
       apiKey,
       enableReverse: true,
       iconsBaseUrl: "../../public/icons/",
+    })
+    .on("select", (...args) => {
+      console.log("select", ...args);
     })
     .addTo(map);
 </script>
