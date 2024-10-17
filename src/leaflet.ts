@@ -36,7 +36,24 @@ type LeafletControlOptions = ControlOptions &
     fullGeometryStyle?: L.PathOptions | L.StyleFunction;
   };
 
-export class GeocodingControl extends L.Control {
+/**
+ * Leaflet mixins https://leafletjs.com/reference.html#class
+ * for TypeScript https://www.typescriptlang.org/docs/handbook/mixins.html
+ * @internal
+ */
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging, @typescript-eslint/no-extraneous-class
+class EventedControl {
+  // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-unused-vars
+  constructor(...args: unknown[]) {}
+}
+
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+interface EventedControl extends L.Control, L.Evented {}
+
+L.Util.extend(EventedControl.prototype, L.Control.prototype);
+L.Util.extend(EventedControl.prototype, L.Evented.prototype);
+
+export class GeocodingControl extends EventedControl {
   #gc?: GeocodingControlComponent;
 
   #options: LeafletControlOptions;
@@ -94,7 +111,7 @@ export class GeocodingControl extends L.Control {
       "queryChange",
     ] as const) {
       this.#gc.$on(eventName, (event) =>
-        map.fire(eventName.toLowerCase(), event.detail),
+        this.fire(eventName.toLowerCase(), event.detail),
       );
     }
 

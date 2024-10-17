@@ -42,6 +42,16 @@
 
   const scale = devicePixelRatio > 1.5 ? "@2x" : "";
 
+  const geocodingControl = new openlayersMaptilerGeocoder.GeocodingControl({
+    apiKey,
+    enableReverse: "always",
+    iconsBaseUrl: "/icons/",
+  });
+
+  geocodingControl.addEventListener("select", (...args) => {
+    console.log("select", ...args);
+  });
+
   new ol.Map({
     target: document.getElementById("map"),
     layers: [
@@ -60,12 +70,6 @@
       center: [0, 0],
       zoom: 0,
     }),
-    controls: ol.control.defaults.defaults().extend([
-      new openlayersMaptilerGeocoder.GeocodingControl({
-        apiKey,
-        enableReverse: "always",
-        iconsBaseUrl: "/icons/",
-      }),
-    ]),
+    controls: ol.control.defaults.defaults().extend([geocodingControl]),
   });
 </script>

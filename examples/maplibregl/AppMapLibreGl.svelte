@@ -17,23 +17,23 @@
       container: containerElement,
     });
 
-    map.addControl(
-      new GeocodingControl({
-        apiKey,
-        enableReverse: "always",
-        collapsed: true,
-        // limit: 20,
-        // types: ["poi"],
-        // fetchParameters: { credentials: "include" },
-        // selectFirst: false,
-        iconsBaseUrl: "/icons/",
-        proximity: [
-          { type: "map-center", minZoom: 12 },
-          { type: "client-geolocation", minZoom: 8 },
-          { type: "server-geolocation", minZoom: 8 },
-        ],
-      }),
-    );
+    const geocodingControl = new GeocodingControl({
+      apiKey,
+      enableReverse: "always",
+      collapsed: true,
+      // limit: 20,
+      // types: ["poi"],
+      // fetchParameters: { credentials: "include" },
+      // selectFirst: false,
+      iconsBaseUrl: "/icons/",
+      proximity: [
+        { type: "map-center", minZoom: 12 },
+        { type: "client-geolocation", minZoom: 8 },
+        { type: "server-geolocation", minZoom: 8 },
+      ],
+    });
+
+    map.addControl(geocodingControl);
 
     map.addControl(new NavigationControl({}));
   });

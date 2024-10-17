@@ -55,6 +55,10 @@
     iconsBaseUrl: "../../public/icons/",
   });
 
+  gc.on("select", (...args) => {
+    console.log("select", ...args);
+  });
+
   map.addControl(gc);
 
   setTimeout(() => {
