@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Map, NavigationControl } from "maplibre-gl";
+  import { Map, Marker, NavigationControl, Popup } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
   import { onMount } from "svelte";
   import { GeocodingControl } from "../../src/maplibregl";
@@ -17,23 +17,52 @@
       container: containerElement,
     });
 
-    const geocodingControl = new GeocodingControl({
-      apiKey,
-      enableReverse: "always",
-      collapsed: true,
-      // limit: 20,
-      // types: ["poi"],
-      // fetchParameters: { credentials: "include" },
-      // selectFirst: false,
-      iconsBaseUrl: "/icons/",
-      proximity: [
-        { type: "map-center", minZoom: 12 },
-        { type: "client-geolocation", minZoom: 8 },
-        { type: "server-geolocation", minZoom: 8 },
-      ],
-    });
+    map.addControl(
+      new GeocodingControl({
+        apiKey,
+        enableReverse: "always",
+        collapsed: true,
+        // limit: 20,
+        // types: ["poi"],
+        // fetchParameters: { credentials: "include" },
+        // selectFirst: false,
+        iconsBaseUrl: "/icons/",
+        proximity: [
+          { type: "map-center", minZoom: 12 },
+          { type: "client-geolocation", minZoom: 8 },
+          { type: "server-geolocation", minZoom: 8 },
+        ],
+        marker(map, feature) {
+          if (!feature) {
+            return;
+          }
 
-    map.addControl(geocodingControl);
+          const marker = new Marker()
+            .setLngLat(feature.center)
+            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+            .addTo(map)
+            .togglePopup();
+
+          const element = marker.getElement();
+
+          element.style.cursor = "pointer";
+
+          element.addEventListener("click", (e) => {
+            marker.togglePopup();
+            e.stopPropagation();
+          });
+
+          return marker;
+        },
+        showResultMarkers(map, feature) {
+          return new Marker()
+            .setLngLat(feature.center)
+            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+            .addTo(map)
+            .togglePopup();
+        },
+      }),
+    );
 
     map.addControl(new NavigationControl({}));
   });

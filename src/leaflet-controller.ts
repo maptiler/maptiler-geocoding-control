@@ -17,30 +17,44 @@ import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
 import type { BBox, Feature, MapController, MapEvent, Position } from "./types";
 
+const defaultFullGeometryStyle: L.StyleFunction = (feature) => {
+  const type = feature?.geometry?.type;
+
+  const weight = feature?.properties?.isMask
+    ? 0
+    : type === "LineString" || type === "MultiLineString"
+      ? 3
+      : 2;
+
+  return {
+    color: "#3170fe",
+    fillColor: "#000",
+    fillOpacity: feature?.properties?.isMask ? 0.1 : 0,
+    weight,
+    dashArray: [weight, weight],
+    lineCap: "butt",
+  };
+};
+
 export function createLeafletMapController(
   map: L.Map,
-  marker: boolean | L.MarkerOptions = true,
-  showResultMarkers: boolean | L.MarkerOptions = true,
-  flyToOptions: L.ZoomPanOptions = {},
-  flyToBounds: L.FitBoundsOptions = {},
-  fullGeometryStyle: L.PathOptions | L.StyleFunction = (feature) => {
-    const type = feature?.geometry?.type;
-
-    const weight = feature?.properties?.isMask
-      ? 0
-      : type === "LineString" || type === "MultiLineString"
-        ? 3
-        : 2;
-
-    return {
-      color: "#3170fe",
-      fillColor: "#000",
-      fillOpacity: feature?.properties?.isMask ? 0.1 : 0,
-      weight,
-      dashArray: [weight, weight],
-      lineCap: "butt",
-    };
-  },
+  marker:
+    | boolean
+    | null
+    | L.MarkerOptions
+    | ((map: L.Map, feature?: Feature) => L.Marker | undefined | null) = true,
+  showResultMarkers:
+    | boolean
+    | null
+    | L.MarkerOptions
+    | ((map: L.Map, feature: Feature) => L.Marker | undefined | null) = true,
+  flyToOptions: L.ZoomPanOptions | null = {},
+  flyToBounds: L.FitBoundsOptions | null = {},
+  fullGeometryStyle:
+    | null
+    | boolean
+    | L.PathOptions
+    | L.StyleFunction = defaultFullGeometryStyle,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -51,7 +65,12 @@ export function createLeafletMapController(
   let reverseMarker: L.Marker | undefined;
 
   const resultLayer = L.geoJSON(undefined, {
-    style: fullGeometryStyle,
+    style:
+      fullGeometryStyle === true
+        ? defaultFullGeometryStyle
+        : fullGeometryStyle === false
+          ? undefined
+          : (fullGeometryStyle ?? undefined),
     interactive: false,
   }).addTo(map);
 
@@ -132,13 +151,17 @@ export function createLeafletMapController(
           reverseMarker.setLatLng(latLng);
         }
       } else if (latLng) {
-        reverseMarker = (
-          typeof marker === "object"
-            ? new L.Marker(latLng, marker)
-            : createMarker(latLng)
-        ).addTo(map);
+        if (marker instanceof Function) {
+          reverseMarker = marker(map) ?? undefined;
+        } else {
+          reverseMarker = (
+            typeof marker === "object"
+              ? new L.Marker(latLng, marker)
+              : createMarker(latLng)
+          ).addTo(map);
 
-        reverseMarker.getElement()?.classList.add("marker-reverse");
+          reverseMarker.getElement()?.classList.add("marker-reverse");
+        }
       }
     },
 
@@ -146,10 +169,6 @@ export function createLeafletMapController(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined,
     ): void {
-      if (!marker) {
-        return;
-      }
-
       function setData(data?: GeoJSON) {
         resultLayer.clearLayers();
 
@@ -251,14 +270,21 @@ export function createLeafletMapController(
           return; // no pin for (multi)linestrings
         }
 
-        const pos: L.LatLngExpression = [picked.center[1], picked.center[0]];
+        if (marker instanceof Function) {
+          const m = marker(map, picked);
 
-        markers.push(
-          (typeof marker === "object"
-            ? new L.Marker(pos, marker)
-            : createMarker(pos)
-          ).addTo(map),
-        );
+          if (m) {
+            markers.push(m.addTo(map));
+          }
+        } else if (marker) {
+          const pos: L.LatLngExpression = [picked.center[1], picked.center[0]];
+
+          markers.push(
+            typeof marker === "object"
+              ? new L.Marker(pos, marker)
+              : createMarker(pos).addTo(map),
+          );
+        }
       }
 
       if (showResultMarkers) {
@@ -272,21 +298,30 @@ export function createLeafletMapController(
             feature.center[0],
           ];
 
-          const marker =
-            typeof showResultMarkers === "object"
-              ? new L.Marker(pos, showResultMarkers)
-              : createMarker(pos, true);
+          let marker;
 
-          marker
-            .addTo(map)
-            .bindTooltip(
-              feature.place_type[0] === "reverse"
-                ? feature.place_name
-                : feature.place_name.replace(/,.*/, ""),
-              {
-                direction: "top",
-              },
-            );
+          if (showResultMarkers instanceof Function) {
+            marker = showResultMarkers(map, feature);
+
+            if (!marker) {
+              continue;
+            }
+          } else {
+            marker = (
+              typeof showResultMarkers === "object"
+                ? new L.Marker(pos, showResultMarkers)
+                : createMarker(pos, true)
+            )
+              .addTo(map)
+              .bindTooltip(
+                feature.place_type[0] === "reverse"
+                  ? feature.place_name
+                  : feature.place_name.replace(/,.*/, ""),
+                {
+                  direction: "top",
+                },
+              );
+          }
 
           const element = marker.getElement();
 

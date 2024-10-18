@@ -17,6 +17,7 @@ import type {
   Map,
   MapMouseEvent,
   Marker,
+  MarkerOptions,
 } from "maplibre-gl";
 import MarkerIcon from "./MarkerIcon.svelte";
 import { setMask } from "./mask";
@@ -27,38 +28,48 @@ export type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
 const emptyGeojson = featureCollection([]);
 
+export type FullGeometryStyle = {
+  fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
+  line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
+};
+
+const defaultGeometryStyle: FullGeometryStyle = {
+  fill: {
+    paint: {
+      "fill-color": "#000",
+      "fill-opacity": 0.1,
+    },
+    filter: ["all", ["==", ["geometry-type"], "Polygon"], ["has", "isMask"]],
+  },
+  line: {
+    layout: {
+      "line-cap": "square",
+    },
+    paint: {
+      "line-width": ["case", ["==", ["geometry-type"], "Polygon"], 2, 3],
+      "line-dasharray": [1, 1],
+      "line-color": "#3170fe",
+    },
+    filter: ["!", ["has", "isMask"]],
+  },
+};
+
 export function createMapLibreGlMapController(
   map: Map,
   maplibregl?: MapLibreGL | undefined,
-  marker: boolean | maplibregl.MarkerOptions = true,
-  showResultMarkers: boolean | maplibregl.MarkerOptions = true,
-  flyToOptions: FlyToOptions = {},
-  fitBoundsOptions: FitBoundsOptions = {},
-  fullGeometryStyle:
-    | undefined
-    | {
-        fill?: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
-        line?: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
-      } = {
-    fill: {
-      paint: {
-        "fill-color": "#000",
-        "fill-opacity": 0.1,
-      },
-      filter: ["all", ["==", ["geometry-type"], "Polygon"], ["has", "isMask"]],
-    },
-    line: {
-      layout: {
-        "line-cap": "square",
-      },
-      paint: {
-        "line-width": ["case", ["==", ["geometry-type"], "Polygon"], 2, 3],
-        "line-dasharray": [1, 1],
-        "line-color": "#3170fe",
-      },
-      filter: ["!", ["has", "isMask"]],
-    },
-  },
+  marker:
+    | boolean
+    | null
+    | MarkerOptions
+    | ((map: Map, feature?: Feature) => Marker | undefined | null) = true,
+  showResultMarkers:
+    | boolean
+    | null
+    | MarkerOptions
+    | ((map: Map, feature: Feature) => Marker | undefined | null) = true,
+  flyToOptions: FlyToOptions | null = {},
+  fitBoundsOptions: FitBoundsOptions | null = {},
+  fullGeometryStyle: boolean | null | FullGeometryStyle = defaultGeometryStyle,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -71,9 +82,15 @@ export function createMapLibreGlMapController(
   let savedData: GeoJSON | undefined; // used to restore features on style switch
 
   function addFullGeometryLayer() {
+    const effFullGeometryStyle = !fullGeometryStyle
+      ? undefined
+      : fullGeometryStyle === true
+        ? defaultGeometryStyle
+        : fullGeometryStyle;
+
     if (
       !map.getSource("full-geom") &&
-      (fullGeometryStyle?.fill || fullGeometryStyle?.line)
+      (effFullGeometryStyle?.fill || effFullGeometryStyle?.line)
     ) {
       map.addSource("full-geom", {
         type: "geojson",
@@ -81,18 +98,18 @@ export function createMapLibreGlMapController(
       });
     }
 
-    if (!map.getLayer("full-geom-fill") && fullGeometryStyle?.fill) {
+    if (!map.getLayer("full-geom-fill") && effFullGeometryStyle?.fill) {
       map.addLayer({
-        ...fullGeometryStyle?.fill,
+        ...effFullGeometryStyle?.fill,
         id: "full-geom-fill",
         type: "fill",
         source: "full-geom",
       });
     }
 
-    if (!map.getLayer("full-geom-line") && fullGeometryStyle?.line) {
+    if (!map.getLayer("full-geom-line") && effFullGeometryStyle?.line) {
       map.addLayer({
-        ...fullGeometryStyle?.line,
+        ...effFullGeometryStyle?.line,
         id: "full-geom-line",
         type: "line",
         source: "full-geom",
@@ -197,15 +214,19 @@ export function createMapLibreGlMapController(
           reverseMarker.setLngLat(coordinates);
         }
       } else if (coordinates) {
-        reverseMarker = (
-          typeof marker === "object"
-            ? new maplibregl.Marker(marker)
-            : createMarker()
-        )
-          .setLngLat(coordinates)
-          .addTo(map);
+        if (marker instanceof Function) {
+          reverseMarker = marker(map) ?? undefined;
+        } else {
+          reverseMarker = (
+            typeof marker === "object"
+              ? new maplibregl.Marker(marker)
+              : createMarker()
+          )
+            .setLngLat(coordinates)
+            .addTo(map);
 
-        reverseMarker.getElement().classList.add("marker-reverse");
+          reverseMarker.getElement().classList.add("marker-reverse");
+        }
       }
     },
 
@@ -213,10 +234,6 @@ export function createMapLibreGlMapController(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined,
     ): void {
-      if (!marker) {
-        return;
-      }
-
       for (const marker of markers) {
         marker.remove();
       }
@@ -290,14 +307,17 @@ export function createMapLibreGlMapController(
           return; // no pin for (multi)linestrings
         }
 
-        if (marker) {
+        if (marker instanceof Function) {
+          const m = marker(map, picked);
+
+          if (m) {
+            markers.push(m);
+          }
+        } else if (marker) {
           markers.push(
-            (typeof marker === "object"
+            typeof marker === "object"
               ? new maplibregl.Marker(marker)
-              : createMarker()
-            )
-              .setLngLat(picked.center)
-              .addTo(map),
+              : createMarker().setLngLat(picked.center).addTo(map),
           );
         }
       }
@@ -308,25 +328,35 @@ export function createMapLibreGlMapController(
             continue;
           }
 
-          const marker = (
-            typeof showResultMarkers === "object"
-              ? new maplibregl.Marker(showResultMarkers)
-              : createMarker(true)
-          )
-            .setLngLat(feature.center)
-            .setPopup(
-              new maplibregl.Popup({
-                offset: [1, -27],
-                closeButton: false,
-                closeOnMove: true,
-                className: "maptiler-gc-popup",
-              }).setText(
-                feature.place_type[0] === "reverse"
-                  ? feature.place_name
-                  : feature.place_name.replace(/,.*/, ""),
-              ),
+          let marker;
+
+          if (showResultMarkers instanceof Function) {
+            marker = showResultMarkers(map, feature);
+
+            if (!marker) {
+              continue;
+            }
+          } else {
+            marker = (
+              typeof showResultMarkers === "object"
+                ? new maplibregl.Marker(showResultMarkers)
+                : createMarker(true)
             )
-            .addTo(map);
+              .setLngLat(feature.center)
+              .setPopup(
+                new maplibregl.Popup({
+                  offset: [1, -27],
+                  closeButton: false,
+                  closeOnMove: true,
+                  className: "maptiler-gc-popup",
+                }).setText(
+                  feature.place_type[0] === "reverse"
+                    ? feature.place_name
+                    : feature.place_name.replace(/,.*/, ""),
+                ),
+              )
+              .addTo(map);
+          }
 
           const element = marker.getElement();
 
