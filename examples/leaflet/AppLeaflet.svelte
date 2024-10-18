@@ -38,6 +38,20 @@
       enableReverse: "always",
       // collapsed: true,
       iconsBaseUrl: "/icons/",
+      marker(map, feature) {
+        return !feature
+          ? undefined
+          : new L.Marker([feature.center[1], feature.center[0]])
+              .bindPopup(feature.text)
+              .addTo(map)
+              .openPopup();
+      },
+      showResultMarkers(map, feature) {
+        return new L.Marker([feature.center[1], feature.center[0]])
+          .bindTooltip(feature.text)
+          .addTo(map)
+          .openTooltip();
+      },
     }).addTo(map);
   });
 </script>

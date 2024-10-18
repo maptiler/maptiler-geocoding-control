@@ -1,52 +1,84 @@
 import type * as maplibregl from "maplibre-gl";
 import type {
-  FillLayerSpecification,
   FitBoundsOptions,
   FlyToOptions,
-  LineLayerSpecification,
   Map,
+  Marker,
   MarkerOptions,
 } from "maplibre-gl";
 import type { SvelteComponent } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import { createMapLibreGlMapController } from "./maplibregl-controller";
-import type { ControlOptions } from "./types";
+import {
+  createMapLibreGlMapController,
+  type FullGeometryStyle,
+} from "./maplibregl-controller";
+import type { ControlOptions, Feature } from "./types";
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
   /**
-   * If `true`, a [Marker](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location of the user-selected result using a default set of Marker options.
-   * If the value is an object, the marker will be constructed using these options.
-   * If `false`, no marker will be added to the map.
+   * Marker to be added to the map at the location of the user-selected result using a default set of Marker options.
+   *
+   * - If `true` or `undefined` then a default marker will be used.
+   * - If the value is a [MarkerOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MarkerOptions/) then the marker will be constructed using these options.
+   * - If the value is a function then it can return instance of the [Marker](https://maplibre.org/maplibre-gl-js/docs/API/classes/Marker/).
+   *   Function can accept `Feature` as a parameter which is `undefined` for the reverse location marker.
+   * - If `false` or `null` then no marker will be added to the map.
+   *
    * Requires that `options.maplibregl` also be set.
+   *
    * Default value is `true`.
    */
-  marker?: boolean | MarkerOptions;
+  marker?:
+    | null
+    | boolean
+    | MarkerOptions
+    | ((map: Map, feature?: Feature) => undefined | null | Marker);
 
   /**
-   * If `true`, [Markers](https://maplibre.org/maplibre-gl-js-docs/api/markers/#marker) will be added to the map at the location the top results for the query.
-   * If the value is an object, the marker will be constructed using these options.
-   * If `false`, no marker will be added to the map.
+   * Marker be added to the map at the location the geocoding results.
+   *
+   * - If `true` or `undefined` then a default marker will be used.
+   * - If the value is a [MarkerOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/MarkerOptions/) then the marker will be constructed using these options.
+   * - If the value is a function then it can return instance of the [Marker](https://maplibre.org/maplibre-gl-js/docs/API/classes/Marker/).
+   *   In this case the default pop-up won't be added to the marker.
+   *   Function can accept `Feature` as a parameter.
+   * - If `false` or `null` then no marker will be added to the map.
+   *
    * Requires that `options.maplibregl` also be set.
+   *
    * Default value is `true`.
    */
-  showResultMarkers?: boolean | MarkerOptions;
+  showResultMarkers?:
+    | null
+    | boolean
+    | MarkerOptions
+    | ((map: Map, feature: Feature) => undefined | null | Marker);
 
   /**
-   * If `false`, animating the map to a selected result is disabled.
-   * If `true`, animating the map will use the default animation parameters.
-   * If an object, it will be passed as options to the map `flyTo` or `fitBounds` method providing control over the animation of the transition.
+   * Animation to selected feature on the map.
+   *
+   * - If `false` or `null` then animating the map to a selected result is disabled.
+   * - If `true` or `undefined` then animating the map will use the default animation parameters.
+   * - If an [FlyToOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/FlyToOptions/)
+   *     ` & `[FitBoundsOptions](https://maplibre.org/maplibre-gl-js/docs/API/type-aliases/FitBoundsOptions/)
+   *     then it will be passed as options to the map [flyTo](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/#flyto)
+   *     or [fitBounds](https://maplibre.org/maplibre-gl-js/docs/API/classes/Map/#fitbounds) method providing control over the animation of the transition.
+   *
    * Default value is `true`.
    */
-  flyTo?: boolean | (FlyToOptions & FitBoundsOptions);
+  flyTo?: null | boolean | (FlyToOptions & FitBoundsOptions);
 
   /**
    * Style for full feature geometry GeoJSON.
+   *
+   * - If `false` or `null` then no full geometry is drawn.
+   * - If `true` or `undefined` then default-styled full geometry is drawn.
+   * - If an object then it must represent the style and will be used to style the full geometry.
+   *
+   * Default is the default style.
    */
-  fullGeometryStyle?: {
-    fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
-    line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
-  };
+  fullGeometryStyle?: null | boolean | FullGeometryStyle;
 };
 
 export type Props<T> = T extends SvelteComponent<infer P> ? P : never;

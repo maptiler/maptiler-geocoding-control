@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Map, NavigationControl } from "maplibre-gl";
+  import { Map, Marker, NavigationControl, Popup } from "maplibre-gl";
   import "maplibre-gl/dist/maplibre-gl.css";
   import { onMount } from "svelte";
   import { GeocodingControl } from "../../src/maplibregl";
@@ -32,6 +32,35 @@
           { type: "client-geolocation", minZoom: 8 },
           { type: "server-geolocation", minZoom: 8 },
         ],
+        marker(map, feature) {
+          if (!feature) {
+            return;
+          }
+
+          const marker = new Marker()
+            .setLngLat(feature.center)
+            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+            .addTo(map)
+            .togglePopup();
+
+          const element = marker.getElement();
+
+          element.style.cursor = "pointer";
+
+          element.addEventListener("click", (e) => {
+            marker.togglePopup();
+            e.stopPropagation();
+          });
+
+          return marker;
+        },
+        showResultMarkers(map, feature) {
+          return new Marker()
+            .setLngLat(feature.center)
+            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+            .addTo(map)
+            .togglePopup();
+        },
       }),
     );
 
