@@ -24,7 +24,7 @@ import { setMask } from "./mask";
 import type { BBox, Position } from "./types";
 import type { Feature, MapController, MapEvent } from "./types.js";
 
-type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
+export type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
 const emptyGeojson = featureCollection([]);
 

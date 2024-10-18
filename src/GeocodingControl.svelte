@@ -110,6 +110,8 @@
 
   export let types: string[] | undefined = undefined;
 
+  export let exhaustiveReverseGeocoding = false;
+
   export let excludeTypes = false;
 
   export let zoom: number | Record<string, number> = ZOOM_DEFAULTS;
@@ -465,7 +467,10 @@
         sp.set("fuzzyMatch", String(fuzzyMatch));
       }
 
-      if (limit !== undefined && (!isReverse || types?.length === 1)) {
+      if (
+        limit !== undefined &&
+        (exhaustiveReverseGeocoding || !isReverse || types?.length === 1)
+      ) {
         sp.set("limit", String(limit));
       }
 

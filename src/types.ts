@@ -258,6 +258,13 @@ export type ControlOptions = {
   types?: string[];
 
   /**
+   * Use `limit` value for reverse geocoding even if `types` is not an array with a single element.
+   * Will work only if enabled on the server.
+   * Default value is `false`.
+   */
+  exhaustiveReverseGeocoding?: boolean;
+
+  /**
    * If set to `true` then use all types except for those listed in `types`.
    * Default value is `false`.
    */
