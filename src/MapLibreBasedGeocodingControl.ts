@@ -1,5 +1,5 @@
-import type * as maplibregl from "maplibre-gl";
 import type {
+  Evented,
   FillLayerSpecification,
   FitBoundsOptions,
   FlyToOptions,
@@ -9,7 +9,10 @@ import type {
 } from "maplibre-gl";
 import type { SvelteComponent } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
-import { createMapLibreGlMapController } from "./maplibregl-controller";
+import {
+  createMapLibreGlMapController,
+  type MapLibreGL,
+} from "./maplibregl-controller";
 import type { ControlOptions } from "./types";
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
@@ -51,123 +54,129 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
 
 export type Props<T> = T extends SvelteComponent<infer P> ? P : never;
 
-export abstract class MapLibreBasedGeocodingControl<
-  T extends MapLibreBaseControlOptions,
-> extends EventTarget {
-  #gc?: GeocodingControlComponent;
+type EventedConstructor = new (
+  ...args: ConstructorParameters<typeof Evented>
+) => Evented;
 
-  #options: T;
-
-  constructor(options: T = {} as T) {
-    super();
-
-    this.#options = options;
-  }
-
-  abstract getExtraProps(
+export function crateBaseClass(
+  Evented: EventedConstructor,
+  maplibreGl: MapLibreGL,
+  getExtraProps?: (
     map: Map,
     div: HTMLElement,
-  ): Partial<Props<GeocodingControlComponent>>;
+  ) => Partial<Props<GeocodingControlComponent>>,
+) {
+  return class MapLibreBasedGeocodingControl<
+    T extends MapLibreBaseControlOptions,
+  > extends Evented {
+    #gc?: GeocodingControlComponent;
 
-  onAddInt(map: Map): HTMLElement {
-    const div = document.createElement("div");
+    #options: T;
 
-    div.className =
-      "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
+    constructor(options: T = {} as T) {
+      super();
 
-    const {
-      marker,
-      showResultMarkers,
-      flyTo,
-      fullGeometryStyle,
-      ...restOptions
-    } = this.#options;
-
-    const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
-
-    const extraConfig = this.getExtraProps(map, div);
-
-    const mapController = createMapLibreGlMapController(
-      map,
-      this.getMapLibreGl(),
-      marker,
-      showResultMarkers,
-      flyToOptions,
-      flyToOptions,
-      fullGeometryStyle,
-    );
-
-    const props = {
-      mapController,
-      flyTo: flyTo === undefined ? true : !!flyTo,
-      apiKey: "", // just to satisfy apiKey; TODO find a better solution
-      ...extraConfig,
-      ...restOptions,
-    };
-
-    if (!props.apiKey) {
-      throw new Error("no apiKey provided");
+      this.#options = options;
     }
 
-    this.#gc = new GeocodingControlComponent({ target: div, props });
+    onAddInt(map: Map): HTMLElement {
+      const div = document.createElement("div");
 
-    for (const eventName of [
-      "select",
-      "pick",
-      "featuresListed",
-      "featuresMarked",
-      "response",
-      "optionsVisibilityChange",
-      "reverseToggle",
-      "queryChange",
-    ] as const) {
-      this.#gc.$on(eventName, (event) => this.dispatchEvent(event));
+      div.className =
+        "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
+
+      const {
+        marker,
+        showResultMarkers,
+        flyTo,
+        fullGeometryStyle,
+        ...restOptions
+      } = this.#options;
+
+      const flyToOptions = typeof flyTo === "boolean" ? {} : flyTo;
+
+      const mapController = createMapLibreGlMapController(
+        map,
+        maplibreGl,
+        marker,
+        showResultMarkers,
+        flyToOptions,
+        flyToOptions,
+        fullGeometryStyle,
+      );
+
+      const props = {
+        mapController,
+        flyTo: flyTo === undefined ? true : !!flyTo,
+        apiKey: "", // just to satisfy apiKey; TODO find a better solution
+        ...getExtraProps?.(map, div),
+        ...restOptions,
+      };
+
+      if (!props.apiKey) {
+        throw new Error("no apiKey provided");
+      }
+
+      this.#gc = new GeocodingControlComponent({ target: div, props });
+
+      for (const eventName of [
+        "select",
+        "pick",
+        "featuresListed",
+        "featuresMarked",
+        "response",
+        "optionsVisibilityChange",
+        "reverseToggle",
+        "queryChange",
+      ] as const) {
+        this.#gc.$on(eventName, (event) => {
+          this.fire(eventName, event.detail);
+        });
+      }
+
+      return div;
     }
 
-    return div;
-  }
+    setOptions(options: T) {
+      this.#options = options;
 
-  abstract getMapLibreGl(): typeof maplibregl;
+      const {
+        marker,
+        showResultMarkers,
+        flyTo,
+        fullGeometryStyle,
+        ...restOptions
+      } = this.#options;
 
-  setOptions(options: T) {
-    this.#options = options;
+      this.#gc?.$set(restOptions);
+    }
 
-    const {
-      marker,
-      showResultMarkers,
-      flyTo,
-      fullGeometryStyle,
-      ...restOptions
-    } = this.#options;
+    setQuery(value: string, submit = true) {
+      this.#gc?.setQuery(value, submit);
+    }
 
-    this.#gc?.$set(restOptions);
-  }
+    clearMap() {
+      this.#gc?.clearMap();
+    }
 
-  setQuery(value: string, submit = true) {
-    this.#gc?.setQuery(value, submit);
-  }
+    clearList() {
+      this.#gc?.clearList();
+    }
 
-  clearMap() {
-    this.#gc?.clearMap();
-  }
+    setReverseMode(value: boolean) {
+      this.#gc?.$set({ reverseActive: value });
+    }
 
-  clearList() {
-    this.#gc?.clearList();
-  }
+    focus() {
+      this.#gc?.focus();
+    }
 
-  setReverseMode(value: boolean) {
-    this.#gc?.$set({ reverseActive: value });
-  }
+    blur() {
+      this.#gc?.blur();
+    }
 
-  focus() {
-    this.#gc?.focus();
-  }
-
-  blur() {
-    this.#gc?.blur();
-  }
-
-  onRemove() {
-    this.#gc?.$destroy();
-  }
+    onRemove() {
+      this.#gc?.$destroy();
+    }
+  };
 }
