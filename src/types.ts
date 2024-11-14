@@ -322,13 +322,24 @@ export type ControlOptions = {
   // getItemValue // A function that specifies how the selected result should be rendered in the search bar. This function should accept a single Carmen GeoJSON object as input and return a string. HTML tags in the output string will not be rendered. Defaults to (item) => item.place_name.
 };
 
-export type DispatcherType = {
-  featuresListed: Feature[] | undefined;
-  featuresMarked: Feature[] | undefined;
-  optionsVisibilityChange: boolean;
-  pick: Feature | undefined;
-  queryChange: string;
+export type DispatcherTypeCC = {
+  featuresListed: { features: Feature[] | undefined };
+  featuresMarked: { features: Feature[] | undefined };
+  optionsVisibilityChange: { optionsVisible: boolean };
+  pick: { feature: Feature | undefined };
+  queryChange: { query: string };
   response: { url: string; featureCollection: FeatureCollection };
-  reverseToggle: boolean;
-  select: Feature | undefined;
+  reverseToggle: { reverse: boolean };
+  select: { feature: Feature | undefined };
 };
+
+export type DispatcherType = {
+  [T in keyof DispatcherTypeCC as Lowercase<T>]: DispatcherTypeCC[T];
+};
+
+// Helper type to enforce key equality
+export type EnsureMatchingKeys<T, U> = keyof T extends keyof U
+  ? keyof U extends keyof T
+    ? true
+    : never
+  : never;
