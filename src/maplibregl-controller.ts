@@ -52,11 +52,11 @@ const defaultGeometryStyle: FullGeometryStyle = {
   },
 };
 
-const RESULT_SOURCE = "full-geom";
+const RESULT_SOURCE = "mtlr-gc-full-geom";
 
-const RESULT_LAYER_FILL = "full-geom-fill";
+const RESULT_LAYER_FILL = "mtlr-gc-full-geom-fill";
 
-const RESULT_LAYER_LINE = "full-geom-line";
+const RESULT_LAYER_LINE = "mtlr-gc-full-geom-line";
 
 export function createMapLibreGlMapController(
   map: Map,
