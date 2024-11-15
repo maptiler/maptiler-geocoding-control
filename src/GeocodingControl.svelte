@@ -805,6 +805,7 @@
     </div>
   {:else if focusedDelayed && listFeatures?.length}
     <ul
+      class="options"
       on:mouseleave={() => {
         if (!selectFirst) {
           selectedItemIndex = -1;
@@ -966,10 +967,11 @@
     }
   }
 
-  :global(.maplibregl-ctrl-bottom-left) ul,
-  :global(.maplibregl-ctrl-bottom-right) ul {
+  :global(.leaflet-bottom) ul.options,
+  :global(.maplibregl-ctrl-bottom-left) ul.options,
+  :global(.maplibregl-ctrl-bottom-right) ul.options {
     top: auto;
-    bottom: 100%;
+    bottom: calc(100% + 6px);
   }
 
   button {

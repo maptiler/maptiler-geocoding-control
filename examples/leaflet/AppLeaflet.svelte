@@ -52,7 +52,7 @@
           .addTo(map)
           .openTooltip();
       },
-      position: "topleft",
+      position: "bottomright",
     }).addTo(map);
   });
 </script>
