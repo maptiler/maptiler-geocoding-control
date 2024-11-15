@@ -96,9 +96,10 @@
 
   export let searchValue = "";
 
-  export let showFullGeometry: boolean | "poly-with-marker" = true;
+  export let showFullGeometry: boolean | "polygon-with-marker" = true;
 
-  export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
+  export let showPlaceType: false | "always" | "ifNeeded" | "if-needed" =
+    "if-needed";
 
   export let showResultsWhileTyping = true;
 

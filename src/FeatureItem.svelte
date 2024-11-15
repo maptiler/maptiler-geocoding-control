@@ -5,7 +5,7 @@
 
   export let selected = false;
 
-  export let showPlaceType: false | "always" | "ifNeeded";
+  export let showPlaceType: false | "always" | "ifNeeded" | "if-needed";
 
   export let missingIconsCache: Set<string>;
 

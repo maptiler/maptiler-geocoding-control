@@ -234,17 +234,17 @@ export type ControlOptions = {
 
   /**
    * Set to `false` to hide place/POI type. If set to `"always"` then type is shown for all items.
-   * If set to `"ifNeeded"` then type is shown only for places/POIs not determined from the icon.
-   * Default value is `"ifNeeded"`.
+   * If set to `"if-needed"` (deprecated `"ifNeeded"`) then type is shown only for places/POIs not determined from the icon.
+   * Default value is `"if-needed"`.
    */
-  showPlaceType?: false | "always" | "ifNeeded";
+  showPlaceType?: false | "always" | "ifNeeded" | "if-needed";
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
-   * If `"poly-with-marker"` is specified, then also a marker will be shown in the hotspot or center of polygon features.
+   * If `"polygon-with-marker"` is specified, then also a marker will be shown in the hotspot or center of polygon features.
    * Default value is `true`.
    */
-  showFullGeometry?: boolean | "poly-with-marker";
+  showFullGeometry?: boolean | "polygon-with-marker";
 
   /**
    * Limit search to specified country(ies).

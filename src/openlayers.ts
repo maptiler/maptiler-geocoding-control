@@ -119,7 +119,7 @@ export class GeocodingControl extends Control {
         // marker,
         // showResultMarkers,
         fullGeometryStyle,
-        this.#options.showFullGeometry === "poly-with-marker",
+        this.#options.showFullGeometry === "polygon-with-marker",
       );
 
       this.#gc?.$set({ mapController });
