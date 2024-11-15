@@ -136,6 +136,7 @@ export function crateBaseClass(
         flyToOptions,
         flyToOptions,
         fullGeometryStyle,
+        restOptions.showFullGeometry === "poly-with-marker",
       );
 
       const props = {

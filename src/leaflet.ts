@@ -123,6 +123,7 @@ export class GeocodingControl extends EventedControl {
       flyToOptions,
       flyToOptions,
       fullGeometryStyle,
+      restOptions.showFullGeometry === "poly-with-marker",
     );
 
     this.#gc = new GeocodingControlComponent({

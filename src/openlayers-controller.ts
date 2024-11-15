@@ -97,6 +97,7 @@ export function createOpenLayersMapController(
   flyToOptions: AnimationOptions = {},
   flyToBounds: FitOptions = {},
   fullGeometryStyle: StyleLike | FlatStyleLike = defaultStyle,
+  showPolyMarker = false,
 ) {
   let prevSelected = -1;
 
@@ -343,6 +344,10 @@ export function createOpenLayersMapController(
           );
 
           return; // no pin for (multi)linestrings
+        }
+
+        if (!showPolyMarker && picked.geometry.type !== "Point") {
+          return;
         }
 
         source.addFeature(new OlFeature(fromWgs84(new OlPoint(picked.center))));

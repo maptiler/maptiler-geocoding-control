@@ -96,7 +96,7 @@
 
   export let searchValue = "";
 
-  export let showFullGeometry = true;
+  export let showFullGeometry: boolean | "poly-with-marker" = true;
 
   export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
 

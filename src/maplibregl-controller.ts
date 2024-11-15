@@ -70,6 +70,7 @@ export function createMapLibreGlMapController(
   flyToOptions: FlyToOptions | null = {},
   fitBoundsOptions: FitBoundsOptions | null = {},
   fullGeometryStyle: boolean | null | FullGeometryStyle = defaultGeometryStyle,
+  showPolyMarker = false,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -305,6 +306,10 @@ export function createMapLibreGlMapController(
           setData(picked);
 
           return; // no pin for (multi)linestrings
+        }
+
+        if (!showPolyMarker && picked.geometry.type !== "Point") {
+          return;
         }
 
         if (marker instanceof Function) {

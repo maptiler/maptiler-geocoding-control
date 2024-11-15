@@ -241,9 +241,10 @@ export type ControlOptions = {
 
   /**
    * Set to `true` to show full feature geometry of the chosen result. Otherwise only marker will be shown.
+   * If `"poly-with-marker"` is specified, then also a marker will be shown in the hotspot or center of polygon features.
    * Default value is `true`.
    */
-  showFullGeometry?: boolean;
+  showFullGeometry?: boolean | "poly-with-marker";
 
   /**
    * Limit search to specified country(ies).
