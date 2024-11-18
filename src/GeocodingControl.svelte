@@ -298,19 +298,21 @@
     );
   }
 
-  $: dispatch("select", selected);
+  $: dispatch("select", { feature: selected });
 
-  $: dispatch("pick", picked);
+  $: dispatch("pick", { feature: picked });
 
-  $: dispatch("optionsVisibilityChange", focusedDelayed && !!listFeatures);
+  $: dispatch("optionsvisibilitychange", {
+    optionsVisible: focusedDelayed && !!listFeatures,
+  });
 
-  $: dispatch("featuresListed", listFeatures);
+  $: dispatch("featureslisted", { features: listFeatures });
 
-  $: dispatch("featuresMarked", markedFeatures);
+  $: dispatch("featuresmarked", { features: markedFeatures });
 
-  $: dispatch("reverseToggle", reverseActive);
+  $: dispatch("reversetoggle", { reverse: reverseActive });
 
-  $: dispatch("queryChange", searchValue);
+  $: dispatch("querychange", { query: searchValue });
 
   $: if (mapController) {
     mapController.indicateReverse(reverseActive);
