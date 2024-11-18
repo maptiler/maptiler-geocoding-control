@@ -101,7 +101,7 @@
     | "full-geometry"
     | "full-geometry-including-polygon-center-marker" = "full-geometry";
 
-  export let showPlaceType: "no" | "always" | "if-needed" = "if-needed";
+  export let showPlaceType: "never" | "always" | "if-needed" = "if-needed";
 
   export let showResultsWhileTyping = true;
 

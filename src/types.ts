@@ -237,12 +237,12 @@ export type ControlOptions = {
   clearButtonTitle?: string;
 
   /**
-   * Set to `"no"` to hide place/POI type. If set to `"always"` then type is shown for all items.
+   * Set to `"never"` to hide place/POI type. If set to `"always"` then type is shown for all items.
    * If set to `"if-needed"` then type is shown only for places/POIs not determined from the icon.
    *
    * Default value is `"if-needed"`.
    */
-  showPlaceType?: "no" | "always" | "if-needed";
+  showPlaceType?: "never" | "always" | "if-needed";
 
   /**
    * Style of the picked result on the map:
