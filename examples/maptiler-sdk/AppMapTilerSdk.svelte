@@ -20,7 +20,7 @@
       navigationControl: true,
     });
 
-    const gc = new GeocodingControl({
+    const geocodingControl = new GeocodingControl({
       enableReverse: "always",
       collapsed: false,
       // limit: 20,
@@ -35,10 +35,14 @@
       ],
     });
 
-    map.addControl(gc);
+    map.addControl(geocodingControl);
+
+    geocodingControl.on("featureslisted", (e) => {
+      console.log(e);
+    });
 
     setTimeout(() => {
-      gc.setOptions({ enableReverse: true });
+      geocodingControl.setOptions({ enableReverse: true });
     }, 5000);
   });
 </script>

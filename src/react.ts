@@ -7,9 +7,9 @@ import {
   type Ref,
 } from "react";
 import GeocodingControl from "./GeocodingControl.svelte";
-import type { ControlOptions, DispatcherType, MapController } from "./types";
+import type { ControlOptions, DispatcherTypeCC, MapController } from "./types";
 
-type EventNames = keyof DispatcherType;
+type EventNames = keyof DispatcherTypeCC;
 
 type EventHandlerFnName<T extends EventNames> = `on${Capitalize<T>}`;
 
@@ -71,7 +71,7 @@ function getEventFnName<T extends EventNames>(name: T): EventHandlerFnName<T> {
 }
 
 export type Props = ControlOptions &
-  CallbackProperties<DispatcherType> &
+  CallbackProperties<DispatcherTypeCC> &
   MapControllerProp;
 
 // defining the type explicitly otherwise compiled .d.ts refers to .svelte which is not good

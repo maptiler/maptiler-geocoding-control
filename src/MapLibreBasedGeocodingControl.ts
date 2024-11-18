@@ -2,6 +2,7 @@ import type {
   Evented,
   FitBoundsOptions,
   FlyToOptions,
+  Listener,
   Map,
   Marker,
   MarkerOptions,
@@ -13,7 +14,14 @@ import {
   type FullGeometryStyle,
   type MapLibreGL,
 } from "./maplibregl-controller";
-import type { ControlOptions, Feature } from "./types";
+import type {
+  ControlOptions,
+  DispatcherType,
+  DispatcherTypeCC,
+  Feature,
+  FeatureCollection,
+  RedefineType,
+} from "./types";
 export {
   createMapLibreGlMapController,
   type MapLibreGL,
@@ -78,7 +86,7 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
    *
    * - If `false` or `null` then no full geometry is drawn.
    * - If `true` or `undefined` then default-styled full geometry is drawn.
-   * - If an object then it must represent the style and will be used to style the full geometry.
+   * - If an T then it must represent the style and will be used to style the full geometry.
    *
    * Default is the default style.
    */
@@ -87,11 +95,15 @@ export type MapLibreBaseControlOptions = Omit<ControlOptions, "apiKey"> & {
 
 export type Props<T> = T extends SvelteComponent<infer P> ? P : never;
 
+type RemoveString<T> = T extends string ? never : T;
+
+type Event$1 = RemoveString<Parameters<Evented["fire"]>[0]>;
+
 type EventedConstructor = new (
   ...args: ConstructorParameters<typeof Evented>
 ) => Evented;
 
-export function crateBaseClass(
+export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
   Evented: EventedConstructor,
   maplibreGl: MapLibreGL,
   getExtraProps?: (
@@ -99,14 +111,140 @@ export function crateBaseClass(
     div: HTMLElement,
   ) => Partial<Props<GeocodingControlComponent>>,
 ) {
-  return class MapLibreBasedGeocodingControl<
-    T extends MapLibreBaseControlOptions,
-  > extends Evented {
+  type EventTypes = RedefineType<
+    DispatcherType,
+    {
+      select: SelectEvent;
+      featureslisted: FeaturesListedEvent;
+      featuresmarked: FeaturesMarkedEvent;
+      optionsvisibilitychange: OptionsVisibilityChangeEvent;
+      pick: PickEvent;
+      querychange: QueryChangeEvent;
+      response: ResponseEvent;
+      reversetoggle: ReverseToggleEvent;
+    }
+  >;
+
+  // NOTE We can't use Maplibre `Event` - see https://github.com/maplibre/maplibre-gl-js/issues/5015
+  class Event<TYPE extends string> implements Event$1 {
+    readonly type: TYPE;
+    readonly target: MapLibreBasedGeocodingControl;
+
+    constructor(target: MapLibreBasedGeocodingControl, type: TYPE) {
+      this.type = type;
+      this.target = target;
+    }
+  }
+
+  class SelectEvent extends Event<"select"> {
+    feature: Feature | undefined;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      details: { feature: Feature | undefined },
+    ) {
+      super(target, "select");
+
+      Object.assign(this, details);
+    }
+  }
+
+  class FeaturesListedEvent extends Event<"featureslisted"> {
+    features: Feature[] | undefined;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      features: Feature[] | undefined,
+    ) {
+      super(target, "featureslisted");
+
+      this.features = features;
+    }
+  }
+
+  class FeaturesMarkedEvent extends Event<"featuresmarked"> {
+    features: Feature[] | undefined;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      features: Feature[] | undefined,
+    ) {
+      super(target, "featuresmarked");
+
+      this.features = features;
+    }
+  }
+
+  class OptionsVisibilityChangeEvent extends Event<"optionsvisibilitychange"> {
+    optionsVisible: boolean;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      optionsVisible: boolean,
+    ) {
+      super(target, "optionsvisibilitychange");
+
+      this.optionsVisible = optionsVisible;
+    }
+  }
+
+  class PickEvent extends Event<"pick"> {
+    feature: Feature | undefined;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      feature: Feature | undefined,
+    ) {
+      super(target, "pick");
+
+      this.feature = feature;
+    }
+  }
+
+  class QueryChangeEvent extends Event<"querychange"> {
+    query: string;
+
+    constructor(target: MapLibreBasedGeocodingControl, query: string) {
+      super(target, "querychange");
+
+      this.query = query;
+    }
+  }
+
+  class ResponseEvent extends Event<"response"> {
+    url: string;
+
+    featureCollection: FeatureCollection;
+
+    constructor(
+      target: MapLibreBasedGeocodingControl,
+      url: string,
+      featureCollection: FeatureCollection,
+    ) {
+      super(target, "response");
+
+      this.url = url;
+
+      this.featureCollection = featureCollection;
+    }
+  }
+
+  class ReverseToggleEvent extends Event<"reversetoggle"> {
+    reverse: boolean;
+
+    constructor(target: MapLibreBasedGeocodingControl, reverse: boolean) {
+      super(target, "reversetoggle");
+
+      this.reverse = reverse;
+    }
+  }
+
+  class MapLibreBasedGeocodingControl extends Evented {
     #gc?: GeocodingControlComponent;
 
-    #options: T;
+    #options: OPTS;
 
-    constructor(options: T = {} as T) {
+    constructor(options: OPTS = {} as OPTS) {
       super();
 
       this.#options = options;
@@ -153,25 +291,83 @@ export function crateBaseClass(
 
       this.#gc = new GeocodingControlComponent({ target: div, props });
 
-      for (const eventName of [
-        "select",
-        "pick",
-        "featuresListed",
-        "featuresMarked",
-        "response",
-        "optionsVisibilityChange",
-        "reverseToggle",
-        "queryChange",
-      ] as const) {
-        this.#gc.$on(eventName, (event) => {
-          this.fire(eventName, event.detail);
-        });
-      }
+      this.#gc.$on("select", (event) => {
+        this.fire(new SelectEvent(this, event.detail));
+      });
+
+      this.#gc.$on("pick", (event) => {
+        this.fire(new PickEvent(this, event.detail.feature));
+      });
+
+      this.#gc.$on("featureslisted", (event) => {
+        this.fire(new FeaturesListedEvent(this, event.detail.features));
+      });
+
+      this.#gc.$on("featuresmarked", (event) => {
+        this.fire(new FeaturesMarkedEvent(this, event.detail.features));
+      });
+
+      this.#gc.$on("response", (event) => {
+        this.fire(
+          new ResponseEvent(
+            this,
+            event.detail.url,
+            event.detail.featureCollection,
+          ),
+        );
+      });
+
+      this.#gc.$on("optionsvisibilitychange", (event) => {
+        this.fire(
+          new OptionsVisibilityChangeEvent(this, event.detail.optionsVisible),
+        );
+      });
+
+      this.#gc.$on("reversetoggle", (event) => {
+        this.fire(new ReverseToggleEvent(this, event.detail.reverse));
+      });
+
+      this.#gc.$on("querychange", (event) => {
+        this.fire(new QueryChangeEvent(this, event.detail.query));
+      });
 
       return div;
     }
 
-    setOptions(options: T) {
+    on<T extends keyof EventTypes>(
+      type: T,
+      listener: (ev: EventTypes[T]) => void,
+    ): this;
+
+    on(type: keyof EventTypes, listener: Listener): this {
+      return super.on(type, listener);
+    }
+
+    once<T extends keyof EventTypes>(
+      type: T,
+      listener: (ev: EventTypes[T]) => void,
+    ): this;
+
+    once(type: keyof EventTypes, listener: Listener): this | Promise<unknown> {
+      return super.once(type, listener);
+    }
+
+    off<T extends keyof EventTypes>(
+      type: T,
+      listener: (ev: EventTypes[T]) => void,
+    ): this;
+
+    off(type: keyof EventTypes, listener: Listener): this {
+      return super.off(type, listener);
+    }
+
+    listens(type: keyof EventTypes): boolean;
+
+    listens(type: keyof EventTypes): boolean {
+      return super.listens(type);
+    }
+
+    setOptions(options: OPTS) {
       this.#options = options;
 
       const {
@@ -212,5 +408,24 @@ export function crateBaseClass(
     onRemove() {
       this.#gc?.$destroy();
     }
+  }
+
+  const events = {
+    SelectEvent,
+    FeaturesListedEvent,
+    FeaturesMarkedEvent,
+    OptionsVisibilityChangeEvent,
+    PickEvent,
+    QueryChangeEvent,
+    ResponseEvent,
+    ReverseToggleEvent,
+  } satisfies {
+    [T in keyof DispatcherTypeCC as `${Capitalize<T>}Event`]: unknown;
+  };
+
+  return {
+    MapLibreBasedGeocodingControl,
+
+    events,
   };
 }

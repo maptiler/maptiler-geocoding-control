@@ -33,7 +33,7 @@
       },
     ).addTo(map);
 
-    new GeocodingControl({
+    const geocodingControl = new GeocodingControl({
       apiKey,
       enableReverse: "always",
       // collapsed: true,
@@ -52,7 +52,12 @@
           .addTo(map)
           .openTooltip();
       },
+      position: "bottomright",
     }).addTo(map);
+
+    geocodingControl.on("featureslisted", (e) => {
+      console.log(e);
+    });
   });
 </script>
 
