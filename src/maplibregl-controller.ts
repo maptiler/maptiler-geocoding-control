@@ -26,8 +26,6 @@ import type { Feature, MapController, MapEvent } from "./types.js";
 
 export type MapLibreGL = Pick<typeof maplibregl, "Marker" | "Popup">;
 
-const emptyGeojson = featureCollection([]);
-
 export type FullGeometryStyle = {
   fill: Pick<FillLayerSpecification, "layout" | "paint" | "filter">;
   line: Pick<LineLayerSpecification, "layout" | "paint" | "filter">;
@@ -53,6 +51,12 @@ const defaultGeometryStyle: FullGeometryStyle = {
     filter: ["!", ["has", "isMask"]],
   },
 };
+
+const RESULT_SOURCE = "mtlr-gc-full-geom";
+
+const RESULT_LAYER_FILL = "mtlr-gc-full-geom-fill";
+
+const RESULT_LAYER_LINE = "mtlr-gc-full-geom-line";
 
 export function createMapLibreGlMapController(
   map: Map,
@@ -81,56 +85,68 @@ export function createMapLibreGlMapController(
 
   let savedData: GeoJSON | undefined; // used to restore features on style switch
 
-  function addFullGeometryLayer() {
+  function syncFullGeometryLayer() {
+    if (!map.loaded) {
+      map.once("load", syncFullGeometryLayer);
+
+      return;
+    }
+
     const effFullGeometryStyle = !fullGeometryStyle
       ? undefined
       : fullGeometryStyle === true
         ? defaultGeometryStyle
         : fullGeometryStyle;
 
-    if (
-      !map.getSource("full-geom") &&
-      (effFullGeometryStyle?.fill || effFullGeometryStyle?.line)
-    ) {
-      map.addSource("full-geom", {
-        type: "geojson",
-        data: emptyGeojson,
-      });
+    if (!effFullGeometryStyle?.fill && !effFullGeometryStyle?.line) {
+      return;
     }
 
-    if (!map.getLayer("full-geom-fill") && effFullGeometryStyle?.fill) {
+    const source = map.getSource<GeoJSONSource>(RESULT_SOURCE);
+
+    if (source) {
+      source.setData(savedData ?? featureCollection([]));
+    } else if (savedData) {
+      map.addSource(RESULT_SOURCE, {
+        type: "geojson",
+        data: savedData,
+      });
+    } else {
+      return;
+    }
+
+    if (!map.getLayer(RESULT_LAYER_FILL) && effFullGeometryStyle?.fill) {
       map.addLayer({
         ...effFullGeometryStyle?.fill,
-        id: "full-geom-fill",
+        id: RESULT_LAYER_FILL,
         type: "fill",
-        source: "full-geom",
+        source: RESULT_SOURCE,
       });
     }
 
-    if (!map.getLayer("full-geom-line") && effFullGeometryStyle?.line) {
+    if (!map.getLayer(RESULT_LAYER_LINE) && effFullGeometryStyle?.line) {
       map.addLayer({
         ...effFullGeometryStyle?.line,
-        id: "full-geom-line",
+        id: RESULT_LAYER_LINE,
         type: "line",
-        source: "full-geom",
+        source: RESULT_SOURCE,
       });
-    }
-
-    if (savedData) {
-      setData(savedData);
     }
   }
 
-  if (map.loaded()) {
-    addFullGeometryLayer();
-  } else {
-    map.once("load", () => {
-      addFullGeometryLayer();
-    });
+  function setAndSaveData(data?: GeoJSON) {
+    savedData = data;
+
+    syncFullGeometryLayer();
   }
 
   map.on("styledata", () => {
-    addFullGeometryLayer();
+    // timeout prevents collision with svelte-maplibre library
+    setTimeout(() => {
+      if (savedData) {
+        syncFullGeometryLayer();
+      }
+    });
   });
 
   const handleMapClick = (e: MapMouseEvent) => {
@@ -157,16 +173,6 @@ export function createMapLibreGlMapController(
     });
 
     return new maplibregl.Marker({ element, offset: [1, -13] });
-  }
-
-  function setData(data?: GeoJSON) {
-    savedData = data;
-
-    if (!data) {
-      return;
-    }
-
-    (map.getSource("full-geom") as GeoJSONSource)?.setData(data);
   }
 
   return {
@@ -240,7 +246,7 @@ export function createMapLibreGlMapController(
 
       markers.length = 0;
 
-      setData(emptyGeojson);
+      setAndSaveData(undefined);
 
       if (!maplibregl) {
         return;
@@ -269,7 +275,7 @@ export function createMapLibreGlMapController(
                 ...picked,
                 geometry: unioned.geometry,
               },
-              setData,
+              setAndSaveData,
             );
 
             handled = true;
@@ -281,7 +287,7 @@ export function createMapLibreGlMapController(
             );
 
             if (geometries.length > 0) {
-              setData({
+              setAndSaveData({
                 ...picked,
                 geometry: { type: "GeometryCollection", geometries },
               });
@@ -297,12 +303,12 @@ export function createMapLibreGlMapController(
           picked.geometry.type === "Polygon" ||
           picked.geometry.type === "MultiPolygon"
         ) {
-          setMask(picked as Feature<Polygon | MultiPolygon>, setData);
+          setMask(picked as Feature<Polygon | MultiPolygon>, setAndSaveData);
         } else if (
           picked.geometry.type === "LineString" ||
           picked.geometry.type === "MultiLineString"
         ) {
-          setData(picked);
+          setAndSaveData(picked);
 
           return; // no pin for (multi)linestrings
         }
