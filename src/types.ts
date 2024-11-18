@@ -337,9 +337,10 @@ export type DispatcherType = {
   [T in keyof DispatcherTypeCC as Lowercase<T>]: DispatcherTypeCC[T];
 };
 
-// Helper type to enforce key equality
-export type EnsureMatchingKeys<T, U> = keyof T extends keyof U
-  ? keyof U extends keyof T
-    ? true
-    : never
-  : never;
+export type RedefineType<
+  OriginalType,
+  UpdatedType extends { [K in keyof OriginalType]: OriginalType[K] } & Record<
+    never,
+    never
+  > & { [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never },
+> = UpdatedType;

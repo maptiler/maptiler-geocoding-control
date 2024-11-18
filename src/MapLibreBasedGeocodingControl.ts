@@ -18,9 +18,9 @@ import type {
   ControlOptions,
   DispatcherType,
   DispatcherTypeCC,
-  EnsureMatchingKeys,
   Feature,
   FeatureCollection,
+  RedefineType,
 } from "./types";
 export {
   createMapLibreGlMapController,
@@ -111,19 +111,19 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
     div: HTMLElement,
   ) => Partial<Props<GeocodingControlComponent>>,
 ) {
-  type EventTypes = {
-    select: SelectEvent;
-    featureslisted: FeaturesListedEvent;
-    featuresmarked: FeaturesMarkedEvent;
-    optionsvisibilitychange: OptionsVisibilityChangeEvent;
-    pick: PickEvent;
-    querychange: QueryChangeEvent;
-    response: ResponseEvent;
-    reversetoggle: ReverseToggleEvent;
-  };
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _keysMatch: EnsureMatchingKeys<EventTypes, DispatcherType> = true;
+  type EventTypes = RedefineType<
+    DispatcherType,
+    {
+      select: SelectEvent;
+      featureslisted: FeaturesListedEvent;
+      featuresmarked: FeaturesMarkedEvent;
+      optionsvisibilitychange: OptionsVisibilityChangeEvent;
+      pick: PickEvent;
+      querychange: QueryChangeEvent;
+      response: ResponseEvent;
+      reversetoggle: ReverseToggleEvent;
+    }
+  >;
 
   // NOTE We can't use Maplibre `Event` - see https://github.com/maplibre/maplibre-gl-js/issues/5015
   class Event<TYPE extends string> implements Event$1 {
