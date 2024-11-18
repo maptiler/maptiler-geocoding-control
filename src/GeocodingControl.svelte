@@ -66,7 +66,7 @@
 
   export let debounceSearch = 200;
 
-  export let reverse: EnableReverse = "never";
+  export let enableReverse: EnableReverse = "never";
 
   export let errorMessage = "Something went wrong…";
 
@@ -93,7 +93,7 @@
     { type: "server-geolocation" },
   ];
 
-  export let reverseActive = reverse === "always";
+  export let reverseActive = enableReverse === "always";
 
   export let reverseButtonTitle = "toggle reverse geocoding";
 
@@ -197,7 +197,7 @@
   const dispatch = createEventDispatcher<DispatcherType>();
 
   $: {
-    reverseActive = reverse === "always";
+    reverseActive = enableReverse === "always";
   }
 
   $: if (
@@ -648,7 +648,7 @@
   }
 
   function handleReverse(coordinates: [lng: number, lat: number]) {
-    reverseActive = reverse === "always";
+    reverseActive = enableReverse === "always";
 
     listFeatures = undefined;
     picked = undefined;
@@ -767,7 +767,7 @@
       {/if}
     </div>
 
-    {#if reverse !== "never"}
+    {#if enableReverse !== "never"}
       <button
         type="button"
         class:active={reverseActive}
