@@ -55,6 +55,7 @@ export function createLeafletMapController(
     | boolean
     | L.PathOptions
     | L.StyleFunction = defaultFullGeometryStyle,
+  showPolyMarker = false,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -268,6 +269,10 @@ export function createLeafletMapController(
           setData(picked);
 
           return; // no pin for (multi)linestrings
+        }
+
+        if (!showPolyMarker && picked.geometry.type !== "Point") {
+          return;
         }
 
         if (marker instanceof Function) {

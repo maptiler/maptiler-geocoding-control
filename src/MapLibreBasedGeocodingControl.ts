@@ -274,6 +274,8 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
         flyToOptions,
         flyToOptions,
         fullGeometryStyle,
+        restOptions.pickedResultStyle ===
+          "full-geometry-including-polygon-center-marker",
       );
 
       const props = {

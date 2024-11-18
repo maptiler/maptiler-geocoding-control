@@ -96,9 +96,12 @@
 
   export let searchValue = "";
 
-  export let showFullGeometry = true;
+  export let pickedResultStyle:
+    | "marker-only"
+    | "full-geometry"
+    | "full-geometry-including-polygon-center-marker" = "full-geometry";
 
-  export let showPlaceType: false | "always" | "ifNeeded" = "ifNeeded";
+  export let showPlaceType: "never" | "always" | "if-needed" = "if-needed";
 
   export let showResultsWhileTyping = true;
 
@@ -114,9 +117,7 @@
 
   export let excludeTypes = false;
 
-  export let zoom: number | Record<string, number> = ZOOM_DEFAULTS;
-
-  export let maxZoom: number | undefined = undefined;
+  export let zoom: Record<string, number> = ZOOM_DEFAULTS;
 
   export let apiUrl: string = import.meta.env.VITE_API_URL;
 
@@ -200,7 +201,7 @@
   }
 
   $: if (
-    showFullGeometry &&
+    pickedResultStyle !== "marker-only" &&
     picked &&
     !picked.address &&
     picked.geometry.type === "Point" &&
@@ -596,12 +597,11 @@
       const featZoom = computeZoom(feature);
 
       allZoom =
-        maxZoom ??
-        (allZoom === undefined
+        allZoom === undefined
           ? featZoom
           : featZoom === undefined
             ? allZoom
-            : Math.max(allZoom, featZoom));
+            : Math.max(allZoom, featZoom);
 
       if (fuzzyOnly || !feature.matching_text) {
         for (const i of [0, 1, 2, 3] as const) {
@@ -629,12 +629,6 @@
         feature.bbox[1] !== feature.bbox[3])
     ) {
       return undefined;
-    }
-
-    if (typeof zoom === "number") {
-      return feature.id.startsWith("poi.") || feature.id.startsWith("address.")
-        ? maxZoom
-        : zoom;
     }
 
     const index = feature.id.replace(/\..*/, "");
