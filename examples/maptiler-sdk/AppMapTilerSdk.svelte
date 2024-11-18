@@ -42,7 +42,7 @@
     });
 
     setTimeout(() => {
-      geocodingControl.setOptions({ enableReverse: true });
+      geocodingControl.setOptions({ enableReverse: "always" });
     }, 5000);
   });
 </script>

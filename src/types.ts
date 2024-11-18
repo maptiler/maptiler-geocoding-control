@@ -123,6 +123,7 @@ export type ControlOptions = {
 
   /**
    * Minimum number of characters to enter before results are shown.
+   *
    * Default value is `2`.
    */
   minLength?: number;
@@ -163,7 +164,7 @@ export type ControlOptions = {
   /**
    * Set to `false` to disable fuzzy search.
    *
-   * Default value is `true`
+   * Default value is `true`.
    */
   fuzzyMatch?: boolean;
 
@@ -179,18 +180,14 @@ export type ControlOptions = {
 
   /**
    * If `true`, the geocoder control will collapse until hovered or in focus.
+   *
    * Default value is `false`.
    */
   collapsed?: boolean;
 
-  // /**
-  //  * If `true`, the geocoder control will clear it's contents and blur when user presses the escape key.
-  //  * Default value is `false`.
-  //  */
-  // clearAndBlurOnEsc?: boolean;
-
   /**
    * If true, the geocoder control will clear its value when the input blurs.
+   *
    * Default value is `false`.
    */
   clearOnBlur?: boolean;
@@ -198,6 +195,8 @@ export type ControlOptions = {
   /**
    * A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list.
    * Return true to keep the item, false otherwise.
+   *
+   * Default value is a function returning always `true`.
    */
   filter?: (feature: Feature) => boolean;
 
@@ -209,14 +208,14 @@ export type ControlOptions = {
   class?: string;
 
   /**
-   * Set to `true` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active.
+   * Set to `button` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active.
    *
-   * Default value is `false`
+   * Default value is `"never"`.
    */
-  enableReverse?: boolean | "always";
+  enableReverse?: EnableReverse;
 
   /**
-   * Reverse mode.
+   * Reverse mode active.
    *
    * Default value is `false`.
    */
@@ -242,7 +241,7 @@ export type ControlOptions = {
    *
    * Default value is `"if-needed"`.
    */
-  showPlaceType?: "never" | "always" | "if-needed";
+  showPlaceType?: ShowPlaceType;
 
   /**
    * Style of the picked result on the map:
@@ -253,10 +252,7 @@ export type ControlOptions = {
    *
    * Default value is `true`.
    */
-  pickedResultStyle?:
-    | "marker-only"
-    | "full-geometry"
-    | "full-geometry-including-polygon-center-marker";
+  pickedResultStyle?: PickedResultStyle;
 
   /**
    * Limit search to specified country(ies).
@@ -341,7 +337,17 @@ export type ControlOptions = {
   // render // A function that specifies how the results should be rendered in the dropdown menu. This function should accepts a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
   // popupRender // A function that specifies how the results should be rendered in the popup menu. This function should accept a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
   // getItemValue // A function that specifies how the selected result should be rendered in the search bar. This function should accept a single Carmen GeoJSON object as input and return a string. HTML tags in the output string will not be rendered. Defaults to (item) => item.place_name.
+  // clearAndBlurOnEsc
 };
+
+export type PickedResultStyle =
+  | "marker-only"
+  | "full-geometry"
+  | "full-geometry-including-polygon-center-marker";
+
+export type EnableReverse = "never" | "always" | "button";
+
+export type ShowPlaceType = "never" | "always" | "if-needed";
 
 export type DispatcherTypeCC = {
   featuresListed: { features: Feature[] | undefined };

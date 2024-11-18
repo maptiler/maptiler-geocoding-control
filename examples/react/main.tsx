@@ -2,6 +2,7 @@ import * as maptilersdk from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createElement, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
+import type { EnableReverse } from "src/types";
 import { createMapLibreGlMapController } from "../../src/maplibregl-controller";
 import { GeocodingControl, type Methods } from "../../src/react";
 
@@ -25,8 +26,6 @@ maptilersdk.config.apiKey = apiKey;
 
 const root = createRoot(appElement);
 
-type Reverse = "enable" | "disable" | "always";
-
 function App() {
   const ref = useRef<Methods>(null);
 
@@ -34,7 +33,7 @@ function App() {
 
   const [collapsed, setCollapsed] = useState<boolean>(false);
 
-  const [reverse, setReverse] = useState<Reverse>("disable");
+  const [reverse, setReverse] = useState<EnableReverse>("never");
 
   const [clearOnBlur, setClearOnBlur] = useState<boolean>(false);
 
@@ -107,10 +106,7 @@ function App() {
               onResponse={(data) => log("response", data)}
               clearOnBlur={clearOnBlur}
               iconsBaseUrl="/icons/"
-              enableReverse={
-                reverse === "enable" ||
-                (reverse === "disable" ? false : "always")
-              }
+              enableReverse={reverse}
             />
           )}
 
@@ -135,11 +131,13 @@ function App() {
           <label>
             <select
               value={reverse}
-              onChange={(e) => setReverse(e.currentTarget.value as Reverse)}
+              onChange={(e) =>
+                setReverse(e.currentTarget.value as EnableReverse)
+              }
             >
-              <option value="enable">Enable reverse</option>
+              <option value="button">Enable reverse</option>
               <option value="always">Always reverse</option>
-              <option value="disable">Disable reverse</option>
+              <option value="never">Disable reverse</option>
             </select>
           </label>
 

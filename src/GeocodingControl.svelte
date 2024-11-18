@@ -13,10 +13,13 @@
   import type {
     BBox,
     DispatcherType,
+    EnableReverse,
     Feature,
     FeatureCollection,
     MapController,
+    PickedResultStyle,
     ProximityRule,
+    ShowPlaceType,
   } from "./types";
 
   export const ZOOM_DEFAULTS: Record<string, number> = {
@@ -63,7 +66,7 @@
 
   export let debounceSearch = 200;
 
-  export let enableReverse: boolean | "always" = false;
+  export let reverse: EnableReverse = "never";
 
   export let errorMessage = "Something went wrong…";
 
@@ -90,18 +93,15 @@
     { type: "server-geolocation" },
   ];
 
-  export let reverseActive = enableReverse === "always";
+  export let reverseActive = reverse === "always";
 
   export let reverseButtonTitle = "toggle reverse geocoding";
 
   export let searchValue = "";
 
-  export let pickedResultStyle:
-    | "marker-only"
-    | "full-geometry"
-    | "full-geometry-including-polygon-center-marker" = "full-geometry";
+  export let pickedResultStyle: PickedResultStyle = "full-geometry";
 
-  export let showPlaceType: "never" | "always" | "if-needed" = "if-needed";
+  export let showPlaceType: ShowPlaceType = "if-needed";
 
   export let showResultsWhileTyping = true;
 
@@ -197,7 +197,7 @@
   const dispatch = createEventDispatcher<DispatcherType>();
 
   $: {
-    reverseActive = enableReverse === "always";
+    reverseActive = reverse === "always";
   }
 
   $: if (
@@ -648,7 +648,7 @@
   }
 
   function handleReverse(coordinates: [lng: number, lat: number]) {
-    reverseActive = enableReverse === "always";
+    reverseActive = reverse === "always";
 
     listFeatures = undefined;
     picked = undefined;
@@ -767,7 +767,7 @@
       {/if}
     </div>
 
-    {#if enableReverse === true}
+    {#if reverse !== "never"}
       <button
         type="button"
         class:active={reverseActive}
