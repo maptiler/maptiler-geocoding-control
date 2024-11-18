@@ -35,9 +35,10 @@ export type MapController = {
 
   indicateReverse(reverse: boolean): void;
 
-  setMarkers(
+  setFeatures(
     features: Feature[] | undefined,
     picked: Feature | undefined,
+    showPolygonMarker: boolean,
   ): void;
 
   setReverseMarker(coordinates?: Position): void;

@@ -128,8 +128,6 @@ export class GeocodingControl extends Control {
         // marker,
         // showResultMarkers,
         fullGeometryStyle,
-        this.#options.pickedResultStyle ===
-          "full-geometry-including-polygon-center-marker",
       );
 
       this.#gc?.$set({ mapController });
@@ -137,7 +135,7 @@ export class GeocodingControl extends Control {
   }
 
   setOptions(options: OpenLayersControlOptions) {
-    this.#options = options;
+    Object.assign(this.#options, options);
 
     const { flyTo, fullGeometryStyle, ...restOptions } = this.#options;
 

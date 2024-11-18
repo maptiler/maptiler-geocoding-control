@@ -74,7 +74,6 @@ export function createMapLibreGlMapController(
   flyToOptions: FlyToOptions | null = {},
   fitBoundsOptions: FitBoundsOptions | null = {},
   fullGeometryStyle: boolean | null | FullGeometryStyle = defaultGeometryStyle,
-  showPolyMarker = false,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -237,9 +236,10 @@ export function createMapLibreGlMapController(
       }
     },
 
-    setMarkers(
+    setFeatures(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined,
+      showPolygonMarker: boolean,
     ): void {
       for (const marker of markers) {
         marker.remove();
@@ -314,7 +314,7 @@ export function createMapLibreGlMapController(
           return; // no pin for (multi)linestrings
         }
 
-        if (!showPolyMarker && picked.geometry.type !== "Point") {
+        if (!showPolygonMarker && picked.geometry.type !== "Point") {
           return;
         }
 

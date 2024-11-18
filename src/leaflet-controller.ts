@@ -55,7 +55,6 @@ export function createLeafletMapController(
     | boolean
     | L.PathOptions
     | L.StyleFunction = defaultFullGeometryStyle,
-  showPolyMarker = false,
 ) {
   let eventHandler: ((e: MapEvent) => void) | undefined;
 
@@ -166,9 +165,10 @@ export function createLeafletMapController(
       }
     },
 
-    setMarkers(
+    setFeatures(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined,
+      showPolygonMarker: boolean,
     ): void {
       function setData(data?: GeoJSON) {
         resultLayer.clearLayers();
@@ -271,7 +271,7 @@ export function createLeafletMapController(
           return; // no pin for (multi)linestrings
         }
 
-        if (!showPolyMarker && picked.geometry.type !== "Point") {
+        if (!showPolygonMarker && picked.geometry.type !== "Point") {
           return;
         }
 

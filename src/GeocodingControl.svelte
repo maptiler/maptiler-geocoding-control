@@ -237,13 +237,20 @@
     mapController.flyTo(selected.center, computeZoom(selected));
   }
 
+  $: showPolygonMarker =
+    pickedResultStyle === "full-geometry-including-polygon-center-marker";
+
   // if markerOnSelected was dynamically changed to false
   $: if (!markerOnSelected) {
-    mapController?.setMarkers(undefined, undefined);
+    mapController?.setFeatures(undefined, undefined, showPolygonMarker);
   }
 
   $: if (mapController && markerOnSelected && !markedFeatures) {
-    mapController.setMarkers(selected ? [selected] : undefined, undefined);
+    mapController.setFeatures(
+      selected ? [selected] : undefined,
+      undefined,
+      showPolygonMarker,
+    );
 
     mapController.setSelectedMarker(selected ? 0 : -1);
   }
@@ -253,7 +260,7 @@
   }
 
   $: if (mapController) {
-    mapController.setMarkers(markedFeatures, picked);
+    mapController.setFeatures(markedFeatures, picked, showPolygonMarker);
   }
 
   $: if (searchValue.length < minLength) {
@@ -364,7 +371,7 @@
       mapController.setEventHandler(undefined);
       mapController.indicateReverse(false);
       mapController.setSelectedMarker(-1);
-      mapController.setMarkers(undefined, undefined);
+      mapController.setFeatures(undefined, undefined, false);
     }
   });
 
@@ -767,7 +774,7 @@
       {/if}
     </div>
 
-    {#if enableReverse !== "never"}
+    {#if enableReverse === "button"}
       <button
         type="button"
         class:active={reverseActive}

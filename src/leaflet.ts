@@ -188,8 +188,6 @@ export class GeocodingControl extends EventedControl {
       flyToOptions,
       flyToOptions,
       fullGeometryStyle,
-      restOptions.pickedResultStyle ===
-        "full-geometry-including-polygon-center-marker",
     );
 
     this.#gc = new GeocodingControlComponent({
@@ -220,7 +218,7 @@ export class GeocodingControl extends EventedControl {
   }
 
   setOptions(options: LeafletControlOptions) {
-    this.#options = options;
+    Object.assign(this.#options, options);
 
     const {
       marker,
