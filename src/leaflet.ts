@@ -85,11 +85,8 @@ type CustomEventMap = {
  * for TypeScript https://www.typescriptlang.org/docs/handbook/mixins.html
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging, @typescript-eslint/no-extraneous-class
-class EventedControl {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-unused-vars
-  constructor(...args: unknown[]) {}
-}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+class EventedControl extends L.Control {}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
 interface EventedControl extends L.Control {
@@ -153,7 +150,6 @@ interface EventedControl extends L.Control {
 
 L.Util.extend(
   EventedControl.prototype,
-  L.Control.prototype,
   L.Evented.prototype,
 );
 
@@ -163,7 +159,7 @@ export class GeocodingControl extends EventedControl {
   #options: LeafletControlOptions;
 
   constructor(options: LeafletControlOptions) {
-    super();
+    super(options);
 
     this.#options = options;
   }
@@ -182,6 +178,7 @@ export class GeocodingControl extends EventedControl {
       showResultMarkers,
       flyTo,
       fullGeometryStyle,
+      position,
       ...restOptions
     } = this.#options;
 
