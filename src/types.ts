@@ -339,8 +339,7 @@ export type DispatcherType = {
 
 export type RedefineType<
   OriginalType,
-  UpdatedType extends { [K in keyof OriginalType]: OriginalType[K] } & Record<
-    never,
-    never
-  > & { [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never },
+  UpdatedType extends { [K in keyof OriginalType]: OriginalType[K] } & {
+    [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never;
+  },
 > = UpdatedType;
