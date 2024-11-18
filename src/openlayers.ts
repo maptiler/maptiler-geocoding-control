@@ -71,11 +71,6 @@ export class GeocodingControl extends Control {
       },
     });
 
-    // // Initialize `on`, `once`, and `un` with OpenLayers' `addEventListener`/`removeEventListener`
-    // this.on = this.addEventListener.bind(this);
-    // this.once = this.onceEventListener.bind(this);
-    // this.un = this.removeEventListener.bind(this);
-
     this.#gc.$on("select", (event) => {
       this.dispatchEvent(new SelectEvent(event.detail.feature));
     });
