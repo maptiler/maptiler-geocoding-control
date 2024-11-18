@@ -17,56 +17,60 @@
       container: containerElement,
     });
 
-    map.addControl(
-      new GeocodingControl({
-        apiKey,
-        selectFirst: true,
-        autocompleteTimeout: 3000,
-        enableReverse: "always",
-        collapsed: true,
-        // limit: 20,
-        // types: ["poi"],
-        // fetchParameters: { credentials: "include" },
-        // selectFirst: false,
-        iconsBaseUrl: "/icons/",
-        proximity: [
-          { type: "map-center", minZoom: 12 },
-          { type: "client-geolocation", minZoom: 8 },
-          { type: "server-geolocation", minZoom: 8 },
-        ],
-        marker(map, feature) {
-          if (!feature) {
-            return;
-          }
+    const geocodingControl = new GeocodingControl({
+      apiKey,
+      enableReverse: "always",
+      selectFirst: true,
+      autocompleteTimeout: 3000,
+      collapsed: true,
+      // limit: 20,
+      // types: ["poi"],
+      // fetchParameters: { credentials: "include" },
+      // selectFirst: false,
+      iconsBaseUrl: "/icons/",
+      proximity: [
+        { type: "map-center", minZoom: 12 },
+        { type: "client-geolocation", minZoom: 8 },
+        { type: "server-geolocation", minZoom: 8 },
+      ],
+      marker(map, feature) {
+        if (!feature) {
+          return;
+        }
 
-          const marker = new Marker()
-            .setLngLat(feature.center)
-            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
-            .addTo(map)
-            .togglePopup();
+        const marker = new Marker()
+          .setLngLat(feature.center)
+          .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+          .addTo(map)
+          .togglePopup();
 
-          const element = marker.getElement();
+        const element = marker.getElement();
 
-          element.style.cursor = "pointer";
+        element.style.cursor = "pointer";
 
-          element.addEventListener("click", (e) => {
-            marker.togglePopup();
-            e.stopPropagation();
-          });
+        element.addEventListener("click", (e) => {
+          marker.togglePopup();
+          e.stopPropagation();
+        });
 
-          return marker;
-        },
-        showResultMarkers(map, feature) {
-          return new Marker()
-            .setLngLat(feature.center)
-            .setPopup(new Popup({ closeButton: false }).setText(feature.text))
-            .addTo(map)
-            .togglePopup();
-        },
-      }),
-    );
+        return marker;
+      },
+      showResultMarkers(map, feature) {
+        return new Marker()
+          .setLngLat(feature.center)
+          .setPopup(new Popup({ closeButton: false }).setText(feature.text))
+          .addTo(map)
+          .togglePopup();
+      },
+    });
 
-    map.addControl(new NavigationControl({}));
+    map.addControl(geocodingControl);
+
+    geocodingControl.on("featureslisted", (e) => {
+      console.log(e);
+    });
+
+    map.addControl(new NavigationControl());
   });
 </script>
 

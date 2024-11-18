@@ -314,19 +314,21 @@
     );
   }
 
-  $: dispatch("select", selected);
+  $: dispatch("select", { feature: selected });
 
-  $: dispatch("pick", picked);
+  $: dispatch("pick", { feature: picked });
 
-  $: dispatch("optionsVisibilityChange", focusedDelayed && !!listFeatures);
+  $: dispatch("optionsvisibilitychange", {
+    optionsVisible: focusedDelayed && !!listFeatures,
+  });
 
-  $: dispatch("featuresListed", listFeatures);
+  $: dispatch("featureslisted", { features: listFeatures });
 
-  $: dispatch("featuresMarked", markedFeatures);
+  $: dispatch("featuresmarked", { features: markedFeatures });
 
-  $: dispatch("reverseToggle", reverseActive);
+  $: dispatch("reversetoggle", { reverse: reverseActive });
 
-  $: dispatch("queryChange", searchValue);
+  $: dispatch("querychange", { query: searchValue });
 
   $: if (mapController) {
     mapController.indicateReverse(reverseActive);
@@ -856,6 +858,7 @@
     </div>
   {:else if focusedDelayed && listFeatures?.length}
     <ul
+      class="options"
       on:mouseleave={() => {
         if (!selectFirst) {
           selectedItemIndex = -1;
@@ -1017,10 +1020,11 @@
     }
   }
 
-  :global(.maplibregl-ctrl-bottom-left) ul,
-  :global(.maplibregl-ctrl-bottom-right) ul {
+  :global(.leaflet-bottom) ul.options,
+  :global(.maplibregl-ctrl-bottom-left) ul.options,
+  :global(.maplibregl-ctrl-bottom-right) ul.options {
     top: auto;
-    bottom: 100%;
+    bottom: calc(100% + 6px);
   }
 
   button {

@@ -21,6 +21,17 @@
   const scale = devicePixelRatio > 1.5 ? "@2x" : "";
 
   onMount(() => {
+    const geocodingControl = new GeocodingControl({
+      apiKey,
+      enableReverse: "always",
+      // collapsed: true,
+      iconsBaseUrl: "/icons/",
+    });
+
+    geocodingControl.on("querychange", (e) => {
+      console.log(e);
+    });
+
     new Map({
       target: containerElement,
       layers: [
@@ -39,14 +50,7 @@
         center: [0, 0],
         zoom: 0,
       }),
-      controls: defaultControls().extend([
-        new GeocodingControl({
-          apiKey,
-          enableReverse: "always",
-          // collapsed: true,
-          iconsBaseUrl: "/icons/",
-        }),
-      ]),
+      controls: defaultControls().extend([geocodingControl]),
     });
   });
 </script>

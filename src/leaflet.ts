@@ -1,7 +1,7 @@
 import * as L from "leaflet";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
 import { createLeafletMapController } from "./leaflet-controller";
-import type { ControlOptions, Feature } from "./types";
+import type { ControlOptions, DispatcherType, Feature } from "./types";
 export { createLeafletMapController } from "./leaflet-controller";
 
 type LeafletControlOptions = ControlOptions &
@@ -70,22 +70,88 @@ type LeafletControlOptions = ControlOptions &
     fullGeometryStyle?: null | boolean | L.PathOptions | L.StyleFunction;
   };
 
+type LeafletEvent<T> = {
+  type: T;
+  target: GeocodingControl;
+  sourceTarget: GeocodingControl;
+};
+
+type CustomEventMap = {
+  [T in keyof DispatcherType]: DispatcherType[T] & LeafletEvent<T>;
+};
+
 /**
  * Leaflet mixins https://leafletjs.com/reference.html#class
  * for TypeScript https://www.typescriptlang.org/docs/handbook/mixins.html
  * @internal
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging, @typescript-eslint/no-extraneous-class
-class EventedControl {
-  // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-unused-vars
-  constructor(...args: unknown[]) {}
-}
+// eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+class EventedControl extends L.Control {}
 
 // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-interface EventedControl extends L.Control, L.Evented {}
+interface EventedControl extends L.Control {
+  on<T extends keyof CustomEventMap>(
+    type: T,
+    fn: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
 
-L.Util.extend(EventedControl.prototype, L.Control.prototype);
-L.Util.extend(EventedControl.prototype, L.Evented.prototype);
+  addEventListener<T extends keyof CustomEventMap>(
+    type: T,
+    fn: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
+
+  once<T extends keyof CustomEventMap>(
+    type: T,
+    fn: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
+
+  addOneTimeEventListener<T extends keyof CustomEventMap>(
+    type: T,
+    fn: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
+
+  off<T extends keyof CustomEventMap>(
+    type?: T,
+    fn?: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
+
+  off(eventMap?: {
+    [T in keyof CustomEventMap]?: (event: CustomEventMap[T]) => void;
+  }): this;
+
+  removeEventListener<T extends keyof CustomEventMap>(
+    type?: T,
+    fn?: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+  ): this;
+
+  listens<T extends keyof CustomEventMap>(
+    type: T,
+    fn: (event: CustomEventMap[T]) => void,
+    context?: unknown,
+    propagate?: boolean,
+  ): boolean;
+
+  fire(type: string, data?: unknown, propagate?: boolean): this;
+
+  addEventParent(obj: L.Evented): this;
+
+  removeEventParent(obj: L.Evented): this;
+
+  fireEvent(type: string, data?: unknown, propagate?: boolean): this;
+
+  hasEventListeners<T extends keyof CustomEventMap>(type: T): boolean;
+}
+
+L.Util.extend(
+  EventedControl.prototype,
+  L.Evented.prototype,
+);
 
 export class GeocodingControl extends EventedControl {
   #gc?: GeocodingControlComponent;
@@ -93,7 +159,7 @@ export class GeocodingControl extends EventedControl {
   #options: LeafletControlOptions;
 
   constructor(options: LeafletControlOptions) {
-    super();
+    super(options);
 
     this.#options = options;
   }
@@ -104,6 +170,7 @@ export class GeocodingControl extends EventedControl {
     div.className = "leaflet-ctrl-geocoder";
 
     L.DomEvent.disableClickPropagation(div);
+
     L.DomEvent.disableScrollPropagation(div);
 
     const {
@@ -111,6 +178,7 @@ export class GeocodingControl extends EventedControl {
       showResultMarkers,
       flyTo,
       fullGeometryStyle,
+      position,
       ...restOptions
     } = this.#options;
 
@@ -134,19 +202,19 @@ export class GeocodingControl extends EventedControl {
       },
     });
 
-    for (const eventName of [
-      "select",
-      "pick",
-      "featuresListed",
-      "featuresMarked",
-      "response",
-      "optionsVisibilityChange",
-      "reverseToggle",
-      "queryChange",
-    ] as const) {
-      this.#gc.$on(eventName, (event) =>
-        this.fire(eventName.toLowerCase(), event.detail),
-      );
+    const eventNames: Record<keyof DispatcherType, undefined> = {
+      select: undefined,
+      pick: undefined,
+      featureslisted: undefined,
+      featuresmarked: undefined,
+      response: undefined,
+      optionsvisibilitychange: undefined,
+      reversetoggle: undefined,
+      querychange: undefined,
+    };
+
+    for (const eventName in eventNames) {
+      this.#gc.$on(eventName, (event) => this.fire(eventName, event.detail));
     }
 
     return div;

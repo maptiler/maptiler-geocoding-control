@@ -1,7 +1,10 @@
 import type { Map } from "ol";
+import type { ObjectEvent } from "ol/Object";
+import type { CombinedOnSignature, EventTypes } from "ol/Observable";
 import type { AnimationOptions, FitOptions } from "ol/View";
 import { Control } from "ol/control";
 import type { Options } from "ol/control/Control";
+import type { EventsKey } from "ol/events";
 import BaseEvent from "ol/events/Event";
 import type { StyleLike } from "ol/style/Style";
 import type { FlatStyleLike } from "ol/style/flat";
@@ -16,10 +19,37 @@ type OpenLayersControlOptions = ControlOptions &
     fullGeometryStyle?: StyleLike | FlatStyleLike;
   };
 
+type CustomEventMap = {
+  select: SelectEvent;
+  featureslisted: FeaturesListedEvent;
+  featuresmarked: FeaturesMarkedEvent;
+  optionsvisibilitychange: OptionsVisibilityChangeEvent;
+  pick: PickEvent;
+  querychange: QueryChangeEvent;
+  response: ResponseEvent;
+  reversetoggle: ReverseToggleEvent;
+};
+
+type CustomObjectOnSignature<ReturnType> = {
+  <K extends keyof CustomEventMap>(
+    type: K,
+    listener: (evt: CustomEventMap[K]) => void,
+  ): ReturnType;
+} & {
+  (type: "propertychange", listener: (evt: ObjectEvent) => void): ReturnType;
+} & CombinedOnSignature<
+    EventTypes | "propertychange" | keyof CustomEventMap,
+    ReturnType
+  >;
+
 export class GeocodingControl extends Control {
   #gc?: GeocodingControlComponent;
 
   #options: OpenLayersControlOptions;
+
+  declare on: CustomObjectOnSignature<EventsKey>;
+  declare once: CustomObjectOnSignature<EventsKey>;
+  declare un: CustomObjectOnSignature<EventsKey>;
 
   constructor(options: OpenLayersControlOptions) {
     const div = document.createElement("div");
@@ -41,62 +71,41 @@ export class GeocodingControl extends Control {
       },
     });
 
-    for (const eventName of [
-      "select",
-      "pick",
-      "featuresListed",
-      "featuresMarked",
-      "response",
-      "optionsVisibilityChange",
-      "reverseToggle",
-      "queryChange",
-    ] as const) {
-      this.#gc.$on(eventName, (event) => {
-        switch (eventName) {
-          case "select":
-            this.dispatchEvent(
-              new SelectEvent(event.detail as Feature | undefined),
-            );
-            break;
-          case "featuresListed":
-            this.dispatchEvent(
-              new FeaturesListedEvent(event.detail as Feature[] | undefined),
-            );
-            break;
-          case "featuresMarked":
-            this.dispatchEvent(
-              new FeaturesMarkedEvent(event.detail as Feature[] | undefined),
-            );
-            break;
-          case "optionsVisibilityChange":
-            this.dispatchEvent(
-              new OptionsVisibilityChangeEvent(event.detail as boolean),
-            );
-            break;
-          case "pick":
-            this.dispatchEvent(
-              new PickEvent(event.detail as Feature | undefined),
-            );
-            break;
-          case "queryChange":
-            this.dispatchEvent(new QueryChangeEvent(event.detail as string));
-            break;
-          case "response":
-            this.dispatchEvent(
-              new ResponseEvent(
-                (event.detail as { url: string }).url,
-                (
-                  event.detail as { featureCollection: FeatureCollection }
-                ).featureCollection,
-              ),
-            );
-            break;
-          case "reverseToggle":
-            this.dispatchEvent(new ReverseToggleEvent(event.detail as boolean));
-            break;
-        }
-      });
-    }
+    this.#gc.$on("select", (event) => {
+      this.dispatchEvent(new SelectEvent(event.detail.feature));
+    });
+
+    this.#gc.$on("pick", (event) => {
+      this.dispatchEvent(new PickEvent(event.detail.feature));
+    });
+
+    this.#gc.$on("featureslisted", (event) => {
+      this.dispatchEvent(new FeaturesListedEvent(event.detail.features));
+    });
+
+    this.#gc.$on("featuresmarked", (event) => {
+      this.dispatchEvent(new FeaturesMarkedEvent(event.detail.features));
+    });
+
+    this.#gc.$on("response", (event) => {
+      this.dispatchEvent(
+        new ResponseEvent(event.detail.url, event.detail.featureCollection),
+      );
+    });
+
+    this.#gc.$on("optionsvisibilitychange", (event) => {
+      this.dispatchEvent(
+        new OptionsVisibilityChangeEvent(event.detail.optionsVisible),
+      );
+    });
+
+    this.#gc.$on("reversetoggle", (event) => {
+      this.dispatchEvent(new ReverseToggleEvent(event.detail.reverse));
+    });
+
+    this.#gc.$on("querychange", (event) => {
+      this.dispatchEvent(new QueryChangeEvent(event.detail.query));
+    });
 
     this.#options = options;
   }
@@ -175,7 +184,7 @@ export class FeaturesListedEvent extends BaseEvent {
   features: Feature[] | undefined;
 
   constructor(features: Feature[] | undefined) {
-    super("featuresListed");
+    super("featureslisted");
 
     this.features = features;
   }
@@ -185,7 +194,7 @@ export class FeaturesMarkedEvent extends BaseEvent {
   features: Feature[] | undefined;
 
   constructor(features: Feature[] | undefined) {
-    super("featuresMarked");
+    super("featuresmarked");
 
     this.features = features;
   }
@@ -195,7 +204,7 @@ export class OptionsVisibilityChangeEvent extends BaseEvent {
   optionsVisible: boolean;
 
   constructor(optionsVisible: boolean) {
-    super("optionsVisibilityChange");
+    super("optionsvisibilitychange");
 
     this.optionsVisible = optionsVisible;
   }
@@ -215,7 +224,7 @@ export class QueryChangeEvent extends BaseEvent {
   query: string;
 
   constructor(query: string) {
-    super("queryChange");
+    super("querychange");
 
     this.query = query;
   }
@@ -239,7 +248,7 @@ export class ReverseToggleEvent extends BaseEvent {
   reverse: boolean;
 
   constructor(reverse: boolean) {
-    super("reverseToggle");
+    super("reversetoggle");
 
     this.reverse = reverse;
   }
