@@ -152,6 +152,8 @@ export type ControlOptions = {
    */
   showResultsWhileTyping?: boolean;
 
+  autocompleteTimeout?: number;
+
   /**
    * Set to `false` to disable fuzzy search.
    * Default value is `true`

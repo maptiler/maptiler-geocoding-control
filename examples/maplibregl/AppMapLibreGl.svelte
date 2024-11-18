@@ -20,6 +20,8 @@
     map.addControl(
       new GeocodingControl({
         apiKey,
+        selectFirst: true,
+        autocompleteTimeout: 3000,
         enableReverse: "always",
         collapsed: true,
         // limit: 20,

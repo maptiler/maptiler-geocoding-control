@@ -102,6 +102,8 @@
 
   export let showResultsWhileTyping = true;
 
+  export let autocompleteTimeout: number | undefined = undefined;
+
   export let selectFirst = true;
 
   export let flyToSelected = false;
@@ -143,7 +145,7 @@
     if (submit) {
       selectedItemIndex = -1;
 
-      handleOnSubmit();
+      handleSubmit();
     } else {
       handleInput(!reverse, reverse);
 
@@ -186,6 +188,8 @@
   let abortController: AbortController | undefined;
 
   let searchTimeoutRef: number | undefined;
+
+  let autocompleteTimeoutRef: number | undefined;
 
   let focusedDelayed: boolean;
 
@@ -276,8 +280,14 @@
     }
   });
 
+  function isInAutocompleteTimeout() {
+    return !!autocompleteTimeoutRef;
+  }
+
   $: if (selectFirst && listFeatures?.length) {
-    selectedItemIndex = 0;
+    if (!isInAutocompleteTimeout()) {
+      selectedItemIndex = 0;
+    }
   }
 
   // clear selection on edit
@@ -289,6 +299,12 @@
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
+
+  $: if (selected) {
+    window.clearTimeout(autocompleteTimeoutRef);
+
+    autocompleteTimeoutRef = undefined;
+  }
 
   $: if (mapController) {
     const coords = isQueryReverse(searchValue);
@@ -365,11 +381,21 @@
     }
   });
 
-  function handleOnSubmit(event?: unknown) {
+  function handleSubmit(event?: unknown) {
     if (searchTimeoutRef) {
-      clearTimeout(searchTimeoutRef);
+      window.clearTimeout(searchTimeoutRef);
 
       searchTimeoutRef = undefined;
+    }
+
+    if (autocompleteTimeoutRef) {
+      window.clearTimeout(autocompleteTimeoutRef);
+
+      autocompleteTimeoutRef = undefined;
+
+      search(searchValue, { exact: true });
+
+      return;
     }
 
     if (selectedItemIndex > -1 && listFeatures) {
@@ -415,7 +441,14 @@
     {
       byId = false,
       exact = false,
-    }: undefined | { byId?: boolean; exact?: boolean } = {},
+      appendSpace = false,
+    }:
+      | undefined
+      | {
+          byId?: boolean;
+          exact?: boolean;
+          appendSpace?: boolean;
+        } = {},
   ) {
     error = undefined;
 
@@ -484,7 +517,7 @@
         encodeURIComponent(
           isReverse
             ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude
-            : searchValue,
+            : searchValue + (appendSpace ? " " : ""),
         ) +
         ".json?" +
         sp.toString();
@@ -696,26 +729,44 @@
   function handleInput(debounce = true, reverse = false) {
     error = undefined;
 
-    if (showResultsWhileTyping || reverse) {
-      if (searchTimeoutRef) {
-        clearTimeout(searchTimeoutRef);
-      }
+    if (searchTimeoutRef) {
+      window.clearTimeout(searchTimeoutRef);
 
-      if (searchValue.length < minLength) {
-        return;
-      }
+      searchTimeoutRef = undefined;
+    }
 
-      const sv = searchValue;
+    if (autocompleteTimeoutRef) {
+      window.clearTimeout(autocompleteTimeoutRef);
 
-      searchTimeoutRef = window.setTimeout(
-        () => {
-          search(sv).catch((err) => (error = err));
-        },
-        debounce ? debounceSearch : 0,
-      );
-    } else {
+      autocompleteTimeoutRef = undefined;
+    }
+
+    if (
+      (!showResultsWhileTyping && !reverse) ||
+      searchValue.length < minLength
+    ) {
       listFeatures = undefined;
-      error = undefined;
+
+      return;
+    }
+
+    const sv = searchValue;
+
+    searchTimeoutRef = window.setTimeout(
+      () => {
+        searchTimeoutRef = undefined;
+
+        search(sv).catch((err) => (error = err));
+      },
+      debounce ? debounceSearch : 0,
+    );
+
+    if (!searchValue.endsWith(" ")) {
+      autocompleteTimeoutRef = window.setTimeout(() => {
+        autocompleteTimeoutRef = undefined;
+
+        search(sv, { appendSpace: true }).catch((err) => (error = err));
+      }, autocompleteTimeout);
     }
   }
 
@@ -734,7 +785,7 @@
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <form
   tabindex="0"
-  on:submit|preventDefault={handleOnSubmit}
+  on:submit|preventDefault={handleSubmit}
   class:can-collapse={collapsed && searchValue === ""}
   class={className}
 >
