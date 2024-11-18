@@ -102,7 +102,7 @@ export function createMapLibreGlMapController(
       return;
     }
 
-    const source = map.getSource(RESULT_SOURCE) as GeoJSONSource;
+    const source = map.getSource<GeoJSONSource>(RESULT_SOURCE);
 
     if (source) {
       source.setData(savedData ?? featureCollection([]));
