@@ -148,10 +148,7 @@ interface EventedControl extends L.Control {
   hasEventListeners<T extends keyof CustomEventMap>(type: T): boolean;
 }
 
-L.Util.extend(
-  EventedControl.prototype,
-  L.Evented.prototype,
-);
+L.Util.extend(EventedControl.prototype, L.Evented.prototype);
 
 export class GeocodingControl extends EventedControl {
   #gc?: GeocodingControlComponent;
@@ -191,7 +188,8 @@ export class GeocodingControl extends EventedControl {
       flyToOptions,
       flyToOptions,
       fullGeometryStyle,
-      restOptions.showFullGeometry === "polygon-with-marker",
+      restOptions.pickedResultStyle ===
+        "full-geometry-including-polygon-center-marker",
     );
 
     this.#gc = new GeocodingControlComponent({

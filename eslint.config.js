@@ -16,6 +16,18 @@ export default [
         "error",
         { ignoreRestSiblings: true },
       ],
+      // TODO for the reason of next 2 rules see https://github.com/eslint/eslint/issues/19134#issuecomment-2480588649
+      "@typescript-eslint/no-unused-expressions": [
+        "error",
+        {
+          allowShortCircuit: true,
+          allowTernary: true,
+        },
+      ],
+      "@typescript-eslint/no-empty-function": [
+        "error",
+        { allow: ["arrowFunctions"] },
+      ],
     },
   },
   {

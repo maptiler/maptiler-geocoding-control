@@ -128,7 +128,8 @@ export class GeocodingControl extends Control {
         // marker,
         // showResultMarkers,
         fullGeometryStyle,
-        this.#options.showFullGeometry === "polygon-with-marker",
+        this.#options.pickedResultStyle ===
+          "full-geometry-including-polygon-center-marker",
       );
 
       this.#gc?.$set({ mapController });
