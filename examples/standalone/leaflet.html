@@ -57,7 +57,7 @@
   const geocodingControl = L.control
     .maptilerGeocoding({
       apiKey,
-      reverse: true,
+      enableReverse: "always",
       iconsBaseUrl: "../../public/icons/",
     })
     .on("select", (...args) => {
