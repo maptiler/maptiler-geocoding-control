@@ -395,7 +395,7 @@
 
       autocompleteTimeoutRef = undefined;
 
-      search(searchValue, { exact: true });
+      search(searchValue, { appendSpace: true });
 
       return;
     }
