@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "The Javascript & TypeScript Map Control component for MapTiler Geocoding service. Easy to be integrated into any JavaScript mapping application.",
   "type": "module",
   "author": {
@@ -108,7 +108,7 @@
     "@tsconfig/svelte": "^5.0.4",
     "@types/geojson": "^7946.0.14",
     "@types/leaflet": "^1.9.14",
-    "@types/node": "^22.9.0",
+    "@types/node": "^22.9.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "concurrently": "^9.1.0",
