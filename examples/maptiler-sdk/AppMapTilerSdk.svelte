@@ -23,6 +23,7 @@
     const geocodingControl = new GeocodingControl({
       enableReverse: "always",
       collapsed: false,
+      // pickedResultStyle: "full-geometry-including-polygon-center-marker",
       // limit: 20,
       // types: ["poi"],
       // fetchParameters: { credentials: "include" },
@@ -42,7 +43,10 @@
     });
 
     setTimeout(() => {
-      geocodingControl.setOptions({ enableReverse: true });
+      geocodingControl.setOptions({
+        enableReverse: "always",
+        pickedResultStyle: "full-geometry-including-polygon-center-marker",
+      });
     }, 5000);
   });
 </script>

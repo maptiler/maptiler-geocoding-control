@@ -1,11 +1,11 @@
 <script lang="ts">
-  import type { Feature } from "./types";
+  import type { Feature, ShowPlaceType } from "./types";
 
   export let feature: Feature;
 
   export let selected = false;
 
-  export let showPlaceType: "never" | "always" | "if-needed";
+  export let showPlaceType: ShowPlaceType;
 
   export let missingIconsCache: Set<string>;
 
