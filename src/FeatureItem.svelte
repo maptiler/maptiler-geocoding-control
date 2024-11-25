@@ -55,21 +55,34 @@
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
   {#if imageUrl}
-    <img src={imageUrl} alt={category} on:error={() => handleImgError()} />
+    <img
+      src={imageUrl}
+      alt={category}
+      title={placeType}
+      on:error={() => handleImgError()}
+    />
   {:else if feature.address}
-    <img src={iconsBaseUrl + "housenumber.svg"} alt={placeType} />
+    <img
+      src={iconsBaseUrl + "housenumber.svg"}
+      alt={placeType}
+      title={placeType}
+    />
   {:else if feature.id.startsWith("road.")}
-    <img src={iconsBaseUrl + "road.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "road.svg"} alt={placeType} title={placeType} />
   {:else if feature.id.startsWith("address.")}
-    <img src={iconsBaseUrl + "street.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "street.svg"} alt={placeType} title={placeType} />
   {:else if feature.id.startsWith("postal_code.")}
-    <img src={iconsBaseUrl + "postal_code.svg"} alt={placeType} />
+    <img
+      src={iconsBaseUrl + "postal_code.svg"}
+      alt={placeType}
+      title={placeType}
+    />
   {:else if feature.id.startsWith("poi.")}
-    <img src={iconsBaseUrl + "poi.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "poi.svg"} alt={placeType} title={placeType} />
   {:else if isReverse}
-    <img src={iconsBaseUrl + "reverse.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "reverse.svg"} alt={placeType} title={placeType} />
   {:else}
-    <img src={iconsBaseUrl + "area.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "area.svg"} alt={placeType} title={placeType} />
   {/if}
 
   <span class="texts">
