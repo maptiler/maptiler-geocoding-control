@@ -309,8 +309,17 @@ export type ControlOptions = {
    * Function to adjust URL search parameters.
    *
    * Default value is empty function.
+   *
+   * @deprecated use `adjustUrl`
    */
   adjustUrlQuery?: (sp: URLSearchParams) => void;
+
+  /**
+   * Function to adjust geocoding URL before the fetch.
+   *
+   * Default value is empty function.
+   */
+  adjustUrl?: (url: URL) => void;
 
   /**
    * Automatically select the first feature from the result list.
