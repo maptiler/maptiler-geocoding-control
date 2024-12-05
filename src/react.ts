@@ -78,11 +78,42 @@ export type Props = ControlOptions &
 // type MethodNames = "blur" | "focus" | "setQuery";
 // export type Methods = { [T in MethodNames]: GeocodingControl[T] };
 export type Methods = {
+  /**
+   * Blur the search input box.
+   */
   blur(): void;
-  focus(): void;
+
+  /**
+   * Focus the search input box.
+   *
+   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
+   */
+  focus(options?: FocusOptions): void;
+
+  /**
+   * Set the content of search input box.
+   *
+   * @param value text to set
+   * @param submit perform the search
+   */
   setQuery(value: string, submit?: boolean): void;
+
+  /**
+   * Clear geocoding search results from the map.
+   */
   clearMap(): void;
+
+  /**
+   * Clear search result list.
+   */
   clearList(): void;
+
+  /**
+   * Set reverse geocoding mode.
+   *
+   * @param reverseActive reverse geocoding active
+   */
+  setReverseMode(reverseActive: boolean): void;
 };
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
@@ -144,8 +175,10 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
       controlRef.current?.setQuery(value, submit),
     clearMap: () => controlRef.current?.clearMap(),
     clearList: () => controlRef.current?.clearList(),
-    focus: () => controlRef.current?.focus(),
+    focus: (options?: FocusOptions) => controlRef.current?.focus(options),
     blur: () => controlRef.current?.blur(),
+    setReverseMode: (reverseActive: boolean) =>
+      controlRef.current?.$set({ reverseActive }),
   }));
 
   return createElement("div", { ref: divRef });
