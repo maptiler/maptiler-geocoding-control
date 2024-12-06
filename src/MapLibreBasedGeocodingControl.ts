@@ -366,6 +366,11 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
       return super.listens(type);
     }
 
+    /**
+     * Update the control options.
+     *
+     * @param options options to update
+     */
     setOptions(options: OPTS) {
       Object.assign(this.#options, options);
 
@@ -380,26 +385,51 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
       this.#gc?.$set(restOptions);
     }
 
+    /**
+     * Set the content of search input box.
+     *
+     * @param value text to set
+     * @param submit perform the search
+     */
     setQuery(value: string, submit = true) {
       this.#gc?.setQuery(value, submit);
     }
 
+    /**
+     * Clear geocoding search results from the map.
+     */
     clearMap() {
       this.#gc?.clearMap();
     }
 
+    /**
+     * Clear search result list.
+     */
     clearList() {
       this.#gc?.clearList();
     }
 
-    setReverseMode(value: boolean) {
-      this.#gc?.$set({ reverseActive: value });
+    /**
+     * Set reverse geocoding mode.
+     *
+     * @param reverseActive reverse geocoding active
+     */
+    setReverseMode(reverseActive: boolean) {
+      this.#gc?.$set({ reverseActive });
     }
 
-    focus() {
-      this.#gc?.focus();
+    /**
+     * Focus the search input box.
+     *
+     * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
+     */
+    focus(options?: FocusOptions) {
+      this.#gc?.focus(options);
     }
 
+    /**
+     * Blur the search input box.
+     */
     blur() {
       this.#gc?.blur();
     }

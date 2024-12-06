@@ -12,6 +12,7 @@ export default [
   ...eslintPluginSvelte.configs["flat/prettier"],
   {
     rules: {
+      "no-undef": "off",
       "@typescript-eslint/no-unused-vars": [
         "error",
         { ignoreRestSiblings: true },
