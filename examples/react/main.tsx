@@ -37,7 +37,9 @@ function App() {
 
   const [clearOnBlur, setClearOnBlur] = useState(false);
 
-  const [clearListOnPick, setClearListOnPick] = useState(true);
+  const [clearListOnPick, setClearListOnPick] = useState(false);
+
+  const [keepListOpen, setKeepListOpen] = useState(false);
 
   const map = useRef<maptilersdk.Map | null>(null);
 
@@ -108,6 +110,7 @@ function App() {
               onResponse={(data) => log("response", data)}
               clearOnBlur={clearOnBlur}
               clearListOnPick={clearListOnPick}
+              keepListOpen={keepListOpen}
               iconsBaseUrl="/icons/"
               enableReverse={reverse}
             />
@@ -138,6 +141,15 @@ function App() {
               onChange={(e) => setClearListOnPick(e.currentTarget.checked)}
             />
             <span className="checkable">Clear list on pick</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={keepListOpen}
+              onChange={(e) => setKeepListOpen(e.currentTarget.checked)}
+            />
+            <span className="checkable">Keep the list open</span>
           </label>
 
           <label>

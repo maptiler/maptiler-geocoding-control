@@ -41,6 +41,7 @@ const propertyNames = [
   "clearButtonTitle",
   "clearOnBlur",
   "clearListOnPick",
+  "keepListOpen",
   "collapsed",
   "country",
   "debounceSearch",

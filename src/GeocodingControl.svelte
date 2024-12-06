@@ -60,7 +60,9 @@
 
   export let clearOnBlur = false;
 
-  export let clearListOnPick = true;
+  export let clearListOnPick = false;
+
+  export let keepListOpen = false;
 
   export let collapsed = false;
 
@@ -827,7 +829,7 @@
         <ClearIcon />
       </button>
     </div>
-  {:else if !focusedDelayed}
+  {:else if !focusedDelayed && !keepListOpen}
     {""}
   {:else if listFeatures?.length === 0}
     <div class="no-results">
@@ -835,7 +837,7 @@
 
       <div>{noResultsMessage}</div>
     </div>
-  {:else if focusedDelayed && listFeatures?.length}
+  {:else if listFeatures?.length}
     <ul
       class="options"
       on:mouseleave={() => {
