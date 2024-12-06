@@ -60,6 +60,8 @@
 
   export let clearOnBlur = false;
 
+  export let clearListOnPick = true;
+
   export let collapsed = false;
 
   export let country: string | string[] | undefined = undefined;
@@ -245,7 +247,10 @@
         );
       }
 
-      listFeatures = undefined;
+      if (clearListOnPick) {
+        listFeatures = undefined;
+      }
+
       markedFeatures = undefined;
       selectedItemIndex = -1;
     }
@@ -521,7 +526,9 @@
 
       if (url === lastSearchUrl) {
         if (byId) {
-          listFeatures = undefined;
+          if (clearListOnPick) {
+            listFeatures = undefined;
+          }
 
           picked = cachedFeatures[0];
         } else {
@@ -547,7 +554,9 @@
       dispatch("response", { url, featureCollection });
 
       if (byId) {
-        listFeatures = undefined;
+        if (clearListOnPick) {
+          listFeatures = undefined;
+        }
 
         picked = featureCollection.features[0];
 

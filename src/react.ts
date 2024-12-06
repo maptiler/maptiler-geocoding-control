@@ -40,6 +40,7 @@ const propertyNames = [
   "bbox",
   "clearButtonTitle",
   "clearOnBlur",
+  "clearListOnPick",
   "collapsed",
   "country",
   "debounceSearch",

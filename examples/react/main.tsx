@@ -31,11 +31,13 @@ function App() {
 
   const consoleRef = useRef<HTMLDivElement | null>(null);
 
-  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   const [reverse, setReverse] = useState<EnableReverse>("never");
 
-  const [clearOnBlur, setClearOnBlur] = useState<boolean>(false);
+  const [clearOnBlur, setClearOnBlur] = useState(false);
+
+  const [clearListOnPick, setClearListOnPick] = useState(true);
 
   const map = useRef<maptilersdk.Map | null>(null);
 
@@ -105,6 +107,7 @@ function App() {
               onReverseToggle={(data) => log("reverseToggle", data)}
               onResponse={(data) => log("response", data)}
               clearOnBlur={clearOnBlur}
+              clearListOnPick={clearListOnPick}
               iconsBaseUrl="/icons/"
               enableReverse={reverse}
             />
@@ -126,6 +129,15 @@ function App() {
               onChange={(e) => setClearOnBlur(e.currentTarget.checked)}
             />
             <span className="checkable">Clear on blur</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={clearListOnPick}
+              onChange={(e) => setClearListOnPick(e.currentTarget.checked)}
+            />
+            <span className="checkable">Clear list on pick</span>
           </label>
 
           <label>
