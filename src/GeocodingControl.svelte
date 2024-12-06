@@ -130,14 +130,28 @@
 
   export let adjustUrlQuery: (sp: URLSearchParams) => void = () => {};
 
-  export function focus() {
-    input.focus();
+  /**
+   * Focus the search input box.
+   *
+   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
+   */
+  export function focus(options?: FocusOptions) {
+    input.focus(options);
   }
 
+  /**
+   * Blur the search input box.
+   */
   export function blur() {
     input.blur();
   }
 
+  /**
+   * Set the content of search input box.
+   *
+   * @param value text to set
+   * @param submit perform the search
+   */
   export function setQuery(value: string, submit = true, reverse = false) {
     searchValue = value;
 
@@ -155,12 +169,18 @@
     }
   }
 
+  /**
+   * Clear search result list.
+   */
   export function clearList() {
     listFeatures = undefined;
     picked = undefined;
     selectedItemIndex = -1;
   }
 
+  /**
+   * Clear geocoding search results from the map.
+   */
   export function clearMap() {
     markedFeatures = [];
     picked = undefined;
