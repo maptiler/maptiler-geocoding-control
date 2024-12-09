@@ -102,7 +102,7 @@
     "./types": "./types.d.ts"
   },
   "devDependencies": {
-    "@maptiler/sdk": "^2.5.0",
+    "@maptiler/sdk": "^3.0.0-rc.2",
     "@sveltejs/package": "^2.3.7",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",
@@ -120,7 +120,7 @@
     "husky": "^9.1.7",
     "leaflet": "^1.9.4",
     "lint-staged": "^15.2.10",
-    "maplibre-gl": "^4.7.1",
+    "maplibre-gl": "^5.0.0-pre.7",
     "ol": "10.2",
     "prettier": "^3.4.2",
     "prettier-plugin-organize-imports": "^4.1.0",
@@ -138,7 +138,7 @@
     "vite": "^5.4.11"
   },
   "peerDependencies": {
-    "@maptiler/sdk": "^1 || ^2",
+    "@maptiler/sdk": "^1 || ^2 || ^3",
     "leaflet": "^1.7 || ^1.8 || ^1.9",
     "maplibre-gl": "^2 || ^3 || ^4 || ^5",
     "ol": "^6 || ^7 || ^8 || ^9 || ^10",
