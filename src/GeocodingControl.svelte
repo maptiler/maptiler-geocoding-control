@@ -60,6 +60,10 @@
 
   export let clearOnBlur = false;
 
+  export let clearListOnPick = false;
+
+  export let keepListOpen = false;
+
   export let collapsed = false;
 
   export let country: string | string[] | undefined = undefined;
@@ -253,7 +257,10 @@
         );
       }
 
-      listFeatures = undefined;
+      if (clearListOnPick) {
+        listFeatures = undefined;
+      }
+
       markedFeatures = undefined;
       selectedItemIndex = -1;
     }
@@ -533,7 +540,9 @@
 
       if (url === lastSearchUrl) {
         if (byId) {
-          listFeatures = undefined;
+          if (clearListOnPick) {
+            listFeatures = undefined;
+          }
 
           picked = cachedFeatures[0];
         } else {
@@ -559,7 +568,9 @@
       dispatch("response", { url, featureCollection });
 
       if (byId) {
-        listFeatures = undefined;
+        if (clearListOnPick) {
+          listFeatures = undefined;
+        }
 
         picked = featureCollection.features[0];
 
@@ -830,7 +841,7 @@
         <ClearIcon />
       </button>
     </div>
-  {:else if !focusedDelayed}
+  {:else if !focusedDelayed && !keepListOpen}
     {""}
   {:else if listFeatures?.length === 0}
     <div class="no-results">
@@ -838,7 +849,7 @@
 
       <div>{noResultsMessage}</div>
     </div>
-  {:else if focusedDelayed && listFeatures?.length}
+  {:else if listFeatures?.length}
     <ul
       class="options"
       on:mouseleave={() => {
