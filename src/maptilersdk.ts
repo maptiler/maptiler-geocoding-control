@@ -5,6 +5,7 @@ import {
   crateClasses,
   type MapLibreBaseControlOptions,
 } from "./MapLibreBasedGeocodingControl";
+import { registerTelemetry } from "./telemetry";
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 const { MapLibreBasedGeocodingControl, events } =
@@ -39,6 +40,7 @@ export class GeocodingControl
   implements maptilersdk.IControl
 {
   onAdd(map: maptilersdk.Map): HTMLElement {
+    registerTelemetry(map);
     return super.onAddInt(map as unknown as maplibregl.Map);
   }
 }
