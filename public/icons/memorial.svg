@@ -1,1 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M6 2C5 2 4 3 4 4v8h8V4c0-1-1-2-2-2H6Zm1 2h2v1H7V4ZM5 6h6v1H5V6Zm1 2h4v1H6V8Zm-3 5-1 1v1h12v-1l-1-1H3Z"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="14"
+   height="14"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <path
+     d="m 5,0.5 c -1,0 -2,1 -2,2 v 8 h 8 v -8 c 0,-1 -1,-2 -2,-2 z m 1,2 h 2 v 1 H 6 Z m -2,2 h 6 v 1 H 4 Z m 1,2 h 4 v 1 H 5 Z m -3,5 -1,1 v 1 h 12 v -1 l -1,-1 z"
+     id="path1" />
+</svg>

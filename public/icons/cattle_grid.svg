@@ -1,1 +1,14 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"><path d="M12 4H2v1h10V4Zm0 2H2v1h10V6Zm0 2H2v1h10V8Zm0 2H2v1h10v-1Z"/></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="14"
+   height="14"
+   version="1.1"
+   id="svg1"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs1" />
+  <path
+     d="M 12,3.5 H 2 v 1 h 10 z m 0,2 H 2 v 1 h 10 z m 0,2 H 2 v 1 h 10 z m 0,2 H 2 v 1 h 10 z"
+     id="path1" />
+</svg>
