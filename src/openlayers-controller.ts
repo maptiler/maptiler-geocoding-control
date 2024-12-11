@@ -279,7 +279,7 @@ export function createOpenLayersMapController(
         source.addFeature(reverseMarker);
       }
 
-      if (picked) {
+      block: if (picked) {
         let handled = false;
 
         if (picked.geometry.type === "GeometryCollection") {
@@ -335,7 +335,7 @@ export function createOpenLayersMapController(
             ),
           );
 
-          return; // no pin for (multi)linestrings
+          break block; // no pin for (multi)linestrings
         } else if (picked.geometry.type === "MultiLineString") {
           source.addFeature(
             new OlFeature(
@@ -343,11 +343,11 @@ export function createOpenLayersMapController(
             ),
           );
 
-          return; // no pin for (multi)linestrings
+          break block; // no pin for (multi)linestrings
         }
 
         if (!showPolygonMarker && picked.geometry.type !== "Point") {
-          return;
+          break block;
         }
 
         source.addFeature(new OlFeature(fromWgs84(new OlPoint(picked.center))));

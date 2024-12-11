@@ -253,7 +253,7 @@ export function createMapLibreGlMapController(
         return;
       }
 
-      if (picked) {
+      block: if (picked) {
         let handled = false;
 
         if (picked.geometry.type === "GeometryCollection") {
@@ -311,11 +311,11 @@ export function createMapLibreGlMapController(
         ) {
           setAndSaveData(picked);
 
-          return; // no pin for (multi)linestrings
+          break block; // no pin for (multi)linestrings
         }
 
         if (!showPolygonMarker && picked.geometry.type !== "Point") {
-          return;
+          break block;
         }
 
         if (marker instanceof Function) {

@@ -60,6 +60,10 @@
 
   export let clearOnBlur = false;
 
+  export let clearListOnPick = false;
+
+  export let keepListOpen = false;
+
   export let collapsed = false;
 
   export let country: string | string[] | undefined = undefined;
@@ -166,9 +170,9 @@
     if (submit) {
       selectedItemIndex = -1;
 
-      handleOnSubmit();
+      handleSubmit();
     } else {
-      handleInput(!reverse, reverse);
+      handleInput(undefined, !reverse, reverse);
 
       setTimeout(() => {
         input.focus();
@@ -194,8 +198,6 @@
     picked = undefined;
   }
 
-  let focused = false;
-
   let listFeatures: Feature[] | undefined;
 
   let markedFeatures: Feature[] | undefined;
@@ -220,6 +222,8 @@
 
   let prevIdToFly: string | undefined;
 
+  let showList = keepListOpen;
+
   const missingIconsCache = new Set<string>();
 
   const dispatch = createEventDispatcher<DispatcherType>();
@@ -240,20 +244,12 @@
 
   $: {
     if (mapController && picked && picked.id !== prevIdToFly && flyTo) {
-      if (
-        !picked.bbox ||
-        (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
-      ) {
-        mapController.flyTo(picked.center, computeZoom(picked));
-      } else {
-        mapController.fitBounds(
-          unwrapBbox(picked.bbox),
-          50,
-          computeZoom(picked),
-        );
+      goToPicked();
+
+      if (clearListOnPick) {
+        listFeatures = undefined;
       }
 
-      listFeatures = undefined;
       markedFeatures = undefined;
       selectedItemIndex = -1;
     }
@@ -276,7 +272,7 @@
   $: if (mapController && markerOnSelected && !markedFeatures) {
     mapController.setFeatures(
       selected ? [selected] : undefined,
-      undefined,
+      picked,
       showPolygonMarker,
     );
 
@@ -305,9 +301,9 @@
 
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
-    focusedDelayed = focused;
+    focusedDelayed = document.activeElement === input;
 
-    if (clearOnBlur && !focused) {
+    if (clearOnBlur && !focusedDelayed) {
       searchValue = "";
     }
   });
@@ -316,12 +312,18 @@
     selectedItemIndex = 0;
   }
 
-  // clear selection on edit
   $: {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     searchValue;
 
     selectedItemIndex = -1;
+  }
+
+  $: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    picked;
+
+    showList = keepListOpen;
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
@@ -403,7 +405,7 @@
     }
   });
 
-  function handleOnSubmit(event?: unknown) {
+  function handleSubmit(event?: unknown) {
     if (searchTimeoutRef) {
       clearTimeout(searchTimeoutRef);
 
@@ -533,7 +535,9 @@
 
       if (url === lastSearchUrl) {
         if (byId) {
-          listFeatures = undefined;
+          if (clearListOnPick) {
+            listFeatures = undefined;
+          }
 
           picked = cachedFeatures[0];
         } else {
@@ -559,7 +563,9 @@
       dispatch("response", { url, featureCollection });
 
       if (byId) {
-        listFeatures = undefined;
+        if (clearListOnPick) {
+          listFeatures = undefined;
+        }
 
         picked = featureCollection.features[0];
 
@@ -661,6 +667,21 @@
     }
   }
 
+  function goToPicked() {
+    if (!picked || !mapController) {
+      return;
+    }
+
+    if (
+      !picked.bbox ||
+      (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3])
+    ) {
+      mapController.flyTo(picked.center, computeZoom(picked));
+    } else {
+      mapController.fitBounds(unwrapBbox(picked.bbox), 50, computeZoom(picked));
+    }
+  }
+
   function computeZoom(feature: Feature): number | undefined {
     if (
       !feature.bbox ||
@@ -709,26 +730,38 @@
 
     let dir = e.key === "ArrowDown" ? 1 : e.key === "ArrowUp" ? -1 : 0;
 
-    if (dir) {
-      if (selectedItemIndex === (selectFirst ? 0 : -1) && dir === -1) {
-        selectedItemIndex = listFeatures.length;
-      }
+    if (!dir) {
+      return;
+    }
 
-      selectedItemIndex += dir;
+    input.focus();
 
-      if (selectedItemIndex >= listFeatures.length) {
-        selectedItemIndex = -1;
-      }
+    e.preventDefault();
 
-      if (selectedItemIndex < 0 && selectFirst) {
-        selectedItemIndex = 0;
-      }
+    showList = true;
 
-      e.preventDefault();
+    if (picked && selectedItemIndex === -1) {
+      selectedItemIndex = listFeatures.findIndex(
+        (listFeature) => listFeature.id === picked?.id,
+      );
+    }
+
+    if (selectedItemIndex === (picked || selectFirst ? 0 : -1) && dir === -1) {
+      selectedItemIndex = listFeatures.length;
+    }
+
+    selectedItemIndex += dir;
+
+    if (selectedItemIndex >= listFeatures.length) {
+      selectedItemIndex = -1;
+    }
+
+    if (selectedItemIndex < 0 && (picked || selectFirst)) {
+      selectedItemIndex = 0;
     }
   }
 
-  function handleInput(debounce = true, reverse = false) {
+  function handleInput(_?: Event, debounce = true, reverse = false) {
     error = undefined;
 
     if (showResultsWhileTyping || reverse) {
@@ -759,6 +792,21 @@
     searchValue = feature.place_name;
     selectedItemIndex = -1;
   }
+
+  function handleMouseEnter(index: number) {
+    selectedItemIndex = index;
+  }
+
+  function handleMouseLeave() {
+    if (!selectFirst || picked) {
+      selectedItemIndex = -1;
+    }
+
+    // re-focus on picked
+    if (flyToSelected) {
+      goToPicked();
+    }
+  }
 </script>
 
 {#if false}
@@ -766,10 +814,8 @@
   <MarkerIcon displayIn="list" />
 {/if}
 
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <form
-  tabindex="0"
-  on:submit|preventDefault={handleOnSubmit}
+  on:submit|preventDefault={handleSubmit}
   class:can-collapse={collapsed && searchValue === ""}
   class={className}
 >
@@ -781,10 +827,11 @@
     <input
       bind:this={input}
       bind:value={searchValue}
-      on:focus={() => (focused = true)}
-      on:blur={() => (focused = false)}
+      on:focus={() => (showList = true)}
       on:keydown={handleKeyDown}
-      on:input={() => handleInput()}
+      on:input={handleInput}
+      on:change={() => (picked = undefined)}
+      on:click={() => (showList = true)}
       {placeholder}
       aria-label={placeholder}
     />
@@ -830,7 +877,7 @@
         <ClearIcon />
       </button>
     </div>
-  {:else if !focusedDelayed}
+  {:else if !focusedDelayed && !keepListOpen}
     {""}
   {:else if listFeatures?.length === 0}
     <div class="no-results">
@@ -838,22 +885,20 @@
 
       <div>{noResultsMessage}</div>
     </div>
-  {:else if focusedDelayed && listFeatures?.length}
+  {:else if listFeatures?.length && showList}
     <ul
       class="options"
-      on:mouseleave={() => {
-        if (!selectFirst) {
-          selectedItemIndex = -1;
-        }
-      }}
+      on:mouseleave={handleMouseLeave}
       on:blur={() => undefined}
+      on:keydown={handleKeyDown}
+      role="listbox"
     >
       {#each listFeatures as feature, i (feature.id + (feature.address ? "," + feature.address : ""))}
         <FeatureItem
           {feature}
           {showPlaceType}
-          selected={selectedItemIndex === i}
-          on:mouseenter={() => (selectedItemIndex = i)}
+          selected={selectedItemIndex === i || picked?.id === feature.id}
+          on:mouseenter={() => handleMouseEnter(i)}
           on:focus={() => pick(feature)}
           {missingIconsCache}
           {iconsBaseUrl}

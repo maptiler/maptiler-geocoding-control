@@ -187,11 +187,25 @@ export type ControlOptions = {
   collapsed?: boolean;
 
   /**
-   * If true, the geocoder control will clear its value when the input blurs.
+   * If `true`, the geocoder control will clear its value when the input blurs.
    *
    * Default value is `false`.
    */
   clearOnBlur?: boolean;
+
+  /**
+   * If `true`, then after picking a result from the list or map the list will be cleared and not re-displayed on input box focus.
+   *
+   * Default value is `false`.
+   */
+  clearListOnPick?: boolean;
+
+  /**
+   * Keep the list open even if the control is not focused.
+   *
+   * Default value is `false`.
+   */
+  keepListOpen?: boolean;
 
   /**
    * A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list.
