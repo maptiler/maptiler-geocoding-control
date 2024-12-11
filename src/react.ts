@@ -36,6 +36,7 @@ type MapControllerProp = {
 
 const propertyNames = [
   "adjustUrlQuery",
+  "adjustUrl",
   "apiKey",
   "apiUrl",
   "bbox",

@@ -132,7 +132,15 @@
     import.meta.env.VITE_LIB_VERSION +
     "/icons/";
 
+  /**
+   * @deprecated use `adjustUrl`
+   */
   export let adjustUrlQuery: (sp: URLSearchParams) => void = () => {};
+
+  /**
+   * Adjust geocoding URL before the fetch.
+   */
+  export let adjustUrl: (url: URL) => void = () => {};
 
   /**
    * Focus the search input box.
@@ -460,7 +468,18 @@
     try {
       const isReverse = isQueryReverse(searchValue);
 
-      const sp = new URLSearchParams();
+      const urlObj = new URL(
+        apiUrl +
+          "/" +
+          encodeURIComponent(
+            isReverse
+              ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude
+              : searchValue,
+          ) +
+          ".json",
+      );
+
+      const sp = urlObj.searchParams;
 
       if (language !== undefined) {
         sp.set(
@@ -510,16 +529,9 @@
 
       adjustUrlQuery(sp);
 
-      const url =
-        apiUrl +
-        "/" +
-        encodeURIComponent(
-          isReverse
-            ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude
-            : searchValue,
-        ) +
-        ".json?" +
-        sp.toString();
+      adjustUrl(urlObj);
+
+      const url = urlObj.toString();
 
       if (url === lastSearchUrl) {
         if (byId) {
