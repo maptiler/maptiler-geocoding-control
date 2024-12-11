@@ -5,7 +5,26 @@ import {
   crateClasses,
   type MapLibreBaseControlOptions,
 } from "./MapLibreBasedGeocodingControl";
-import { registerTelemetry } from "./telemetry";
+
+import packagejson from "../package.json";
+/**
+ * TODO: Remove when telemetry will be implemented
+ */
+declare module "@maptiler/sdk" {
+  interface Map {
+    telemetry: {
+      registerModule: (name: string, version: string) => void;
+    };
+  }
+}
+
+maptilersdk.Map.prototype.telemetry = {
+  registerModule: (name: string, version: string) => {
+    console.log(`Telemetry module registered: ${name} ${version}`);
+  },
+};
+/* *** */
+
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 const { MapLibreBasedGeocodingControl, events } =
@@ -40,7 +59,7 @@ export class GeocodingControl
   implements maptilersdk.IControl
 {
   onAdd(map: maptilersdk.Map): HTMLElement {
-    registerTelemetry(map);
+    map.telemetry.registerModule(packagejson.name, packagejson.version);
     return super.onAddInt(map as unknown as maplibregl.Map);
   }
 }
