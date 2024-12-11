@@ -37,22 +37,29 @@ type MapControllerProp = {
 const propertyNames = [
   "adjustUrlQuery",
   "apiKey",
+  "apiUrl",
   "bbox",
+  "class",
   "clearButtonTitle",
-  "clearOnBlur",
   "clearListOnPick",
-  "keepListOpen",
+  "clearOnBlur",
   "collapsed",
   "country",
   "debounceSearch",
   "enableReverse",
   "errorMessage",
   "excludeTypes",
+  "exhaustiveReverseGeocoding",
+  "fetchParameters",
   "filter",
+  "flyToSelected",
   "fuzzyMatch",
+  "iconsBaseUrl",
+  "keepListOpen",
   "language",
   "limit",
   "mapController",
+  "markerOnSelected",
   "minLength",
   "noResultsMessage",
   "pickedResultStyle",
@@ -60,6 +67,7 @@ const propertyNames = [
   "proximity",
   "reverseActive",
   "reverseButtonTitle",
+  "selectFirst",
   "showPlaceType",
   "showResultsWhileTyping",
   "types",
@@ -122,9 +130,9 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
   ref: Ref<Methods>,
 ) {
-  const divRef = useRef<HTMLDivElement>();
+  const divRef = useRef<HTMLDivElement>(undefined);
 
-  const controlRef = useRef<GeocodingControl>();
+  const controlRef = useRef<GeocodingControl>(undefined);
 
   const options = { ...props };
 

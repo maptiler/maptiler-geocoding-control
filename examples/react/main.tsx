@@ -41,6 +41,10 @@ function App() {
 
   const [keepListOpen, setKeepListOpen] = useState(false);
 
+  const [flyToSelected, setFlyToSelected] = useState(false);
+
+  const [selectFirst, setSelectFirst] = useState(true);
+
   const map = useRef<maptilersdk.Map | null>(null);
 
   const mapContainer = useRef<HTMLDivElement | null>(null);
@@ -113,6 +117,8 @@ function App() {
               keepListOpen={keepListOpen}
               iconsBaseUrl="/icons/"
               enableReverse={reverse}
+              flyToSelected={flyToSelected}
+              selectFirst={selectFirst}
             />
           )}
 
@@ -141,6 +147,24 @@ function App() {
               onChange={(e) => setClearListOnPick(e.currentTarget.checked)}
             />
             <span className="checkable">Clear list on pick</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={selectFirst}
+              onChange={(e) => setSelectFirst(e.currentTarget.checked)}
+            />
+            <span className="checkable">Select first</span>
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              checked={flyToSelected}
+              onChange={(e) => setFlyToSelected(e.currentTarget.checked)}
+            />
+            <span className="checkable">Fly to selected</span>
           </label>
 
           <label>

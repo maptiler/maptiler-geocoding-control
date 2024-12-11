@@ -52,8 +52,15 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
+<li
+  tabindex="-1"
+  role="option"
+  aria-selected={selected}
+  data-selected={selected}
+  class:selected
+  on:mouseenter
+  on:focus
+>
   {#if imageUrl}
     <img
       src={imageUrl}
@@ -115,6 +122,7 @@
     font-size: 14px;
     line-height: 18px;
     min-width: fit-content;
+    outline: 0;
 
     &:first-child {
       padding-top: 10px;
