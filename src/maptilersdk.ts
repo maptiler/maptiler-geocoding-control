@@ -7,23 +7,6 @@ import {
 } from "./MapLibreBasedGeocodingControl";
 
 import packagejson from "../package.json";
-/**
- * TODO: Remove when telemetry will be implemented
- */
-declare module "@maptiler/sdk" {
-  interface Map {
-    telemetry: {
-      registerModule: (name: string, version: string) => void;
-    };
-  }
-}
-
-maptilersdk.Map.prototype.telemetry = {
-  registerModule: (name: string, version: string) => {
-    console.log(`Telemetry module registered: ${name} ${version}`);
-  },
-};
-/* *** */
 
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
