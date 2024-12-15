@@ -121,9 +121,9 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
   ref: Ref<Methods>,
 ) {
-  const divRef = useRef<HTMLDivElement>();
+  const divRef = useRef<HTMLDivElement>(undefined);
 
-  const controlRef = useRef<GeocodingControl>();
+  const controlRef = useRef<GeocodingControl>(undefined);
 
   const options = { ...props };
 
