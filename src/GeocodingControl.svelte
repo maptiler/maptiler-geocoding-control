@@ -222,15 +222,13 @@
 
   let prevIdToFly: string | undefined;
 
-  let showList = keepListOpen;
+  let focused = false;
 
   const missingIconsCache = new Set<string>();
 
   const dispatch = createEventDispatcher<DispatcherType>();
 
-  $: {
-    reverseActive = enableReverse === "always";
-  }
+  $: reverseActive = enableReverse === "always";
 
   $: if (
     pickedResultStyle !== "marker-only" &&
@@ -288,7 +286,6 @@
   }
 
   $: if (searchValue.length < minLength) {
-    picked = undefined;
     listFeatures = undefined;
     error = undefined;
     markedFeatures = listFeatures;
@@ -301,29 +298,15 @@
 
   // close dropdown in the next cycle so that the selected item event has the chance to fire
   $: setTimeout(() => {
-    focusedDelayed = document.activeElement === input;
+    focusedDelayed = focused;
 
     if (clearOnBlur && !focusedDelayed) {
       searchValue = "";
     }
   });
 
-  $: if (selectFirst && listFeatures?.length) {
+  $: if (selectFirst && listFeatures?.length && selectedItemIndex == -1) {
     selectedItemIndex = 0;
-  }
-
-  $: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    searchValue;
-
-    selectedItemIndex = -1;
-  }
-
-  $: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    picked;
-
-    showList = keepListOpen;
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
@@ -340,9 +323,10 @@
 
   $: dispatch("pick", { feature: picked });
 
-  $: dispatch("optionsvisibilitychange", {
-    optionsVisible: focusedDelayed && !!listFeatures,
-  });
+  $: optionsVisible =
+    !!listFeatures?.length && (focusedDelayed || keepListOpen);
+
+  $: dispatch("optionsvisibilitychange", { optionsVisible });
 
   $: dispatch("featureslisted", { features: listFeatures });
 
@@ -406,6 +390,8 @@
   });
 
   function handleSubmit(event?: unknown) {
+    focused = false;
+
     if (searchTimeoutRef) {
       clearTimeout(searchTimeoutRef);
 
@@ -542,6 +528,10 @@
           picked = cachedFeatures[0];
         } else {
           listFeatures = cachedFeatures;
+
+          if (listFeatures[selectedItemIndex]?.id !== selected?.id) {
+            selectedItemIndex = -1;
+          }
         }
 
         return;
@@ -604,6 +594,10 @@
         }
 
         cachedFeatures = listFeatures;
+
+        if (listFeatures[selectedItemIndex]?.id !== selected?.id) {
+          selectedItemIndex = -1;
+        }
 
         if (isReverse) {
           input.focus();
@@ -736,9 +730,9 @@
 
     input.focus();
 
-    e.preventDefault();
+    focused = true;
 
-    showList = true;
+    e.preventDefault();
 
     if (picked && selectedItemIndex === -1) {
       selectedItemIndex = listFeatures.findIndex(
@@ -763,6 +757,8 @@
 
   function handleInput(_?: Event, debounce = true, reverse = false) {
     error = undefined;
+    picked = undefined;
+    focused = true;
 
     if (showResultsWhileTyping || reverse) {
       if (searchTimeoutRef) {
@@ -785,6 +781,10 @@
       listFeatures = undefined;
       error = undefined;
     }
+  }
+
+  $: {
+    console.log({ selectedItemIndex });
   }
 
   function pick(feature: Feature) {
@@ -827,11 +827,12 @@
     <input
       bind:this={input}
       bind:value={searchValue}
-      on:focus={() => (showList = true)}
+      on:focus={() => (focused = true)}
+      on:blur={() => (focused = false)}
+      on:click={() => (focused = true)}
       on:keydown={handleKeyDown}
       on:input={handleInput}
       on:change={() => (picked = undefined)}
-      on:click={() => (showList = true)}
       {placeholder}
       aria-label={placeholder}
     />
@@ -885,7 +886,7 @@
 
       <div>{noResultsMessage}</div>
     </div>
-  {:else if listFeatures?.length && showList}
+  {:else if listFeatures?.length && (focusedDelayed || keepListOpen)}
     <ul
       class="options"
       on:mouseleave={handleMouseLeave}
