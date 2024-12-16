@@ -173,7 +173,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
     useEffect(
       () =>
         eventHandlerFn &&
-        controlRef.current?.$on(eventName, (e) => {
+        controlRef.current?.$on(eventName.toLowerCase(), (e) => {
           eventHandlerFn(e.detail as never);
         }),
 
