@@ -3,7 +3,7 @@
 
   export let feature: Feature;
 
-  export let selected = false;
+  export let style: "selected" | "picked" | "default" = "default";
 
   export let showPlaceType: ShowPlaceType;
 
@@ -55,9 +55,9 @@
 <li
   tabindex="-1"
   role="option"
-  aria-selected={selected}
-  data-selected={selected}
-  class:selected
+  aria-selected={style === "selected"}
+  aria-checked={style === "picked"}
+  class={style}
   on:mouseenter
   on:focus
 >
@@ -132,6 +132,19 @@
       padding-bottom: 10px;
     }
 
+    &.picked {
+      background-color: #e7edff;
+
+      .secondary {
+        color: #96a4c7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #96a4c7;
+      }
+    }
+
     &.selected {
       background-color: #f3f6ff;
 
@@ -141,6 +154,15 @@
 
       & .primary {
         color: #2b8bfb;
+      }
+
+      .secondary {
+        color: #a2adc7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #a2adc7;
       }
     }
 

@@ -898,7 +898,11 @@
         <FeatureItem
           {feature}
           {showPlaceType}
-          selected={selectedItemIndex === i || picked?.id === feature.id}
+          style={selectedItemIndex === i
+            ? "selected"
+            : picked?.id === feature.id
+              ? "picked"
+              : "default"}
           on:mouseenter={() => handleMouseEnter(i)}
           on:focus={() => pick(feature)}
           {missingIconsCache}
