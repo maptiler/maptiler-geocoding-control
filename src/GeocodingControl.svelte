@@ -305,7 +305,12 @@
     }
   });
 
-  $: if (selectFirst && listFeatures?.length && selectedItemIndex == -1) {
+  $: if (
+    selectFirst &&
+    listFeatures?.length &&
+    selectedItemIndex == -1 &&
+    !picked
+  ) {
     selectedItemIndex = 0;
   }
 
@@ -783,14 +788,13 @@
     }
   }
 
-  $: {
-    console.log({ selectedItemIndex });
-  }
-
   function pick(feature: Feature) {
-    picked = feature;
-    searchValue = feature.place_name;
-    selectedItemIndex = -1;
+    if (picked && picked?.id === feature?.id) {
+      goToPicked();
+    } else {
+      picked = feature;
+      searchValue = feature.place_name;
+    }
   }
 
   function handleMouseEnter(index: number) {
@@ -904,7 +908,7 @@
               ? "picked"
               : "default"}
           on:mouseenter={() => handleMouseEnter(i)}
-          on:focus={() => pick(feature)}
+          on:select={() => pick(feature)}
           {missingIconsCache}
           {iconsBaseUrl}
         />

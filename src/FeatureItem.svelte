@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import type { Feature, ShowPlaceType } from "./types";
 
   export let feature: Feature;
@@ -10,6 +11,8 @@
   export let missingIconsCache: Set<string>;
 
   export let iconsBaseUrl: string;
+
+  const dispatch = createEventDispatcher<{ select: undefined }>();
 
   const categories = feature.properties?.categories;
 
@@ -52,6 +55,7 @@
   }
 </script>
 
+<!-- svelte-ignore a11y-click-events-have-key-events -->
 <li
   tabindex="-1"
   role="option"
@@ -59,7 +63,13 @@
   aria-checked={style === "picked"}
   class={style}
   on:mouseenter
-  on:focus
+  on:focus={() => dispatch("select", undefined)}
+  on:click={(ev) => {
+    // this is to trigger the event if we click on focused item
+    if (document.activeElement !== ev.target) {
+      dispatch("select", undefined);
+    }
+  }}
 >
   {#if imageUrl}
     <img
