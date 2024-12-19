@@ -109,6 +109,8 @@
 
   export let showResultsWhileTyping = true;
 
+  export let autocompleteTimeout: number | undefined = undefined;
+
   export let selectFirst = true;
 
   export let flyToSelected = false;
@@ -218,6 +220,8 @@
 
   let searchTimeoutRef: number | undefined;
 
+  let autocompleteTimeoutRef: number | undefined;
+
   let focusedDelayed: boolean;
 
   let prevIdToFly: string | undefined;
@@ -305,6 +309,16 @@
     }
   });
 
+  function isInAutocompleteTimeout() {
+    return !!autocompleteTimeoutRef;
+  }
+
+  $: if (selectFirst && listFeatures?.length) {
+    if (!isInAutocompleteTimeout()) {
+      selectedItemIndex = 0;
+    }
+  }
+
   $: if (
     selectFirst &&
     listFeatures?.length &&
@@ -315,6 +329,12 @@
   }
 
   $: selected = listFeatures?.[selectedItemIndex];
+
+  $: if (selected) {
+    window.clearTimeout(autocompleteTimeoutRef);
+
+    autocompleteTimeoutRef = undefined;
+  }
 
   $: if (mapController) {
     const coords = isQueryReverse(searchValue);
@@ -398,9 +418,19 @@
     focused = false;
 
     if (searchTimeoutRef) {
-      clearTimeout(searchTimeoutRef);
+      window.clearTimeout(searchTimeoutRef);
 
       searchTimeoutRef = undefined;
+    }
+
+    if (autocompleteTimeoutRef) {
+      window.clearTimeout(autocompleteTimeoutRef);
+
+      autocompleteTimeoutRef = undefined;
+
+      search(searchValue, { appendSpace: true });
+
+      return;
     }
 
     if (selectedItemIndex > -1 && listFeatures) {
@@ -446,7 +476,14 @@
     {
       byId = false,
       exact = false,
-    }: undefined | { byId?: boolean; exact?: boolean } = {},
+      appendSpace = false,
+    }:
+      | undefined
+      | {
+          byId?: boolean;
+          exact?: boolean;
+          appendSpace?: boolean;
+        } = {},
   ) {
     error = undefined;
 
@@ -465,7 +502,7 @@
           encodeURIComponent(
             isReverse
               ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude
-              : searchValue,
+              : searchValue + (appendSpace ? " " : ""),
           ) +
           ".json",
       );
@@ -765,26 +802,44 @@
     picked = undefined;
     focused = true;
 
-    if (showResultsWhileTyping || reverse) {
-      if (searchTimeoutRef) {
-        clearTimeout(searchTimeoutRef);
-      }
+    if (searchTimeoutRef) {
+      window.clearTimeout(searchTimeoutRef);
 
-      if (searchValue.length < minLength) {
-        return;
-      }
+      searchTimeoutRef = undefined;
+    }
 
-      const sv = searchValue;
+    if (autocompleteTimeoutRef) {
+      window.clearTimeout(autocompleteTimeoutRef);
 
-      searchTimeoutRef = window.setTimeout(
-        () => {
-          search(sv).catch((err) => (error = err));
-        },
-        debounce ? debounceSearch : 0,
-      );
-    } else {
+      autocompleteTimeoutRef = undefined;
+    }
+
+    if (
+      (!showResultsWhileTyping && !reverse) ||
+      searchValue.length < minLength
+    ) {
       listFeatures = undefined;
-      error = undefined;
+
+      return;
+    }
+
+    const sv = searchValue;
+
+    searchTimeoutRef = window.setTimeout(
+      () => {
+        searchTimeoutRef = undefined;
+
+        search(sv).catch((err) => (error = err));
+      },
+      debounce ? debounceSearch : 0,
+    );
+
+    if (!searchValue.endsWith(" ")) {
+      autocompleteTimeoutRef = window.setTimeout(() => {
+        autocompleteTimeoutRef = undefined;
+
+        search(sv, { appendSpace: true }).catch((err) => (error = err));
+      }, autocompleteTimeout);
     }
   }
 

@@ -20,6 +20,8 @@
     const geocodingControl = new GeocodingControl({
       apiKey,
       enableReverse: "always",
+      selectFirst: true,
+      autocompleteTimeout: 3000,
       collapsed: true,
       // limit: 20,
       // types: ["poi"],
