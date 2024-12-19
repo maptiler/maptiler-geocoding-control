@@ -1,5 +1,5 @@
 import * as maptilersdk from "@maptiler/sdk";
-import type * as maplibregl from "maplibre-gl";
+import * as maplibregl from "maplibre-gl";
 import type { Map } from "maplibre-gl";
 import {
   crateClasses,
@@ -12,8 +12,8 @@ export { createMapLibreGlMapController } from "./maplibregl-controller";
 
 const { MapLibreBasedGeocodingControl, events } =
   crateClasses<MapLibreBaseControlOptions>(
-    maptilersdk.Evented,
-    maptilersdk,
+    maplibregl.Evented,
+    maplibregl,
     (map: Map, div: HTMLElement) => {
       const sdkConfig: { apiKey?: string; language?: string } = {};
 
