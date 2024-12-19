@@ -33,6 +33,13 @@
         { type: "client-geolocation", minZoom: 8 },
         { type: "server-geolocation", minZoom: 8 },
       ],
+      adjustUrl(url) {
+        // for reverse geocoding use only address type
+        if (/\/\d+\.?\d*%2C\d+.?\d*.json$/.test(url.pathname)) {
+          url.searchParams.set("types", "address");
+          url.searchParams.set("limit", "5");
+        }
+      },
       marker(map, feature) {
         if (!feature) {
           return;

@@ -165,9 +165,10 @@ export function createLeafletMapController(
       }
     },
 
-    setMarkers(
+    setFeatures(
       markedFeatures: Feature[] | undefined,
       picked: Feature | undefined,
+      showPolygonMarker: boolean,
     ): void {
       function setData(data?: GeoJSON) {
         resultLayer.clearLayers();
@@ -185,7 +186,7 @@ export function createLeafletMapController(
 
       setData();
 
-      if (picked) {
+      block: if (picked) {
         let handled = false;
 
         if (picked.geometry.type === "GeometryCollection") {
@@ -267,7 +268,11 @@ export function createLeafletMapController(
         ) {
           setData(picked);
 
-          return; // no pin for (multi)linestrings
+          break block; // no pin for (multi)linestrings
+        }
+
+        if (!showPolygonMarker && picked.geometry.type !== "Point") {
+          break block;
         }
 
         if (marker instanceof Function) {

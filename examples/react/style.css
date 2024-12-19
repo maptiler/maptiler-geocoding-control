@@ -37,3 +37,7 @@ main {
   text-wrap: nowrap;
   color: blue;
 }
+
+select {
+  margin-right: 2ex;
+}

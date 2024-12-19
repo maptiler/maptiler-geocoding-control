@@ -35,33 +35,44 @@ type MapControllerProp = {
 };
 
 const propertyNames = [
+  "adjustUrlQuery",
+  "adjustUrl",
   "apiKey",
+  "apiUrl",
   "bbox",
+  "class",
   "clearButtonTitle",
+  "clearListOnPick",
   "clearOnBlur",
   "collapsed",
   "country",
   "debounceSearch",
   "enableReverse",
-  "reverseActive",
   "errorMessage",
+  "excludeTypes",
+  "exhaustiveReverseGeocoding",
+  "fetchParameters",
   "filter",
+  "flyToSelected",
   "fuzzyMatch",
+  "iconsBaseUrl",
+  "keepListOpen",
   "language",
   "limit",
+  "mapController",
+  "markerOnSelected",
   "minLength",
   "noResultsMessage",
+  "pickedResultStyle",
   "placeholder",
   "proximity",
+  "reverseActive",
   "reverseButtonTitle",
-  "showFullGeometry",
+  "selectFirst",
   "showPlaceType",
   "showResultsWhileTyping",
-  "adjustUrlQuery",
   "types",
-  "excludeTypes",
   "zoom",
-  "mapController",
 ] as const satisfies readonly (keyof (ControlOptions & MapControllerProp))[];
 
 function getEventFnName<T extends EventNames>(name: T): EventHandlerFnName<T> {
@@ -78,20 +89,51 @@ export type Props = ControlOptions &
 // type MethodNames = "blur" | "focus" | "setQuery";
 // export type Methods = { [T in MethodNames]: GeocodingControl[T] };
 export type Methods = {
+  /**
+   * Blur the search input box.
+   */
   blur(): void;
-  focus(): void;
+
+  /**
+   * Focus the search input box.
+   *
+   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
+   */
+  focus(options?: FocusOptions): void;
+
+  /**
+   * Set the content of search input box.
+   *
+   * @param value text to set
+   * @param submit perform the search
+   */
   setQuery(value: string, submit?: boolean): void;
+
+  /**
+   * Clear geocoding search results from the map.
+   */
   clearMap(): void;
+
+  /**
+   * Clear search result list.
+   */
   clearList(): void;
+
+  /**
+   * Set reverse geocoding mode.
+   *
+   * @param reverseActive reverse geocoding active
+   */
+  setReverseMode(reverseActive: boolean): void;
 };
 
 const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
   props: Props,
   ref: Ref<Methods>,
 ) {
-  const divRef = useRef<HTMLDivElement>();
+  const divRef = useRef<HTMLDivElement>(undefined);
 
-  const controlRef = useRef<GeocodingControl>();
+  const controlRef = useRef<GeocodingControl>(undefined);
 
   const options = { ...props };
 
@@ -131,7 +173,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
     useEffect(
       () =>
         eventHandlerFn &&
-        controlRef.current?.$on(eventName, (e) => {
+        controlRef.current?.$on(eventName.toLowerCase(), (e) => {
           eventHandlerFn(e.detail as never);
         }),
 
@@ -144,8 +186,10 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
       controlRef.current?.setQuery(value, submit),
     clearMap: () => controlRef.current?.clearMap(),
     clearList: () => controlRef.current?.clearList(),
-    focus: () => controlRef.current?.focus(),
+    focus: (options?: FocusOptions) => controlRef.current?.focus(options),
     blur: () => controlRef.current?.blur(),
+    setReverseMode: (reverseActive: boolean) =>
+      controlRef.current?.$set({ reverseActive }),
   }));
 
   return createElement("div", { ref: divRef });

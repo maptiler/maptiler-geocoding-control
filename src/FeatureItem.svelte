@@ -1,15 +1,18 @@
 <script lang="ts">
-  import type { Feature } from "./types";
+  import { createEventDispatcher } from "svelte";
+  import type { Feature, ShowPlaceType } from "./types";
 
   export let feature: Feature;
 
-  export let selected = false;
+  export let style: "selected" | "picked" | "default" = "default";
 
-  export let showPlaceType: false | "always" | "ifNeeded";
+  export let showPlaceType: ShowPlaceType;
 
   export let missingIconsCache: Set<string>;
 
   export let iconsBaseUrl: string;
+
+  const dispatch = createEventDispatcher<{ select: undefined }>();
 
   const categories = feature.properties?.categories;
 
@@ -52,24 +55,51 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<li
+  tabindex="-1"
+  role="option"
+  aria-selected={style === "selected"}
+  aria-checked={style === "picked"}
+  class={style}
+  on:mouseenter
+  on:focus={() => dispatch("select", undefined)}
+  on:click={(ev) => {
+    // this is to trigger the event if we click on focused item
+    if (document.activeElement !== ev.target) {
+      dispatch("select", undefined);
+    }
+  }}
+>
   {#if imageUrl}
-    <img src={imageUrl} alt={category} on:error={() => handleImgError()} />
+    <img
+      src={imageUrl}
+      alt={category}
+      title={placeType}
+      on:error={() => handleImgError()}
+    />
   {:else if feature.address}
-    <img src={iconsBaseUrl + "housenumber.svg"} alt={placeType} />
+    <img
+      src={iconsBaseUrl + "housenumber.svg"}
+      alt={placeType}
+      title={placeType}
+    />
   {:else if feature.id.startsWith("road.")}
-    <img src={iconsBaseUrl + "road.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "road.svg"} alt={placeType} title={placeType} />
   {:else if feature.id.startsWith("address.")}
-    <img src={iconsBaseUrl + "street.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "street.svg"} alt={placeType} title={placeType} />
   {:else if feature.id.startsWith("postal_code.")}
-    <img src={iconsBaseUrl + "postal_code.svg"} alt={placeType} />
+    <img
+      src={iconsBaseUrl + "postal_code.svg"}
+      alt={placeType}
+      title={placeType}
+    />
   {:else if feature.id.startsWith("poi.")}
-    <img src={iconsBaseUrl + "poi.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "poi.svg"} alt={placeType} title={placeType} />
   {:else if isReverse}
-    <img src={iconsBaseUrl + "reverse.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "reverse.svg"} alt={placeType} title={placeType} />
   {:else}
-    <img src={iconsBaseUrl + "area.svg"} alt={placeType} />
+    <img src={iconsBaseUrl + "area.svg"} alt={placeType} title={placeType} />
   {/if}
 
   <span class="texts">
@@ -78,7 +108,7 @@
         {isReverse ? feature.place_name : feature.place_name.replace(/,.*/, "")}
       </span>
 
-      {#if showPlaceType === "always" || (showPlaceType && !feature.address && !feature.id.startsWith("road.") && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl) && !isReverse)}
+      {#if showPlaceType === "always" || (showPlaceType !== "never" && !feature.address && !feature.id.startsWith("road.") && !feature.id.startsWith("address.") && !feature.id.startsWith("postal_code.") && (!feature.id.startsWith("poi.") || !imageUrl) && !isReverse)}
         <span class="secondary">
           {placeType}
         </span>
@@ -102,6 +132,7 @@
     font-size: 14px;
     line-height: 18px;
     min-width: fit-content;
+    outline: 0;
 
     &:first-child {
       padding-top: 10px;
@@ -109,6 +140,19 @@
 
     &:last-child {
       padding-bottom: 10px;
+    }
+
+    &.picked {
+      background-color: #e7edff;
+
+      .secondary {
+        color: #96a4c7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #96a4c7;
+      }
     }
 
     &.selected {
@@ -120,6 +164,15 @@
 
       & .primary {
         color: #2b8bfb;
+      }
+
+      .secondary {
+        color: #a2adc7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #a2adc7;
       }
     }
 

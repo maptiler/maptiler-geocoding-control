@@ -44,11 +44,11 @@
 
   const geocodingControl = new openlayersMaptilerGeocoder.GeocodingControl({
     apiKey,
-    enableReverse: "always",
+    enableReverse: "button",
     iconsBaseUrl: "/icons/",
   });
 
-  geocodingControl.addEventListener("select", (...args) => {
+  geocodingControl.on("select", (...args) => {
     console.log("select", ...args);
   });
 
