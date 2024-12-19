@@ -1,15 +1,18 @@
 <script lang="ts">
+  import { createEventDispatcher } from "svelte";
   import type { Feature, ShowPlaceType } from "./types";
 
   export let feature: Feature;
 
-  export let selected = false;
+  export let style: "selected" | "picked" | "default" = "default";
 
   export let showPlaceType: ShowPlaceType;
 
   export let missingIconsCache: Set<string>;
 
   export let iconsBaseUrl: string;
+
+  const dispatch = createEventDispatcher<{ select: undefined }>();
 
   const categories = feature.properties?.categories;
 
@@ -52,8 +55,22 @@
   }
 </script>
 
-<!-- svelte-ignore a11y-no-noninteractive-tabindex -->
-<li tabindex="0" data-selected={selected} class:selected on:mouseenter on:focus>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<li
+  tabindex="-1"
+  role="option"
+  aria-selected={style === "selected"}
+  aria-checked={style === "picked"}
+  class={style}
+  on:mouseenter
+  on:focus={() => dispatch("select", undefined)}
+  on:click={(ev) => {
+    // this is to trigger the event if we click on focused item
+    if (document.activeElement !== ev.target) {
+      dispatch("select", undefined);
+    }
+  }}
+>
   {#if imageUrl}
     <img
       src={imageUrl}
@@ -115,6 +132,7 @@
     font-size: 14px;
     line-height: 18px;
     min-width: fit-content;
+    outline: 0;
 
     &:first-child {
       padding-top: 10px;
@@ -122,6 +140,19 @@
 
     &:last-child {
       padding-bottom: 10px;
+    }
+
+    &.picked {
+      background-color: #e7edff;
+
+      .secondary {
+        color: #96a4c7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #96a4c7;
+      }
     }
 
     &.selected {
@@ -133,6 +164,15 @@
 
       & .primary {
         color: #2b8bfb;
+      }
+
+      .secondary {
+        color: #a2adc7;
+        padding-left: 4px;
+      }
+
+      .line2 {
+        color: #a2adc7;
       }
     }
 

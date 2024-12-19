@@ -38,8 +38,11 @@ const propertyNames = [
   "adjustUrlQuery",
   "adjustUrl",
   "apiKey",
+  "apiUrl",
   "bbox",
+  "class",
   "clearButtonTitle",
+  "clearListOnPick",
   "clearOnBlur",
   "collapsed",
   "country",
@@ -47,11 +50,17 @@ const propertyNames = [
   "enableReverse",
   "errorMessage",
   "excludeTypes",
+  "exhaustiveReverseGeocoding",
+  "fetchParameters",
   "filter",
+  "flyToSelected",
   "fuzzyMatch",
+  "iconsBaseUrl",
+  "keepListOpen",
   "language",
   "limit",
   "mapController",
+  "markerOnSelected",
   "minLength",
   "noResultsMessage",
   "pickedResultStyle",
@@ -59,6 +68,7 @@ const propertyNames = [
   "proximity",
   "reverseActive",
   "reverseButtonTitle",
+  "selectFirst",
   "showPlaceType",
   "showResultsWhileTyping",
   "types",
@@ -163,7 +173,7 @@ const ReactGeocodingControl = forwardRef(function ReactGeocodingControl(
     useEffect(
       () =>
         eventHandlerFn &&
-        controlRef.current?.$on(eventName, (e) => {
+        controlRef.current?.$on(eventName.toLowerCase(), (e) => {
           eventHandlerFn(e.detail as never);
         }),
 
