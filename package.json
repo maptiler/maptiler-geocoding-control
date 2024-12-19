@@ -102,7 +102,7 @@
     "./types": "./types.d.ts"
   },
   "devDependencies": {
-    "@maptiler/sdk": "^3.0.0-rc.4",
+    "@maptiler/sdk": "^3.0.0-rc.5",
     "@sveltejs/package": "^2.3.7",
     "@sveltejs/vite-plugin-svelte": "^3.1.2",
     "@tsconfig/svelte": "^5.0.4",

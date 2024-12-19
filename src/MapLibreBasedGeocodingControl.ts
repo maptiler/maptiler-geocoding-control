@@ -6,7 +6,6 @@ import type {
   Map,
   Marker,
   MarkerOptions,
-  Subscription,
 } from "maplibre-gl";
 import type { SvelteComponent } from "svelte";
 import GeocodingControlComponent from "./GeocodingControl.svelte";
@@ -337,9 +336,9 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
     on<T extends keyof EventTypes>(
       type: T,
       listener: (ev: EventTypes[T]) => void,
-    ): Subscription;
+    ): this;
 
-    on(type: keyof EventTypes, listener: Listener): Subscription {
+    on(type: keyof EventTypes, listener: Listener): this {
       return super.on(type, listener);
     }
 
