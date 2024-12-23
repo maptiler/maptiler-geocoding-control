@@ -20,6 +20,7 @@
     PickedResultStyle,
     ProximityRule,
     ShowPlaceType,
+    TypeRule,
   } from "./types";
 
   export const ZOOM_DEFAULTS: Record<string, number> = {
@@ -84,6 +85,10 @@
 
   export let limit: number | undefined = undefined;
 
+  const COPY_LIMIT = +41415112612;
+
+  export let reverseGeocodingLimit: number | undefined = COPY_LIMIT;
+
   export let mapController: MapController | undefined = undefined;
 
   export let minLength = 2;
@@ -115,11 +120,20 @@
 
   export let markerOnSelected = true;
 
-  export let types: string[] | undefined = undefined;
+  export let types: TypeRule[] | undefined = undefined;
+
+  const COPY_TYPES: TypeRule[] = [];
+
+  export let reverseGeocodingTypes: TypeRule[] | undefined = COPY_TYPES;
 
   export let exhaustiveReverseGeocoding = false;
 
   export let excludeTypes = false;
+
+  const COPY_EXCLUDE_TYPES = undefined;
+
+  export let reverseGeocodingExcludeTypes: boolean | undefined =
+    COPY_EXCLUDE_TYPES;
 
   export let zoom: Record<string, number> = ZOOM_DEFAULTS;
 
@@ -479,12 +493,34 @@
         );
       }
 
-      if (types) {
-        sp.set("types", types.join(","));
+      const [zoom] = mapController?.getCenterAndZoom() ?? [];
+
+      const effTypes = (
+        !isReverse || reverseGeocodingTypes === COPY_TYPES
+          ? types
+          : reverseGeocodingTypes
+      )
+        ?.map((typeRule) =>
+          typeof typeRule === "string"
+            ? typeRule
+            : zoom === undefined ||
+                ((typeRule[0] ?? 0) <= zoom && zoom < (typeRule[1] ?? Infinity))
+              ? typeRule[2]
+              : undefined,
+        )
+        .filter((type) => type !== undefined);
+
+      if (effTypes) {
+        sp.set("types", effTypes.join(","));
       }
 
-      if (excludeTypes) {
-        sp.set("excludeTypes", String(excludeTypes));
+      const effExcludeTypes =
+        !isReverse || reverseGeocodingExcludeTypes === COPY_EXCLUDE_TYPES
+          ? excludeTypes
+          : reverseGeocodingExcludeTypes;
+
+      if (effExcludeTypes) {
+        sp.set("excludeTypes", String(effExcludeTypes));
       }
 
       if (bbox) {
@@ -509,10 +545,17 @@
         sp.set("fuzzyMatch", String(fuzzyMatch));
       }
 
-      if (
-        limit !== undefined &&
-        (exhaustiveReverseGeocoding || !isReverse || types?.length === 1)
-      ) {
+      const effReverseGeocodingLimit =
+        reverseGeocodingLimit === COPY_LIMIT ? limit : reverseGeocodingLimit;
+
+      if (isReverse) {
+        if (
+          effReverseGeocodingLimit !== undefined &&
+          (exhaustiveReverseGeocoding || effTypes?.length === 1)
+        ) {
+          sp.set("limit", String(effReverseGeocodingLimit));
+        }
+      } else if (limit !== undefined) {
         sp.set("limit", String(limit));
       }
 

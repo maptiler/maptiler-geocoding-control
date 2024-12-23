@@ -145,6 +145,13 @@ export type ControlOptions = {
   limit?: number;
 
   /**
+   * Same as `limit` but used for reverse geocoding.
+   *
+   * Default value is value of `limit`.
+   */
+  reverseGeocodingLimit?: number;
+
+  /**
    * Specify the language to use for response text and query result weighting.
    * Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script.
    * More than one value can also be specified, separated by commas.
@@ -277,11 +284,19 @@ export type ControlOptions = {
   country?: string | string[];
 
   /**
-   * Filter of feature types to return.
+   * Types to query. Array of types or `[minZoom, maxZoom, type]` items, where `minZoom` is inclusive, `maxZoom` exclusive and can be `null` or `undefined` for unbound.
    *
-   * Default value is `undefined` - all available feature types are returned.
+   * Default value is `undefined` - server default feature types
    */
-  types?: string[];
+  types?: TypeRule[];
+
+  /**
+   * Same as `types` but used for reverse geocoding.
+   *
+   * Default value is value of `types`.
+   */
+  // TODO use reasonable types (see GO-729)
+  reverseGeocodingTypes?: TypeRule[];
 
   /**
    * Use `limit` value for reverse geocoding even if `types` is not an array with a single element.
@@ -297,6 +312,13 @@ export type ControlOptions = {
    * Default value is `false`.
    */
   excludeTypes?: boolean;
+
+  /**
+   * Same as `excludeTypes` but used for reverse geocoding.
+   *
+   * Default value is value of `excludeTypes`.
+   */
+  reverseGeocodingExcludeTypes?: boolean;
 
   /**
    * Geocoding API URL.
@@ -396,3 +418,11 @@ export type RedefineType<
     [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never;
   },
 > = UpdatedType;
+
+export type TypeRule =
+  | string
+  | [
+      minZoom: number | null | undefined,
+      maxZoom: number | null | undefined,
+      type: string,
+    ];
