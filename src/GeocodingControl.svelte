@@ -495,7 +495,7 @@
 
       const [zoom] = mapController?.getCenterAndZoom() ?? [];
 
-      const effTypes = (
+      let effTypes = (
         !isReverse || reverseGeocodingTypes === COPY_TYPES
           ? types
           : reverseGeocodingTypes
@@ -511,6 +511,8 @@
         .filter((type) => type !== undefined);
 
       if (effTypes) {
+        effTypes = [...new Set(effTypes)];
+
         sp.set("types", effTypes.join(","));
       }
 
@@ -548,10 +550,21 @@
       const effReverseGeocodingLimit =
         reverseGeocodingLimit === COPY_LIMIT ? limit : reverseGeocodingLimit;
 
+      if (
+        effReverseGeocodingLimit !== undefined &&
+        effReverseGeocodingLimit > 1 &&
+        effTypes?.length !== 1
+      ) {
+        console.warn(
+          "For reverse geocoding when `limit` > 1 then `types` must contain single value.",
+        );
+      }
+
       if (isReverse) {
         if (
-          effReverseGeocodingLimit !== undefined &&
-          (exhaustiveReverseGeocoding || effTypes?.length === 1)
+          effReverseGeocodingLimit === 1 ||
+          (effReverseGeocodingLimit !== undefined &&
+            (exhaustiveReverseGeocoding || effTypes?.length === 1))
         ) {
           sp.set("limit", String(effReverseGeocodingLimit));
         }
@@ -564,6 +577,10 @@
       adjustUrlQuery(sp);
 
       adjustUrl(urlObj);
+
+      const noTypes =
+        urlObj.searchParams.get("types") === "" &&
+        urlObj.searchParams.get("excludeTypes") !== "true";
 
       const url = urlObj.toString();
 
@@ -587,16 +604,22 @@
 
       lastSearchUrl = url;
 
-      const res = await fetch(url, {
-        signal: ac.signal,
-        ...fetchParameters,
-      });
+      let featureCollection: FeatureCollection;
 
-      if (!res.ok) {
-        throw new Error(await res.text());
+      if (noTypes) {
+        featureCollection = { type: "FeatureCollection", features: [] };
+      } else {
+        const res = await fetch(url, {
+          signal: ac.signal,
+          ...fetchParameters,
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+
+        featureCollection = await res.json();
       }
-
-      const featureCollection: FeatureCollection = await res.json();
 
       dispatch("response", { url, featureCollection });
 
