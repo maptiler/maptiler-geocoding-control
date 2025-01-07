@@ -6,7 +6,7 @@ import {
   type MapLibreBaseControlOptions,
 } from "./MapLibreBasedGeocodingControl";
 
-import packagejson from "../package.json";
+import { name, version } from "../package.json";
 
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
@@ -42,7 +42,7 @@ export class GeocodingControl
   implements maptilersdk.IControl
 {
   onAdd(map: maptilersdk.Map): HTMLElement {
-    map.telemetry.registerModule(packagejson.name, packagejson.version);
+    map.telemetry.registerModule(name, version);
     return super.onAddInt(map as unknown as maplibregl.Map);
   }
 }
