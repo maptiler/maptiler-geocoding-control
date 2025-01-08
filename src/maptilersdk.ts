@@ -1,12 +1,11 @@
 import * as maptilersdk from "@maptiler/sdk";
 import type * as maplibregl from "maplibre-gl";
 import type { Map } from "maplibre-gl";
+import { name, version } from "../package.json";
 import {
   crateClasses,
   type MapLibreBaseControlOptions,
 } from "./MapLibreBasedGeocodingControl";
-
-import { name, version } from "../package.json";
 
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
@@ -42,7 +41,7 @@ export class GeocodingControl
   implements maptilersdk.IControl
 {
   onAdd(map: maptilersdk.Map): HTMLElement {
-    map.telemetry.registerModule(name, version);
+    map.telemetry?.registerModule(name, version);
     return super.onAddInt(map as unknown as maplibregl.Map);
   }
 }
