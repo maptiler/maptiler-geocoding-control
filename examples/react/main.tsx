@@ -33,7 +33,7 @@ function App() {
 
   const [collapsed, setCollapsed] = useState(false);
 
-  const [reverse, setReverse] = useState<EnableReverse>("never");
+  const [reverse, setReverse] = useState<EnableReverse>("always");
 
   const [clearOnBlur, setClearOnBlur] = useState(false);
 
@@ -119,6 +119,8 @@ function App() {
               enableReverse={reverse}
               flyToSelected={flyToSelected}
               selectFirst={selectFirst}
+              // reverseGeocodingLimit={5}
+              // reverseGeocodingTypes={["address"]}
             />
           )}
 
