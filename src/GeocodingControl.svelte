@@ -556,7 +556,7 @@
         effTypes?.length !== 1
       ) {
         console.warn(
-          "For reverse geocoding when `limit` > 1 then `types` must contain single value.",
+          "For reverse geocoding when limit > 1 then types must contain single value.",
         );
       }
 
