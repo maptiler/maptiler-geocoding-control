@@ -85,7 +85,7 @@ function App() {
     dataDiv.appendChild(document.createTextNode(JSON.stringify(data)));
     el.appendChild(dataDiv);
 
-    (el.parentElement as HTMLDivElement).scrollTo(0, el.scrollHeight);
+    el.parentElement?.scrollTo(0, el.scrollHeight);
   }
 
   return (
@@ -215,6 +215,19 @@ function App() {
 
       <div className="row flex-grow">
         <div className="col-6 card flex-grow overflow-auto">
+          <div>
+            <b>Logs</b>&emsp;
+            <button
+              type="button"
+              className="is-small"
+              onClick={() =>
+                consoleRef.current && (consoleRef.current.innerText = "")
+              }
+            >
+              Clear
+            </button>
+          </div>
+
           <div className="logs" ref={consoleRef} />
         </div>
 
