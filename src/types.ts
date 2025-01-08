@@ -339,11 +339,11 @@ export type ControlOptions = {
 
   /**
    * Limits results for reverse geocoding.
-   * Applied only if effective types contain a single value.
+   * Applied only if value is 1 or effective types contain a single value.
    *
    * See also `reverseGeocodingTypes` option.
    *
-   * Default: Value of the `limit` option if set, otherwise `1`.
+   * Default: Value of the `limit` option.
    */
   reverseGeocodingLimit?: number;
 
