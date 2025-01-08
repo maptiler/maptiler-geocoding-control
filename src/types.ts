@@ -343,7 +343,7 @@ export type ControlOptions = {
    *
    * See also `reverseGeocodingTypes` option.
    *
-   * Default: Value of the `limit` option.
+   * Default: The value of the `limit` option if set. If effective types contain a single value, the default is `1`. In all other cases, this option is not used.
    */
   reverseGeocodingLimit?: number;
 
