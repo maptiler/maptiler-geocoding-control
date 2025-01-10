@@ -1,11 +1,11 @@
 import * as maptilersdk from "@maptiler/sdk";
 import type * as maplibregl from "maplibre-gl";
 import type { Map } from "maplibre-gl";
-import { name, version } from "../package.json";
 import {
   crateClasses,
   type MapLibreBaseControlOptions,
 } from "./MapLibreBasedGeocodingControl";
+import { name, version } from "./info.json";
 
 export { createMapLibreGlMapController } from "./maplibregl-controller";
 
