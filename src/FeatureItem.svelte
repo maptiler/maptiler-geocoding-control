@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-  type SriteIcon = { width: number; height: number; x: number; y: number };
+  type SpriteIcon = { width: number; height: number; x: number; y: number };
 
   const hidpi = devicePixelRatio > 1.25;
 
@@ -10,7 +10,7 @@
   let sprites:
     | undefined
     | null
-    | { width: number; height: number; icons: Record<string, SriteIcon> };
+    | { width: number; height: number; icons: Record<string, SpriteIcon> };
 
   let spritePromise: Promise<void> | undefined;
 </script>
@@ -39,7 +39,7 @@
 
   let imageUrl: string | undefined;
 
-  let spriteIcon: SriteIcon | undefined;
+  let spriteIcon: SpriteIcon | undefined;
 
   let index: number;
 
