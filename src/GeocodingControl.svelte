@@ -912,6 +912,7 @@
         type="button"
         on:click={() => {
           searchValue = "";
+          picked = undefined;
           input.focus();
         }}
         title={clearButtonTitle}
