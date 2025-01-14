@@ -41,3 +41,8 @@ main {
 select {
   margin-right: 2ex;
 }
+
+button.is-small {
+  padding: 4px 8px;
+  font-size: 0.8em;
+}

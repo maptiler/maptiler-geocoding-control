@@ -2,6 +2,7 @@ import { svelte } from "@sveltejs/vite-plugin-svelte";
 import process from "node:process";
 import { sveltePreprocess } from "svelte-preprocess";
 import { BuildOptions, defineConfig } from "vite";
+import { syncInfo } from "./sync-info";
 
 const libs = {
   leaflet: {
@@ -109,6 +110,10 @@ if (flavour) {
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
+    {
+      name: "sync-info",
+      buildStart: syncInfo,
+    },
     svelte({
       preprocess: sveltePreprocess(),
     }),

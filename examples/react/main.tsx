@@ -33,7 +33,7 @@ function App() {
 
   const [collapsed, setCollapsed] = useState(false);
 
-  const [reverse, setReverse] = useState<EnableReverse>("never");
+  const [reverse, setReverse] = useState<EnableReverse>("always");
 
   const [clearOnBlur, setClearOnBlur] = useState(false);
 
@@ -85,7 +85,7 @@ function App() {
     dataDiv.appendChild(document.createTextNode(JSON.stringify(data)));
     el.appendChild(dataDiv);
 
-    (el.parentElement as HTMLDivElement).scrollTo(0, el.scrollHeight);
+    el.parentElement?.scrollTo(0, el.scrollHeight);
   }
 
   return (
@@ -119,6 +119,8 @@ function App() {
               enableReverse={reverse}
               flyToSelected={flyToSelected}
               selectFirst={selectFirst}
+              // reverseGeocodingLimit={5}
+              // reverseGeocodingTypes={["address"]}
             />
           )}
 
@@ -215,6 +217,19 @@ function App() {
 
       <div className="row flex-grow">
         <div className="col-6 card flex-grow overflow-auto">
+          <div>
+            <b>Logs</b>&emsp;
+            <button
+              type="button"
+              className="is-small"
+              onClick={() =>
+                consoleRef.current && (consoleRef.current.innerText = "")
+              }
+            >
+              Clear
+            </button>
+          </div>
+
           <div className="logs" ref={consoleRef} />
         </div>
 

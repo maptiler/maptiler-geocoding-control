@@ -81,291 +81,330 @@ export type ProximityRule = {
 
 export type ControlOptions = {
   /**
-   * Maptiler API key
-   */
-  apiKey: string;
-
-  /**
-   * Sets the amount of time, in milliseconds, to wait before querying the server when a user types into the Geocoder input box.
-   * This parameter may be useful for reducing the total number of API calls made for a single query.
+   * Callback function to adjust URL search parameters.
    *
-   * Default value is `200`.
-   */
-  debounceSearch?: number;
-
-  /**
-   * Search results closer to the proximity point will be given higher priority. First matching rule from the array will be used.
-   * Set to `null` to disable the proximity.
+   * Default: Empty function.
    *
-   * Default value is `[{ type: "server-geolocation" }]`.
-   */
-  proximity?: ProximityRule[] | null;
-
-  /**
-   * Override the default placeholder attribute value.
-   *
-   * Default value is `"Search"`.
-   */
-  placeholder?: string;
-
-  /**
-   * Override the default error message.
-   *
-   * Default value is `"Something went wrong…"`.
-   */
-  errorMessage?: string;
-
-  /**
-   * Override the default message if no results are found.
-   *
-   * Default value is `"Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"`.
-   */
-  noResultsMessage?: string;
-
-  /**
-   * Minimum number of characters to enter before results are shown.
-   *
-   * Default value is `2`.
-   */
-  minLength?: number;
-
-  /**
-   * A bounding box argument: this is a bounding box given as an array in the format [minX, minY, maxX, maxY].
-   * Search results will be limited to the bounding box.
-   *
-   * Default value is `undefined`.
-   */
-  bbox?: BBox;
-
-  /**
-   * Maximum number of results to show.
-   *
-   * Default value is `5`.
-   */
-  limit?: number;
-
-  /**
-   * Specify the language to use for response text and query result weighting.
-   * Options are IETF language tags comprised of a mandatory ISO 639-1 language code and optionally one or more IETF subtags for country or script.
-   * More than one value can also be specified, separated by commas.
-   * Set to `null` or empty string for disabling language-specific searching.
-   *
-   * Default value is `undefined` which means to use the browser's language settings.
-   */
-  language?: string | string[] | null;
-
-  /**
-   * If `false`, indicates that search will only occur on enter key press.
-   * If `true`, indicates that the Geocoder will search on the input box being updated above the minLength option.
-   *
-   * Default value is `false`.
-   */
-  showResultsWhileTyping?: boolean;
-
-  autocompleteTimeout?: number;
-
-  /**
-   * Set to `false` to disable fuzzy search.
-   *
-   * Default value is `true`.
-   */
-  fuzzyMatch?: boolean;
-
-  /**
-   * On geocoded result what zoom level should the map animate to when a bbox in the response isn't present or is a point.
-   * If a bbox is present and not a point then the map will fit to the bbox.
-   *
-   * Value is key-value pairs, where key is a &lt;type&gt; or &lt;type&gt;.&lt;categoy&gt; and the value is the zoom level.
-   *
-   * Default value is `GeocodingControl.ZOOM_DEFAULTS`.
-   */
-  zoom?: Record<string, number>;
-
-  /**
-   * If `true`, the geocoder control will collapse until hovered or in focus.
-   *
-   * Default value is `false`.
-   */
-  collapsed?: boolean;
-
-  /**
-   * If `true`, the geocoder control will clear its value when the input blurs.
-   *
-   * Default value is `false`.
-   */
-  clearOnBlur?: boolean;
-
-  /**
-   * If `true`, then after picking a result from the list or map the list will be cleared and not re-displayed on input box focus.
-   *
-   * Default value is `false`.
-   */
-  clearListOnPick?: boolean;
-
-  /**
-   * Keep the list open even if the control is not focused.
-   *
-   * Default value is `false`.
-   */
-  keepListOpen?: boolean;
-
-  /**
-   * A function which accepts a Feature in the Carmen GeoJSON format to filter out results from the Geocoding API response before they are included in the suggestions list.
-   * Return true to keep the item, false otherwise.
-   *
-   * Default value is a function returning always `true`.
-   */
-  filter?: (feature: Feature) => boolean;
-
-  /**
-   * Class of the root element.
-   *
-   * Default value is `undefined`.
-   */
-  class?: string;
-
-  /**
-   * Set to `button` to enable reverse geocoding button with title. Set to `"always"` to reverse geocoding be always active.
-   *
-   * Default value is `"never"`.
-   */
-  enableReverse?: EnableReverse;
-
-  /**
-   * Reverse mode active.
-   *
-   * Default value is `false`.
-   */
-  reverseActive?: boolean;
-
-  /**
-   * Title of the reverse toggle button.
-   *
-   * Default value is `"toggle reverse geocoding"`.
-   */
-  reverseButtonTitle?: string;
-
-  /**
-   * Title of the clear button.
-   *
-   * Default value is `"clear"`.
-   */
-  clearButtonTitle?: string;
-
-  /**
-   * Set to `"never"` to hide place/POI type. If set to `"always"` then type is shown for all items.
-   * If set to `"if-needed"` then type is shown only for places/POIs not determined from the icon.
-   *
-   * Default value is `"if-needed"`.
-   */
-  showPlaceType?: ShowPlaceType;
-
-  /**
-   * Style of the picked result on the map:
-   *
-   * - `"marker-only"` - show only marker at the center of the feature
-   * - `"full-geometry"` - show full feature geometry of the chosen result
-   * - `"full-geometry-including-polygon-center-marker"` - show full feature geometry of the chosen result together with a marker in the center of polygon feature
-   *
-   * Default value is `true`.
-   */
-  pickedResultStyle?: PickedResultStyle;
-
-  /**
-   * Limit search to specified country(ies).
-   *
-   * Default value is `undefined` - use all countries.
-   */
-  country?: string | string[];
-
-  /**
-   * Filter of feature types to return.
-   *
-   * Default value is `undefined` - all available feature types are returned.
-   */
-  types?: string[];
-
-  /**
-   * Use `limit` value for reverse geocoding even if `types` is not an array with a single element.
-   * Will work only if enabled on the server.
-   *
-   * Default value is `false`.
-   */
-  exhaustiveReverseGeocoding?: boolean;
-
-  /**
-   * If set to `true` then use all types except for those listed in `types`.
-   *
-   * Default value is `false`.
-   */
-  excludeTypes?: boolean;
-
-  /**
-   * Geocoding API URL.
-   *
-   * Default value is MapTiler Geocoding API URL.
-   */
-  apiUrl?: string;
-
-  /**
-   * Extra fetch parameters.
-   *
-   * Default value is `undefined`.
-   */
-  fetchParameters?: RequestInit;
-
-  /**
-   * Base URL for POI icons.
-   *
-   * Default value is `"icons/"` for Svelte apps, otherwise `"https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/"`.
-   */
-  iconsBaseUrl?: string;
-
-  /**
-   * Function to adjust URL search parameters.
-   *
-   * Default value is empty function.
-   *
-   * @deprecated use `adjustUrl`
+   * @deprecated Use `adjustUrl` instead.
    */
   adjustUrlQuery?: (sp: URLSearchParams) => void;
 
   /**
-   * Function to adjust geocoding URL before the fetch.
+   * Callback function to adjust the geocoding URL before fetching.
    *
-   * @param url [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL) parameter which can be modified
+   * @param url [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL) parameter that can be modified.
    *
-   * Default value is empty function.
+   * Default: Empty function.
    */
   adjustUrl?: (url: URL) => void;
 
   /**
-   * Automatically select the first feature from the result list.
-   *
-   * Default value is `true`.
+   * MapTiler API key.
    */
-  selectFirst?: boolean;
+  apiKey: string;
 
   /**
-   * Fly to selected feature from the result list.
+   * Geocoding API URL.
    *
-   * Default value is `false`.
+   * Default: MapTiler Geocoding API URL.
+   */
+  apiUrl?: string;
+
+  autocompleteTimeout?: number;
+
+  /**
+   * Bounding box in the format `[minX, minY, maxX, maxY]` to limit search results.
+   *
+   * Default: `undefined`.
+   */
+  bbox?: BBox;
+
+  /**
+   * CSS class for the root element.
+   *
+   * Default: `undefined`.
+   */
+  class?: string;
+
+  /**
+   * Title of the clear button.
+   *
+   * Default: `"clear"`.
+   */
+  clearButtonTitle?: string;
+
+  /**
+   * Clears the result list after picking an item.
+   * Prevents redisplaying the list when the input box is focused.
+   *
+   * Default: `false`.
+   */
+  clearListOnPick?: boolean;
+
+  /**
+   * Clears the input value when it loses focus.
+   *
+   * Default: `false`.
+   */
+  clearOnBlur?: boolean;
+
+  /**
+   * Collapses the geocoder control until hovered or focused.
+   *
+   * Default: `false`.
+   */
+  collapsed?: boolean;
+
+  /**
+   * Limits search to the specified country or countries.
+   *
+   * Default: `undefined` (all countries).
+   */
+  country?: string | string[];
+
+  /**
+   * Time delay (in milliseconds) before querying the server after typing in the input box.
+   * Useful for reducing the number of API calls.
+   *
+   * Default: `200`.
+   */
+  debounceSearch?: number;
+
+  /**
+   * Enables reverse geocoding:
+   * - `"button"`: Enables reverse geocoding button.
+   * - `"always"`: Reverse geocoding is always active.
+   *
+   * Default: `"never"`.
+   */
+  enableReverse?: EnableReverse;
+
+  /**
+   * Custom error message.
+   *
+   * Default: `"Something went wrong…"`.
+   */
+  errorMessage?: string;
+
+  /**
+   * Includes all available types except those listed in the `types` option.
+   *
+   * See `reverseGeocodingExcludeTypes` for reverse geocoding exclusion.
+   *
+   * Default: `false`.
+   */
+  excludeTypes?: boolean;
+
+  /**
+   * Uses the `limit` option value for reverse geocoding even if the `types` option has multiple elements.
+   * Works only if enabled on the server.
+   *
+   * Default: `false`.
+   */
+  exhaustiveReverseGeocoding?: boolean;
+
+  /**
+   * Additional parameters for fetch requests.
+   *
+   * Default: `undefined`.
+   */
+  fetchParameters?: RequestInit;
+
+  /**
+   * Callback function to filter results from the Geocoding API response.
+   * The function should return `true` to keep an item, or `false` to exclude it.
+   *
+   * Default: A function that always returns `true`.
+   */
+  filter?: (feature: Feature) => boolean;
+
+  /**
+   * Animates the map to the selected feature from the result list.
+   *
+   * Default: `false`.
    */
   flyToSelected?: boolean;
 
   /**
-   * Show marker on the selected feature from the result list.
+   * Enables fuzzy search.
    *
-   * Default value is `true`.
+   * Default: `true`.
+   */
+  fuzzyMatch?: boolean;
+
+  /**
+   * Base URL for POI icons.
+   *
+   * Default:
+   * - `"icons/"` for Svelte apps.
+   * - `"https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/"` for others.
+   */
+  iconsBaseUrl?: string;
+
+  /**
+   * Keeps the result list open even if the control is unfocused.
+   *
+   * Default: `false`.
+   */
+  keepListOpen?: boolean;
+
+  /**
+   * Language for response text and query weighting.
+   * Accepts IETF language tags.
+   * Set to `null` or an empty string to disable language-specific searching.
+   *
+   * Default: `undefined` (uses the browser's language settings).
+   */
+  language?: string | string[] | null;
+
+  /**
+   * Maximum number of results to display.
+   *
+   * See `reverseGeocodingLimit` for reverse geocoding limits.
+   *
+   * Default: `5`.
+   */
+  limit?: number;
+
+  /**
+   * Displays a marker on the selected feature from the result list.
+   *
+   * Default: `true`.
    */
   markerOnSelected?: boolean;
 
-  // TODO - missing but useful from maplibre-gl-geocoder
-  // popup // If true, a Popup will be added to the map when clicking on a marker using a default set of popup options. If the value is an object, the popup will be constructed using these options. If false, no popup will be added to the map. Requires that options.maplibregl also be set. (optional, default true)
-  // render // A function that specifies how the results should be rendered in the dropdown menu. This function should accepts a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
-  // popupRender // A function that specifies how the results should be rendered in the popup menu. This function should accept a single Carmen GeoJSON object as input and return a string. Any HTML in the returned string will be rendered.
-  // getItemValue // A function that specifies how the selected result should be rendered in the search bar. This function should accept a single Carmen GeoJSON object as input and return a string. HTML tags in the output string will not be rendered. Defaults to (item) => item.place_name.
-  // clearAndBlurOnEsc
+  /**
+   * Minimum number of characters required to start a search.
+   *
+   * Default: `2`.
+   */
+  minLength?: number;
+
+  /**
+   * Custom message for when no results are found.
+   *
+   * Default:
+   * ```
+   * "Oops! Looks like you're trying to predict something that's not quite right.
+   * We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term.
+   * Keep on typing - we'll do our best to get you where you need to go!"
+   * ```
+   */
+  noResultsMessage?: string;
+
+  /**
+   * Style of the picked result on the map:
+   * - `"marker-only"`: Show only a marker at the center of the feature.
+   * - `"full-geometry"`: Display the full feature geometry.
+   * - `"full-geometry-including-polygon-center-marker"`: Display full geometry with a marker at the polygon center.
+   *
+   * Default: `"full-geometry"`.
+   */
+  pickedResultStyle?: PickedResultStyle;
+
+  /**
+   * Custom placeholder for the input box.
+   *
+   * Default: `"Search"`.
+   */
+  placeholder?: string;
+
+  /**
+   * Prioritizes search results closer to a proximity point.
+   * The first matching rule in the array is used.
+   * Set to `null` to disable proximity.
+   *
+   * Default: `[ { type: "server-geolocation" } ]`.
+   */
+  proximity?: ProximityRule[] | null;
+
+  /**
+   * Activates reverse geocoding.
+   *
+   * Default: `false`.
+   */
+  reverseActive?: boolean;
+
+  /**
+   * Title of the reverse geocoding toggle button.
+   *
+   * Default: `"toggle reverse geocoding"`.
+   */
+  reverseButtonTitle?: string;
+
+  /**
+   * Excludes types for reverse geocoding.
+   *
+   * Default: Same as `excludeTypes`.
+   */
+  reverseGeocodingExcludeTypes?: boolean;
+
+  /**
+   * Limits results for reverse geocoding.
+   * Applied only if value is 1 or effective types contain a single value.
+   *
+   * See also `reverseGeocodingTypes` option.
+   *
+   * Default: The value of the `limit` option if set. If effective types contain a single value, the default is `1`. In all other cases, this option is not used.
+   */
+  reverseGeocodingLimit?: number;
+
+  /**
+   * Specifies types for reverse geocoding.
+   *
+   * If effective types are multiple values, the `limit`/`reverseGeocodingLimit` option is ignored.
+   *
+   * See also `reverseGeocodingLimit` option.
+   *
+   * Default: Same as `types`.
+   */
+  reverseGeocodingTypes?: TypeRule[];
+
+  /**
+   * Automatically selects the first feature in the result list.
+   *
+   * Default: `true`.
+   */
+  selectFirst?: boolean;
+
+  /**
+   * Indicates when to show place/POI types in the dropdown:
+   * - `"never"`: Hide the type.
+   * - `"always"`: Always show the type.
+   * - `"if-needed"`: Show the type only if it cannot be determined from the icon.
+   *
+   * Default: `"if-needed"`.
+   */
+  showPlaceType?: ShowPlaceType;
+
+  /**
+   * Displays results while typing:
+   * - `false`: Search occurs only on pressing the Enter key.
+   * - `true`: Search begins when the input meets the `minLength` requirement.
+   *
+   * Default: `false`.
+   */
+  showResultsWhileTyping?: boolean;
+
+  /**
+   * Types to query, either as an array or `[minZoom, maxZoom, type]` format.
+   * `minZoom` is inclusive, `maxZoom` is exclusive, and either can be `null` or `undefined` for unbounded values.
+   *
+   * See `reverseGeocodingTypes` option for reverse geocoding types.
+   *
+   * Default: `undefined` (uses server default feature types).
+   */
+  types?: TypeRule[];
+
+  /**
+   * Specifies the zoom level to animate the map to for a geocoded result when no bounding box is present or when the result is a point.
+   * If a bounding box is present and not a point, the map will fit to the bounding box.
+   *
+   * Values are key-value pairs where the key is a `<type>` or `<type>.<category>` and the value is the zoom level.
+   *
+   * Default: `GeocodingControl.ZOOM_DEFAULTS`.
+   */
+  zoom?: Record<string, number>;
 };
 
 export type PickedResultStyle =
@@ -398,3 +437,11 @@ export type RedefineType<
     [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never;
   },
 > = UpdatedType;
+
+export type TypeRule =
+  | string
+  | [
+      minZoom: number | null | undefined,
+      maxZoom: number | null | undefined,
+      type: string,
+    ];

@@ -25,3 +25,4 @@ dist.svelte
 *.sw?
 
 *.tgz
+src/info.json

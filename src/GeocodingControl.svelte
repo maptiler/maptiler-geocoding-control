@@ -20,6 +20,7 @@
     PickedResultStyle,
     ProximityRule,
     ShowPlaceType,
+    TypeRule,
   } from "./types";
 
   export const ZOOM_DEFAULTS: Record<string, number> = {
@@ -84,6 +85,10 @@
 
   export let limit: number | undefined = undefined;
 
+  const COPY_LIMIT = +41415112612;
+
+  export let reverseGeocodingLimit: number | undefined = COPY_LIMIT;
+
   export let mapController: MapController | undefined = undefined;
 
   export let minLength = 2;
@@ -117,11 +122,20 @@
 
   export let markerOnSelected = true;
 
-  export let types: string[] | undefined = undefined;
+  export let types: TypeRule[] | undefined = undefined;
+
+  const COPY_TYPES: TypeRule[] = [];
+
+  export let reverseGeocodingTypes: TypeRule[] | undefined = COPY_TYPES;
 
   export let exhaustiveReverseGeocoding = false;
 
   export let excludeTypes = false;
+
+  const COPY_EXCLUDE_TYPES = undefined;
+
+  export let reverseGeocodingExcludeTypes: boolean | undefined =
+    COPY_EXCLUDE_TYPES;
 
   export let zoom: Record<string, number> = ZOOM_DEFAULTS;
 
@@ -516,12 +530,36 @@
         );
       }
 
-      if (types) {
-        sp.set("types", types.join(","));
+      const [zoom] = mapController?.getCenterAndZoom() ?? [];
+
+      let effTypes = (
+        !isReverse || reverseGeocodingTypes === COPY_TYPES
+          ? types
+          : reverseGeocodingTypes
+      )
+        ?.map((typeRule) =>
+          typeof typeRule === "string"
+            ? typeRule
+            : zoom === undefined ||
+                ((typeRule[0] ?? 0) <= zoom && zoom < (typeRule[1] ?? Infinity))
+              ? typeRule[2]
+              : undefined,
+        )
+        .filter((type) => type !== undefined);
+
+      if (effTypes) {
+        effTypes = [...new Set(effTypes)];
+
+        sp.set("types", effTypes.join(","));
       }
 
-      if (excludeTypes) {
-        sp.set("excludeTypes", String(excludeTypes));
+      const effExcludeTypes =
+        !isReverse || reverseGeocodingExcludeTypes === COPY_EXCLUDE_TYPES
+          ? excludeTypes
+          : reverseGeocodingExcludeTypes;
+
+      if (effExcludeTypes) {
+        sp.set("excludeTypes", String(effExcludeTypes));
       }
 
       if (bbox) {
@@ -546,10 +584,28 @@
         sp.set("fuzzyMatch", String(fuzzyMatch));
       }
 
+      const effReverseGeocodingLimit =
+        reverseGeocodingLimit === COPY_LIMIT ? limit : reverseGeocodingLimit;
+
       if (
-        limit !== undefined &&
-        (exhaustiveReverseGeocoding || !isReverse || types?.length === 1)
+        effReverseGeocodingLimit !== undefined &&
+        effReverseGeocodingLimit > 1 &&
+        effTypes?.length !== 1
       ) {
+        console.warn(
+          "For reverse geocoding when limit > 1 then types must contain single value.",
+        );
+      }
+
+      if (isReverse) {
+        if (
+          effReverseGeocodingLimit === 1 ||
+          (effReverseGeocodingLimit !== undefined &&
+            (exhaustiveReverseGeocoding || effTypes?.length === 1))
+        ) {
+          sp.set("limit", String(effReverseGeocodingLimit));
+        }
+      } else if (limit !== undefined) {
         sp.set("limit", String(limit));
       }
 
@@ -558,6 +614,10 @@
       adjustUrlQuery(sp);
 
       adjustUrl(urlObj);
+
+      const noTypes =
+        urlObj.searchParams.get("types") === "" &&
+        urlObj.searchParams.get("excludeTypes") !== "true";
 
       const url = urlObj.toString();
 
@@ -581,16 +641,22 @@
 
       lastSearchUrl = url;
 
-      const res = await fetch(url, {
-        signal: ac.signal,
-        ...fetchParameters,
-      });
+      let featureCollection: FeatureCollection;
 
-      if (!res.ok) {
-        throw new Error(await res.text());
+      if (noTypes) {
+        featureCollection = { type: "FeatureCollection", features: [] };
+      } else {
+        const res = await fetch(url, {
+          signal: ac.signal,
+          ...fetchParameters,
+        });
+
+        if (!res.ok) {
+          throw new Error(await res.text());
+        }
+
+        featureCollection = await res.json();
       }
-
-      const featureCollection: FeatureCollection = await res.json();
 
       dispatch("response", { url, featureCollection });
 
@@ -901,6 +967,7 @@
         type="button"
         on:click={() => {
           searchValue = "";
+          picked = undefined;
           input.focus();
         }}
         title={clearButtonTitle}

@@ -50,6 +50,7 @@ const propertyNames = [
   "enableReverse",
   "errorMessage",
   "excludeTypes",
+  "reverseGeocodingExcludeTypes",
   "exhaustiveReverseGeocoding",
   "fetchParameters",
   "filter",
@@ -59,6 +60,7 @@ const propertyNames = [
   "keepListOpen",
   "language",
   "limit",
+  "reverseGeocodingLimit",
   "mapController",
   "markerOnSelected",
   "minLength",
@@ -72,6 +74,7 @@ const propertyNames = [
   "showPlaceType",
   "showResultsWhileTyping",
   "types",
+  "reverseGeocodingTypes",
   "zoom",
 ] as const satisfies readonly (keyof (ControlOptions & MapControllerProp))[];
 

@@ -14,9 +14,9 @@
     "allowJs": true,
     "checkJs": true,
     "strict": true,
-    "moduleResolution": "Node"
+    "moduleResolution": "Node",
+    "resolveJsonModule": true
   },
   "include": ["src/*.d.ts", "src/*.ts", "src/*.js", "src/*.svelte"],
-  "references": [{ "path": "./tsconfig.node.json" }],
-  "resolveJsonModule": true
+  "references": [{ "path": "./tsconfig.node.json" }]
 }
