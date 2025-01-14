@@ -55,7 +55,7 @@
   }
 
   function loadSprites() {
-    spritePromise ??= fetch(`${iconsBaseUrl}/sprite${scaleUrl}.json`)
+    spritePromise ??= fetch(`${iconsBaseUrl}sprite${scaleUrl}.json`)
       .then((response) => response.json())
       .then((data) => {
         sprites = data;
