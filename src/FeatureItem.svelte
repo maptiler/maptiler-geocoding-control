@@ -1,3 +1,20 @@
+<script context="module" lang="ts">
+  type SpriteIcon = { width: number; height: number; x: number; y: number };
+
+  const hidpi = devicePixelRatio > 1.25;
+
+  const scaleUrl = hidpi ? "@2x" : "";
+
+  const scaleFactor = hidpi ? 2 : 1;
+
+  let sprites:
+    | undefined
+    | null
+    | { width: number; height: number; icons: Record<string, SpriteIcon> };
+
+  let spritePromise: Promise<void> | undefined;
+</script>
+
 <script lang="ts">
   import { createEventDispatcher } from "svelte";
   import type { Feature, ShowPlaceType } from "./types";
@@ -12,46 +29,76 @@
 
   export let iconsBaseUrl: string;
 
-  const dispatch = createEventDispatcher<{ select: undefined }>();
+  $: categories = feature.properties?.categories;
 
-  const categories = feature.properties?.categories;
+  $: isReverse = feature.place_type[0] === "reverse";
+
+  const dispatch = createEventDispatcher<{ select: undefined }>();
 
   let category: string | undefined;
 
   let imageUrl: string | undefined;
 
-  let loadIconAttempt = 0;
+  let spriteIcon: SpriteIcon | undefined;
 
-  let isReverse = feature.place_type[0] === "reverse";
-
-  $: index = categories?.length ?? 0;
-
-  $: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    loadIconAttempt;
-
-    do {
-      index--;
-
-      category = categories?.[index];
-
-      imageUrl = category
-        ? iconsBaseUrl + category.replace(/ /g, "_") + ".svg"
-        : undefined;
-    } while (index > -1 && (!imageUrl || missingIconsCache.has(imageUrl)));
-  }
+  let index: number;
 
   $: placeType =
     feature.properties?.categories?.join(", ") ??
     feature.properties?.place_type_name?.[0] ??
     feature.place_type[0];
 
+  $: {
+    index = categories?.length ?? 0;
+
+    loadIcon();
+  }
+
+  function loadSprites() {
+    spritePromise ??= fetch(`${iconsBaseUrl}sprite${scaleUrl}.json`)
+      .then((response) => response.json())
+      .then((data) => {
+        sprites = data;
+      })
+      .catch(() => {
+        sprites = null;
+      });
+  }
+
   function handleImgError() {
     if (imageUrl) {
       missingIconsCache.add(imageUrl);
     }
 
-    loadIconAttempt++;
+    loadIcon();
+  }
+
+  function loadIcon() {
+    if (sprites !== undefined) {
+      loadIcon2();
+    } else {
+      loadSprites();
+
+      spritePromise?.then(loadIcon2);
+    }
+  }
+
+  function loadIcon2() {
+    do {
+      index--;
+
+      category = categories?.[index];
+
+      spriteIcon = category ? sprites?.icons[category] : undefined;
+
+      if (spriteIcon) {
+        break;
+      }
+
+      imageUrl = category
+        ? iconsBaseUrl + category.replace(/ /g, "_") + ".svg"
+        : undefined;
+    } while (index > -1 && (!imageUrl || missingIconsCache.has(imageUrl)));
   }
 </script>
 
@@ -71,7 +118,19 @@
     }
   }}
 >
-  {#if imageUrl}
+  {#if sprites && spriteIcon}
+    <div
+      class="sprite-icon"
+      style={`
+        width: ${spriteIcon.width / scaleFactor}px;
+        height: ${spriteIcon.height / scaleFactor}px;
+        background-image: url(${iconsBaseUrl}sprite${scaleUrl}.png);
+        background-position: -${spriteIcon.x / scaleFactor}px -${spriteIcon.y / scaleFactor}px;
+        background-size: ${sprites.width / scaleFactor}px ${sprites.height / scaleFactor}px;
+      `}
+      title={placeType}
+    />
+  {:else if imageUrl}
     <img
       src={imageUrl}
       alt={category}
@@ -122,6 +181,13 @@
 </li>
 
 <style lang="scss">
+  .sprite-icon {
+    align-self: center;
+    justify-self: center;
+    opacity: 0.75;
+    background-repeat: no-repeat;
+  }
+
   li {
     text-align: left;
     cursor: default;
