@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
   type SpriteIcon = { width: number; height: number; x: number; y: number };
 
-  const hidpi = devicePixelRatio > 1.25;
+  const hidpi =
+    typeof devicePixelRatio === "undefined" ? 1 : devicePixelRatio > 1.25;
 
   const scaleUrl = hidpi ? "@2x" : "";
 
