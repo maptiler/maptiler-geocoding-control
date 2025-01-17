@@ -380,7 +380,7 @@ export type ControlOptions = {
    * - `false`: Search occurs only on pressing the Enter key.
    * - `true`: Search begins when the input meets the `minLength` requirement.
    *
-   * Default: `false`.
+   * Default: `true`.
    */
   showResultsWhileTyping?: boolean;
 

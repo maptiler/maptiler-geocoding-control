@@ -245,6 +245,8 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
 
     #options: OPTS;
 
+    #container?: HTMLElement;
+
     constructor(options: OPTS = {} as OPTS) {
       super();
 
@@ -331,13 +333,15 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
         this.fire(new QueryChangeEvent(this, event.detail.query));
       });
 
+      this.#container = div;
+
       return div;
     }
 
     on<T extends keyof EventTypes>(
       type: T,
       listener: (ev: EventTypes[T]) => void,
-    ): Subscription;
+    ): Subscription; // TODO add backward type compatibility; in MapLibre v4 it returns `this`.
 
     on(type: keyof EventTypes, listener: Listener): Subscription {
       return super.on(type, listener);
@@ -345,10 +349,10 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
 
     once<T extends keyof EventTypes>(
       type: T,
-      listener: (ev: EventTypes[T]) => void,
-    ): this;
+      listener?: (ev: EventTypes[T]) => void,
+    ): this | Promise<unknown>;
 
-    once(type: keyof EventTypes, listener: Listener): this | Promise<unknown> {
+    once(type: keyof EventTypes, listener?: Listener): this | Promise<unknown> {
       return super.once(type, listener);
     }
 
@@ -437,6 +441,10 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
 
     onRemove() {
       this.#gc?.$destroy();
+
+      this.#gc = undefined;
+
+      this.#container?.parentNode?.removeChild(this.#container);
     }
   }
 
