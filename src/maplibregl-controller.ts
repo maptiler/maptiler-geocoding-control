@@ -314,7 +314,7 @@ export function createMapLibreGlMapController(
           break block; // no pin for (multi)linestrings
         }
 
-        if (!showPolygonMarker && picked.geometry.type !== "Point") {
+        if (!showPolygonMarker && !picked.geometry.type.endsWith("Point")) {
           break block;
         }
 
