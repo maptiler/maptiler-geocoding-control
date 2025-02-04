@@ -53,7 +53,7 @@
 
   export { className as class };
 
-  export let apiKey: string;
+  export let apiKey: string | undefined;
 
   export let bbox: BBox | undefined = undefined;
 
@@ -572,7 +572,9 @@
         sp.set("limit", String(limit));
       }
 
-      sp.set("key", apiKey);
+      if (apiKey) {
+        sp.set("key", apiKey);
+      }
 
       adjustUrlQuery(sp);
 
