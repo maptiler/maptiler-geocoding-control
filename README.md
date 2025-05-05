@@ -36,6 +36,12 @@ Geocoding control is also provided as [React component](https://docs.maptiler.co
 
 Install the Geocoding control unsing `npm`:
 
+**⚠️ Warning! ⚠️**
+
+The current version of Geocoding Control is only compatible with Svelte v4, this will potentially cause peer dependency issues when installing with certain versions of npm in Svelte projects (eg if you're using Svelte v5), or if you intend to import the Svelte component directly.
+
+If you are using a this library in a Svelte project you can npm install with `--force` or `--legacy-peer-deps` and use only the **pre-compiled `GeoLocatControl` vanilla module**, not the Svelte component.
+
 ```shell
 npm install --save @maptiler/geocoding-control @maptiler/sdk
 ```
