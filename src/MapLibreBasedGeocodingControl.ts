@@ -288,8 +288,8 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
       };
 
       if (!props.apiKey) {
-        console.error(
-          "No MapTiler apiKey provided, some or all geocoding requests may fail",
+        console.warn(
+          "No MapTiler Cloud API key was provided, some or all geocoding requests may fail",
         );
       }
 
