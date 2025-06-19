@@ -288,7 +288,9 @@ export function crateClasses<OPTS extends MapLibreBaseControlOptions>(
       };
 
       if (!props.apiKey) {
-        throw new Error("no apiKey provided");
+        console.error(
+          "No MapTiler apiKey provided, some or all geocoding requests may fail",
+        );
       }
 
       this.#gc = new GeocodingControlComponent({ target: div, props });
