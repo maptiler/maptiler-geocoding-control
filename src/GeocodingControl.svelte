@@ -910,17 +910,19 @@
     />
 
     <div class="clear-button-container" class:displayable={searchValue !== ""}>
-      <button
-        type="button"
-        on:click={() => {
-          searchValue = "";
-          picked = undefined;
-          input.focus();
-        }}
-        title={clearButtonTitle}
-      >
-        <ClearIcon />
-      </button>
+      {#if !abortController}
+        <button
+          type="button"
+          on:click={() => {
+            searchValue = "";
+            picked = undefined;
+            input.focus();
+          }}
+          title={clearButtonTitle}
+        >
+          <ClearIcon />
+        </button>
+      {/if}
 
       {#if abortController}
         <LoadingIcon />
