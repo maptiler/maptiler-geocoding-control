@@ -1,5 +1,5 @@
 <div>
-  <svg viewBox="0 0 18 18" width="24" height="24">
+  <svg viewBox="0 0 18 18" width="24" height="24" class="loading-icon">
     <path
       fill="#333"
       d="M4.4 4.4l.8.8c2.1-2.1 5.5-2.1 7.6 0l.8-.8c-2.5-2.5-6.7-2.5-9.2 0z"
@@ -23,7 +23,7 @@
     align-items: center;
   }
 
-  svg {
+  .loading-icon {
     animation: rotate 0.8s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
   }
 
