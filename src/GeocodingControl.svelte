@@ -53,7 +53,7 @@
 
   export { className as class };
 
-  export let apiKey: string | undefined;
+  export let apiKey: string | undefined = undefined;
 
   export let bbox: BBox | undefined = undefined;
 

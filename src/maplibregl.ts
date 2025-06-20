@@ -10,7 +10,7 @@ type Options = MapLibreBaseControlOptions & {
   /**
    * Maptiler API key. Optional if used with MapTiler SDK.
    */
-  apiKey: string;
+  apiKey?: string;
 };
 
 const { MapLibreBasedGeocodingControl, events } = crateClasses<Options>(
