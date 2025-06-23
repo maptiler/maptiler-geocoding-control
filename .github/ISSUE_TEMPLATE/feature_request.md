@@ -3,7 +3,9 @@ name: Feature request
 about: Suggest an idea for this project
 title: "[FEATURE]"
 labels: ""
-assignees: jachym
+assignees:
+  - lesbaa
+  - DominikCoal
 ---
 
 **Is your feature request related to a problem? Please describe.**
