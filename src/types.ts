@@ -101,7 +101,7 @@ export type ControlOptions = {
   /**
    * MapTiler API key.
    */
-  apiKey: string;
+  apiKey?: string;
 
   /**
    * Geocoding API URL.
