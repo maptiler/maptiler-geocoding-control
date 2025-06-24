@@ -2,6 +2,9 @@ import type { Feature as FeatureType, Geometry } from "geojson";
 
 export type BBox = [minx: number, miny: number, maxx: number, maxy: number];
 
+// this is to test the build process
+export type Name = "MapTiler Geocoding Control";
+
 export type Position = [x: number, y: number];
 
 export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
