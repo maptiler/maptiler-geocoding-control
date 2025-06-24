@@ -5,7 +5,7 @@ on:
     types: [opened]
 
 jobs:
-  build-and-publish:
+  build-and-publish-dry-run:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
