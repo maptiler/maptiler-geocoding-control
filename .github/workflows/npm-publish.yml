@@ -39,14 +39,14 @@ jobs:
       - name: Publish NPM package (regular)
         if: "!github.event.release.prerelease"
         run: |
-          npm publish
+          npm run pub
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
       - name: Publish NPM package (pre-release)
         if: "github.event.release.prerelease"
         run: |
-          npm publish --tag next
+          npm run pub-next
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
