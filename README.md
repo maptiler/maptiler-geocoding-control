@@ -18,11 +18,11 @@
 
 # MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
 
-## What ?
+## What?
 
 The *MapTiler Geocoding control* implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
 
-## About
+## Why?
 
 The _Geocoding control_ uses the [MapTiler Geocoding API](https://www.maptiler.com/cloud/geocoding/). You can use the API directly from your web or backend applications or use the [API Client JS](https://docs.maptiler.com/client-js/) library.
 
