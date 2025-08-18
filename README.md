@@ -16,7 +16,7 @@
   <img src="https://img.shields.io/twitter/follow/maptiler?style=social"></img>
 </p>
 
-# MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
+# MapTiler Search and Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
 
 ## What?
 
