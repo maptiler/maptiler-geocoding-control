@@ -18,21 +18,29 @@
 
 # MapTiler Geocoding control for MapTiler SDK, MapLibre GL JS, Leaflet and OpenLayers
 
+## What ?
+
+The *MapTiler Geocoding control* implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
+
 ## About
 
-A _Geocoding control_ for [MapTiler SDK](https://github.com/maptiler/maptiler-sdk-js),
-[MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js),
-[Leaflet](https://leafletjs.com) and [OpenLayers](https://openlayers.org) utilizes [MapTiler Cloud Geocoding
-API](https://www.maptiler.com/cloud/geocoding/). With this control, users of
-mapping application can find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
-to the address level, restrict the search area to a specific country, highlight
-searched results on the map, autocomplete words while typing, and much more.
+The _Geocoding control_ uses the [MapTiler Geocoding API](https://www.maptiler.com/cloud/geocoding/). You can use the API directly from your web or backend applications or use the [API Client JS](https://docs.maptiler.com/client-js/) library.
+
+With this control, users of
+mapping application can:
+
+* Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
+to the address level
+* Restrict the search area to a specific country, bounding box, or proximity
+* Highlight searched results on the map (marker or full geometry) 
+* Autocomplete words while typing
+* and much more. Check out the [Geocoding Control API reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/#options) to see all the options.
 
 The component can be used as an ES module or UMD module with or without bundler.
 
 Geocoding control is also provided as [React component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/) and [Svelte component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/) and [other libraries](#installation-and-more-usage-examples).
 
-## Quick start
+## Install
 
 Install the Geocoding control unsing `npm`:
 
@@ -45,6 +53,8 @@ If you are using a this library in a Svelte project you can npm install with `--
 ```shell
 npm install --save @maptiler/geocoding-control @maptiler/sdk
 ```
+
+## Quick start
 
 Use the component in your mapping application:
 
