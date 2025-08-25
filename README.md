@@ -31,6 +31,7 @@ mapping application can:
 
 * Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
 to the address level
+* Find and identify objects or place names using a coordinate pair or a single mouse click (reverse geocoding)
 * Restrict the search area to a specific country, bounding box, or proximity
 * Highlight searched results on the map (marker or full geometry) 
 * Autocomplete words while typing
