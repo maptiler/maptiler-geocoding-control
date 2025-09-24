@@ -9,6 +9,7 @@ export type Feature<T extends Geometry = Geometry> = FeatureType<T> & {
   text: string;
   place_name: string;
   place_type: string[];
+  place_type_name: string[];
   center: Position;
   bbox: BBox;
   address?: string;
