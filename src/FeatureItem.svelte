@@ -46,7 +46,7 @@
 
   $: placeType =
     feature.properties?.categories?.join(", ") ??
-    feature.properties?.place_type_name?.[0] ??
+    feature.place_type_name?.[0] ??
     feature.place_type[0];
 
   $: {

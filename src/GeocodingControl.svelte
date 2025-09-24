@@ -649,6 +649,7 @@
             place_name:
               isReverse.decimalLatitude + ", " + isReverse.decimalLongitude,
             place_type: ["reverse"],
+            place_type_name: ["reverse"],
             center: [isReverse.decimalLongitude, isReverse.decimalLatitude],
             bbox: [
               isReverse.decimalLongitude,
