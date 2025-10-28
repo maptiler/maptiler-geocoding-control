@@ -62,4 +62,3 @@ jobs:
           r2-bucket: cdn-storage
           source-dir: dist
           destination-dir: maptiler-geocoding-control/v${{ env.PACKAGE_VERSION }}/
-    
