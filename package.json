@@ -32,6 +32,7 @@
   ],
   "scripts": {
     "dev": "vite --host",
+    "make": "npm run clean && npm run build",
     "build": "node sync-info.js run && npm run check && concurrently --names \"SVELTE  ,MAPLIBRE,MAPTILER,MAPLIB-C,LEAFLET ,LEAFLE-C,OL      ,OL-C    ,REACT   ,TYPES   ,VANILLA \" \"npm run build-svelte\" \"npm run build-maplibre\" \"npm run build-maptilersdk\" \"npm run build-maplibre-controller\" \"npm run build-leaflet\" \"npm run build-leaflet-controller\" \"npm run build-openlayers\" \"npm run build-openlayers-controller\" \"npm run build-react\" \"npm run build-vanilla\" \"npm run build-types\" && cp LICENSE README.md package.json dist && cp -r dist.svelte dist/svelte",
     "build-svelte": "svelte-package -i src -o dist.svelte && VITE_LIB_VERSION=$npm_package_version node replace-env-vars.js",
     "build-maptilersdk": "FLAVOUR=maptilersdk vite build",
