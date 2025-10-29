@@ -20,7 +20,7 @@
 
 ## What?
 
-The *MapTiler Geocoding control* implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
+The _MapTiler Geocoding control_ implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
 
 ## Why?
 
@@ -29,13 +29,13 @@ The _Geocoding control_ uses the [MapTiler Geocoding API](https://www.maptiler.c
 With this control, users of
 mapping application can:
 
-* Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
-to the address level
-* Find and identify objects or place names using a coordinate pair or a single mouse click (reverse geocoding)
-* Restrict the search area to a specific country, bounding box, or proximity
-* Highlight searched results on the map (marker or full geometry) 
-* Autocomplete words while typing
-* and much more. Check out the [Geocoding Control API reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/#options) to see all the options.
+- Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
+  to the address level
+- Find and identify objects or place names using a coordinate pair or a single mouse click (reverse geocoding)
+- Restrict the search area to a specific country, bounding box, or proximity
+- Highlight searched results on the map (marker or full geometry)
+- Autocomplete words while typing
+- and much more. Check out the [Geocoding Control API reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/#options) to see all the options.
 
 The component can be used as an ES module or UMD module with or without bundler.
 

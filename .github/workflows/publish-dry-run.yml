@@ -4,11 +4,11 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
+  pull_request:
+    types: [opened]
 
 jobs:
-  build-and-publish:
+  test-build-and-publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -39,26 +39,13 @@ jobs:
       - name: Publish NPM package (regular)
         if: "!github.event.release.prerelease"
         run: |
-          npm publish
+          npm publish --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
 
       - name: Publish NPM package (pre-release)
         if: "github.event.release.prerelease"
         run: |
-          npm publish --tag next
+          npm publish --tag next --dry-run
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}
-
-      - name: Get Package version
-        id: version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-      - name: Publish to CDN Cloudflar R2
-        uses: ryand56/r2-upload-action@v1.4
-        with:
-          r2-account-id: ${{ secrets.CDN_MAPTILER_ACCOUNT_ID }}
-          r2-access-key-id: ${{ secrets.CDN_MAPTILER_ACCESS_KEY_ID }}
-          r2-secret-access-key: ${{ secrets.CDN_MAPTILER_SECRET_ACCESS_KEY }}
-          r2-bucket: cdn-storage
-          source-dir: dist
-          destination-dir: maptiler-geocoding-control/v${{ env.PACKAGE_VERSION }}/
