@@ -82,15 +82,6 @@ export type ProximityRule = {
 
 export type ControlOptions = {
   /**
-   * Callback function to adjust URL search parameters.
-   *
-   * Default: Empty function.
-   *
-   * @deprecated Use `adjustUrl` instead.
-   */
-  adjustUrlQuery?: (sp: URLSearchParams) => void;
-
-  /**
    * Callback function to adjust the geocoding URL before fetching.
    *
    * @param url [URL](https://developer.mozilla.org/en-US/docs/Web/API/URL) parameter that can be modified.
@@ -217,12 +208,12 @@ export type ControlOptions = {
    */
   filter?: (feature: Feature) => boolean;
 
-  /**
-   * Animates the map to the selected feature from the result list.
-   *
-   * Default: `false`.
-   */
-  flyToSelected?: boolean;
+  // /**
+  //  * Animates the map to the selected feature from the result list.
+  //  *
+  //  * Default: `false`.
+  //  */
+  // flyToSelected?: boolean;
 
   /**
    * Enables fuzzy search.
@@ -265,12 +256,12 @@ export type ControlOptions = {
    */
   limit?: number;
 
-  /**
-   * Displays a marker on the selected feature from the result list.
-   *
-   * Default: `true`.
-   */
-  markerOnSelected?: boolean;
+  // /**
+  //  * Displays a marker on the selected feature from the result list.
+  //  *
+  //  * Default: `true`.
+  //  */
+  // markerOnSelected?: boolean;
 
   /**
    * Minimum number of characters required to start a search.
@@ -291,15 +282,15 @@ export type ControlOptions = {
    */
   noResultsMessage?: string;
 
-  /**
-   * Style of the picked result on the map:
-   * - `"marker-only"`: Show only a marker at the center of the feature.
-   * - `"full-geometry"`: Display the full feature geometry.
-   * - `"full-geometry-including-polygon-center-marker"`: Display full geometry with a marker at the polygon center.
-   *
-   * Default: `"full-geometry"`.
-   */
-  pickedResultStyle?: PickedResultStyle;
+  // /**
+  //  * Style of the picked result on the map:
+  //  * - `"marker-only"`: Show only a marker at the center of the feature.
+  //  * - `"full-geometry"`: Display the full feature geometry.
+  //  * - `"full-geometry-including-polygon-center-marker"`: Display full geometry with a marker at the polygon center.
+  //  *
+  //  * Default: `"full-geometry"`.
+  //  */
+  // pickedResultStyle?: PickedResultStyle;
 
   /**
    * Custom placeholder for the input box.
@@ -395,15 +386,15 @@ export type ControlOptions = {
    */
   types?: TypeRule[];
 
-  /**
-   * Specifies the zoom level to animate the map to for a geocoded result when no bounding box is present or when the result is a point.
-   * If a bounding box is present and not a point, the map will fit to the bounding box.
-   *
-   * Values are key-value pairs where the key is a `<type>` or `<type>.<category>` and the value is the zoom level.
-   *
-   * Default: `GeocodingControl.ZOOM_DEFAULTS`.
-   */
-  zoom?: Record<string, number>;
+  // /**
+  //  * Specifies the zoom level to animate the map to for a geocoded result when no bounding box is present or when the result is a point.
+  //  * If a bounding box is present and not a point, the map will fit to the bounding box.
+  //  *
+  //  * Values are key-value pairs where the key is a `<type>` or `<type>.<category>` and the value is the zoom level.
+  //  *
+  //  * Default: `GeocodingControl.ZOOM_DEFAULTS`.
+  //  */
+  // zoom?: Record<string, number>;
 };
 
 export type PickedResultStyle =

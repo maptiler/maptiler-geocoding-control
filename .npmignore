@@ -1,0 +1,12 @@
+images
+demos
+public
+src
+!dist/src
+*.tgz
+.github
+.husky
+.vscode
+vite*
+.*
+tsconfig.json
