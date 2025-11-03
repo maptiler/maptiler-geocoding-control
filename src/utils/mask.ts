@@ -3,19 +3,11 @@ import difference from "@turf/difference";
 import flatten from "@turf/flatten";
 import { featureCollection, polygon } from "@turf/helpers";
 import union from "@turf/union";
-import type {
-  Feature,
-  FeatureCollection,
-  MultiPolygon,
-  Polygon,
-} from "geojson";
-import { unwrapBbox } from "./geo-utils";
+import type { Feature, FeatureCollection, MultiPolygon, Polygon } from "geojson";
 import type { BBox } from "../types";
+import { unwrapBbox } from "./geo-utils";
 
-export function setMask(
-  picked: Feature<Polygon | MultiPolygon>,
-  setData: (data?: FeatureCollection<Polygon | MultiPolygon>) => void,
-): void {
+export function setMask(picked: Feature<Polygon | MultiPolygon>, setData: (data?: FeatureCollection<Polygon | MultiPolygon>) => void): void {
   const diff = difference(
     featureCollection([
       polygon([
@@ -70,10 +62,5 @@ export function setMask(
     }
   }
 
-  setData(
-    featureCollection([
-      flattened.features.length < 2 ? picked : (union(flattened) ?? picked),
-      diff,
-    ]),
-  );
+  setData(featureCollection([flattened.features.length < 2 ? picked : (union(flattened) ?? picked), diff]));
 }

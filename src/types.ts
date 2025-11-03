@@ -36,11 +36,7 @@ export type MapController = {
 
   indicateReverse(reverse: boolean): void;
 
-  setFeatures(
-    features: Feature[] | undefined,
-    picked: Feature | undefined,
-    showPolygonMarker: boolean,
-  ): void;
+  setFeatures(features: Feature[] | undefined, picked: Feature | undefined, showPolygonMarker: boolean): void;
 
   setReverseMarker(coordinates?: Position): void;
 
@@ -397,10 +393,7 @@ export type ControlOptions = {
   // zoom?: Record<string, number>;
 };
 
-export type PickedResultStyle =
-  | "marker-only"
-  | "full-geometry"
-  | "full-geometry-including-polygon-center-marker";
+export type PickedResultStyle = "marker-only" | "full-geometry" | "full-geometry-including-polygon-center-marker";
 
 export type EnableReverse = "never" | "always" | "button";
 
@@ -423,15 +416,7 @@ export type DispatcherType = {
 
 export type RedefineType<
   OriginalType,
-  UpdatedType extends { [K in keyof OriginalType]: OriginalType[K] } & {
-    [K in Exclude<keyof UpdatedType, keyof OriginalType>]: never;
-  },
+  UpdatedType extends { [K in keyof OriginalType]: OriginalType[K] } & Record<Exclude<keyof UpdatedType, keyof OriginalType>, never>,
 > = UpdatedType;
 
-export type TypeRule =
-  | string
-  | [
-      minZoom: number | null | undefined,
-      maxZoom: number | null | undefined,
-      type: string,
-    ];
+export type TypeRule = string | [minZoom: number | null | undefined, maxZoom: number | null | undefined, type: string];

@@ -1,32 +1,29 @@
 <html>
+  <head>
+    <title>MapTiler Geocoding Control example</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
 
-<head>
-  <title>MapTiler Geocoding Control example</title>
-  <style>
-    html,
-    body {
-      margin: 0;
-    }
+      #map {
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        background: #ccc;
+      }
 
-    #map {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
-      background: #ccc;
-    }
+      #style-picker-container {
+        position: absolute;
+        z-index: 2;
+        margin: 10px;
+      }
+    </style>
+  </head>
 
-    #style-picker-container {
-      position: absolute;
-      z-index: 2;
-      margin: 10px;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="map"></div>
-  <script type="module" src="/src/02-maptiler-sdk.ts"></script>
-</body>
-
+  <body>
+    <div id="map"></div>
+    <script type="module" src="/src/02-maptiler-sdk.ts"></script>
+  </body>
 </html>
-

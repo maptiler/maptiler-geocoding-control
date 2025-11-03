@@ -2,17 +2,9 @@ import type { ProximityRule } from "../types";
 
 let cachedLocation: { time: number; coords: undefined | string } | undefined;
 
-export async function getProximity(
-  centerAndZoom: [zoom: number, lon: number, lat: number] | undefined,
-  proximity: ProximityRule[] | null | undefined,
-  ac: AbortController,
-) {
+export async function getProximity(centerAndZoom: [zoom: number, lon: number, lat: number] | undefined, proximity: ProximityRule[] | null | undefined, ac: AbortController) {
   for (const rule of proximity ?? []) {
-    if (
-      centerAndZoom &&
-      ((rule.minZoom != undefined && rule.minZoom > centerAndZoom[0]) ||
-        (rule.maxZoom != undefined && rule.maxZoom < centerAndZoom[0]))
-    ) {
+    if (centerAndZoom && ((rule.minZoom != undefined && rule.minZoom > centerAndZoom[0]) || (rule.maxZoom != undefined && rule.maxZoom < centerAndZoom[0]))) {
       continue;
     }
 
@@ -21,11 +13,7 @@ export async function getProximity(
     }
 
     cg: if (rule.type === "client-geolocation") {
-      if (
-        cachedLocation &&
-        rule.cachedLocationExpiry &&
-        cachedLocation.time + rule.cachedLocationExpiry > Date.now()
-      ) {
+      if (cachedLocation && rule.cachedLocationExpiry && cachedLocation.time + rule.cachedLocationExpiry > Date.now()) {
         if (!cachedLocation.coords) {
           break cg;
         }
@@ -43,13 +31,10 @@ export async function getProximity(
 
           navigator.geolocation.getCurrentPosition(
             (pos) => {
-              resolve(
-                [pos.coords.longitude, pos.coords.latitude]
-                  .map((c) => c.toFixed(6))
-                  .join(","),
-              );
+              resolve([pos.coords.longitude, pos.coords.latitude].map((c) => c.toFixed(6)).join(","));
             },
             (err) => {
+              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
               reject(err);
             },
             rule,

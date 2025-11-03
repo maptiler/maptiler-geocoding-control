@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { convert } from "geo-coordinates-parser";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
@@ -65,6 +66,8 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
   // @TODO DEFAULTS TO TRUE, shouldn't be Boolean type:
   @property({ type: Boolean }) showResultsWhileTyping: boolean = true;
   @property({ type: Array }) types?: TypeRule[];
+
+  @property({ type: Boolean }) fetchFullGeometryOnPick: boolean = false;
 
   @query("input") private input!: HTMLInputElement;
 
@@ -276,7 +279,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
       }
 
       // const [zoom] = mapController?.getCenterAndZoom() ?? [];
-      const zoom = undefined;
+      const zoom = undefined as number | undefined;
 
       let effTypes = (!isReverse || this.reverseGeocodingTypes === undefined ? this.types : this.reverseGeocodingTypes)
         ?.map((typeRule) =>
@@ -318,17 +321,18 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
         sp.set("fuzzyMatch", String(this.fuzzyMatch));
       }
 
-      const effReverseGeocodingLimit = this.reverseGeocodingLimit === undefined ? this.limit : this.reverseGeocodingLimit;
+      const effReverseGeocodingLimit = this.reverseGeocodingLimit ?? this.limit;
 
-      if (effReverseGeocodingLimit !== undefined && effReverseGeocodingLimit > 1 && effTypes?.length !== 1) {
+      if (effReverseGeocodingLimit > 1 && effTypes?.length !== 1) {
         console.warn("For reverse geocoding when limit > 1 then types must contain single value.");
       }
 
       if (isReverse) {
-        if (effReverseGeocodingLimit === 1 || (effReverseGeocodingLimit !== undefined && (this.exhaustiveReverseGeocoding || effTypes?.length === 1))) {
+        if (effReverseGeocodingLimit === 1 || this.exhaustiveReverseGeocoding || effTypes?.length === 1) {
           sp.set("limit", String(effReverseGeocodingLimit));
         }
-      } else if (this.limit !== undefined) {
+        // } else if (this.limit !== undefined) {
+      } else {
         sp.set("limit", String(this.limit));
       }
 
@@ -381,7 +385,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
           throw new Error(await res.text());
         }
 
-        featureCollection = await res.json();
+        featureCollection = (await res.json()) as FeatureCollection;
       }
 
       this.#dispatch("response", { url, featureCollection });
@@ -491,7 +495,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
   }
 
   #pick(feature: Feature) {
-    if (this.picked && this.picked?.id === feature?.id) {
+    if (this.picked && this.picked.id === feature.id) {
       // this.#goToPicked();
     } else {
       this.picked = feature;
@@ -522,7 +526,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
     this.input.focus();
   }
 
-  willUpdate(changedProperties: Map<string, any>) {
+  willUpdate(changedProperties: Map<string, unknown>) {
     if (changedProperties.has("error") && this.error) {
       console.error("Error from geocoding component", this.error);
     }
@@ -591,7 +595,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
 
     if (["picked"].some((prop) => changedProperties.has(prop))) {
       if (this.picked) {
-        /*this.pickedResultStyle === "marker-only"*/ (false ? Promise.resolve() : this.#search(this.picked.id, { byId: true })).then(
+        (this.fetchFullGeometryOnPick ? this.#search(this.picked.id, { byId: true }) : Promise.resolve()).then(
           () => {
             this.#dispatch("pick", { feature: this.picked });
           },

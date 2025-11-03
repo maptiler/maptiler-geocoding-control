@@ -1,9 +1,9 @@
-// @ts-nocheck
-
 import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended";
+import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
-export default tseslint.config(
+export default defineConfig(
+  globalIgnores(["dist/", "vite.config*.ts", "**/eslint.config.js"]),
   // https://typescript-eslint.io/getting-started/typed-linting/
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
@@ -28,8 +28,8 @@ export default tseslint.config(
               ],
             },
             create: function (context) {
-              const filePath = context.getFilename();
-              const options = context.options[0] || {
+              const filePath = context.filename;
+              const options = context.options[0] ?? {
                 "^/(.*)": {
                   locations: ["(.*)"],
                 },
@@ -85,6 +85,7 @@ export default tseslint.config(
       parserOptions: {
         projectService: true,
         tsconfigRootDir: import.meta.dirname,
+        allowDefaultProject: [],
       },
     },
   },

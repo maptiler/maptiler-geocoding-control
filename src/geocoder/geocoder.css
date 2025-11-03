@@ -11,7 +11,10 @@ form {
   --color-icon-button: #444952;
   pointer-events: all;
 }
-form, form *, form *:after, form *:before {
+form,
+form *,
+form *:after,
+form *:before {
   box-sizing: border-box;
 }
 form.can-collapse {
@@ -21,11 +24,15 @@ form.can-collapse input::placeholder {
   transition: opacity 0.25s;
   opacity: 0;
 }
-form, form:focus-within, form:hover {
+form,
+form:focus-within,
+form:hover {
   width: 270px;
   max-width: 270px;
 }
-form input::placeholder, form:focus-within input::placeholder, form:hover input::placeholder {
+form input::placeholder,
+form:focus-within input::placeholder,
+form:hover input::placeholder {
   opacity: 1;
 }
 input {
@@ -47,7 +54,9 @@ input:focus {
   outline: none;
   box-shadow: none;
 }
-ul, div.error, div.no-results {
+ul,
+div.error,
+div.no-results {
   background-color: #fff;
   border-radius: 4px;
   left: 0;
@@ -64,7 +73,8 @@ ul {
   line-height: 16px;
   box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
 }
-div.error, div.no-results {
+div.error,
+div.no-results {
   font: inherit;
   line-height: 18px;
   font-size: 12px;
@@ -92,7 +102,8 @@ div.error button > :global(svg) {
   width: 13px;
   fill: #e25041;
 }
-div.error button:hover :global(svg), div.error button:active :global(svg) {
+div.error button:hover :global(svg),
+div.error button:active :global(svg) {
   fill: #444952;
 }
 div.no-results {
@@ -109,7 +120,9 @@ div.no-results :global(svg) {
   width: 30px;
   height: 30px;
 }
-:global(.leaflet-bottom) ul.options, :global(.maplibregl-ctrl-bottom-left) ul.options, :global(.maplibregl-ctrl-bottom-right) ul.options {
+:global(.leaflet-bottom) ul.options,
+:global(.maplibregl-ctrl-bottom-left) ul.options,
+:global(.maplibregl-ctrl-bottom-right) ul.options {
   top: auto;
   bottom: calc(100% + 6px);
 }
@@ -124,7 +137,8 @@ button {
 button:hover {
   background-color: transparent;
 }
-button:hover :global(svg), button:active :global(svg) {
+button:hover :global(svg),
+button:active :global(svg) {
   fill: #2b8bfb;
 }
 .input-group {
@@ -174,15 +188,17 @@ button:hover :global(svg), button:active :global(svg) {
 :global(.maptiler-ctrl) form.can-collapse {
   max-width: 33px;
 }
-:global(.maptiler-ctrl) form, :global(.maptiler-ctrl) form:focus-within, :global(.maptiler-ctrl) form:hover {
+:global(.maptiler-ctrl) form,
+:global(.maptiler-ctrl) form:focus-within,
+:global(.maptiler-ctrl) form:hover {
   width: 270px;
   max-width: 270px;
 }
 
 /* @TODO temporary styles until feature-item is reimplemented */
-feature-item[style=selected] {
+feature-item[style="selected"] {
   background: pink;
 }
-feature-item[style=picked] {
+feature-item[style="picked"] {
   background: lime;
 }

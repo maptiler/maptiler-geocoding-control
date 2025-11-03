@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */ // @TODO fix this so it is not necessary
 import maplibregl from "maplibre-gl";
 
 import { feature, featureCollection } from "@turf/helpers";
@@ -101,6 +102,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
   }
 
   onAdd(map: MLMap): MaptilerGeocoderElement {
+    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
     // Check if Maptiler SDK is present
     if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
       const { primaryLanguage, apiKey } = map.getSdkConfig();
@@ -116,6 +118,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
         }
       }
     }
+    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
     this.#map = map;
     this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
@@ -328,8 +331,9 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     });
 
     this.#map.on("render", () => {
+      const zoom = this.#map?.getZoom();
       const center = this.#map?.getCenter();
-      this.#element?.handleMapChange(center ? [this.#map!.getZoom(), center.lng, center.lat] : undefined);
+      this.#element?.handleMapChange(zoom && center ? [zoom, center.lng, center.lat] : undefined);
     });
 
     this.#map.on("click", (e: MapMouseEvent) => {
@@ -471,9 +475,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       if (this.#options.marker instanceof Function) {
         this.#reverseMarker = this.#options.marker(this.#map) ?? undefined;
       } else {
-        this.#reverseMarker = (typeof this.#options.marker === "object" ? new Marker(this.#options.marker) : this.#createMarker())
-          .setLngLat(coordinates)
-          .addTo(this.#map);
+        this.#reverseMarker = (typeof this.#options.marker === "object" ? new Marker(this.#options.marker) : this.#createMarker()).setLngLat(coordinates).addTo(this.#map);
 
         this.#reverseMarker.getElement().classList.add("marker-reverse");
       }
@@ -536,7 +538,9 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       if (handled) {
         // nothing
       } else if (picked.geometry.type === "Polygon" || picked.geometry.type === "MultiPolygon") {
-        setMask(picked as Feature<Polygon | MultiPolygon>, (data?: GeoJSON) => this.#setAndSaveData(data));
+        setMask(picked as Feature<Polygon | MultiPolygon>, (data?: GeoJSON) => {
+          this.#setAndSaveData(data);
+        });
       } else if (picked.geometry.type === "LineString" || picked.geometry.type === "MultiLineString") {
         this.#setAndSaveData(picked);
 
@@ -558,10 +562,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
           this.#markers.set(picked, m);
         }
       } else {
-        this.#markers.set(
-          picked,
-          (typeof this.#options.marker === "object" ? new Marker(this.#options.marker) : this.#createMarker()).setLngLat(picked.center).addTo(this.#map),
-        );
+        this.#markers.set(picked, (typeof this.#options.marker === "object" ? new Marker(this.#options.marker) : this.#createMarker()).setLngLat(picked.center).addTo(this.#map));
       }
     }
 

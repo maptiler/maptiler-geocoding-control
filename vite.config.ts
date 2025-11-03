@@ -43,17 +43,14 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
     fileName: "openlayers",
     entry: ["src/openlayers.ts"],
     name: "maptilerGeocoder",
-    globals: (name) => name.startsWith("ol") ? name.replaceAll("/", ".") : "",
+    globals: (name) => (name.startsWith("ol") ? name.replaceAll("/", ".") : ""),
   },
 };
 
 const flavour = flavours[process.env.FLAVOUR!] ?? flavours.standalone;
 
 export default defineConfig({
-  plugins: [
-    externalizeDeps({ deps: !umd }),
-    umd ? undefined : dts({ exclude: ["demos"] }),
-  ],
+  plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos"] })],
   publicDir: "public",
   build: {
     sourcemap: true,
@@ -61,21 +58,23 @@ export default defineConfig({
     lib: flavour,
     rollupOptions: {
       output: [
-        umd ? {
-          name: flavour.name,
-          format: "umd",
-          entryFileNames: "[name].umd.js",
-          chunkFileNames: "[name].umd.js",
-          assetFileNames: "[name].[ext]",
+        umd
+          ? {
+              name: flavour.name,
+              format: "umd",
+              entryFileNames: "[name].umd.js",
+              chunkFileNames: "[name].umd.js",
+              assetFileNames: "[name].[ext]",
 
-          // Provide global variables to use in the UMD build for externalized deps
-          globals: flavour.globals,
-        } : {
-          format: "es",
-          entryFileNames: "[name].js",
-          chunkFileNames: "[name].js",
-          assetFileNames: "[name].[ext]",
-        },
+              // Provide global variables to use in the UMD build for externalized deps
+              globals: flavour.globals,
+            }
+          : {
+              format: "es",
+              entryFileNames: "[name].js",
+              chunkFileNames: "[name].js",
+              assetFileNames: "[name].[ext]",
+            },
       ],
     },
   },

@@ -3,7 +3,7 @@
  * If you don't want to use the URL parameter, you can set the key directly in the code.
  */
 export function getApiKey(): string {
-  const apiKey = import.meta.env.VITE_API_KEY ?? localStorage.getItem("MT_DEMO_API_KEY") ?? "API_KEY";
+  const apiKey: string = import.meta.env.VITE_API_KEY ?? localStorage.getItem("MT_DEMO_API_KEY") ?? "API_KEY";
 
   if (apiKey === "API_KEY") {
     const urlParams = new URLSearchParams(window.location.search);
