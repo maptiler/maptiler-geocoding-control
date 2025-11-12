@@ -80,7 +80,7 @@ export default defineConfig({
         console.log("\n");
         console.log("┏" + "━".repeat(lineLength) + "┓");
         console.info(`┃` + " ".repeat(lineLength) + "┃");
-        console.info("┃" + yellow(centerText(`** MapTiler SDK JS **`, lineLength)) + " ┃");
+        console.info("┃" + yellow(centerText(`** MapTiler Geocoding Control **`, lineLength)) + " ┃");
         console.info("┃" + purple(centerText(`** Demos **`, lineLength)) + " ┃");
         console.info(`┃` + " ".repeat(lineLength) + "┃");
         urls

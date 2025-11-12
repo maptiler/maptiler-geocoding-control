@@ -1,5 +1,12 @@
 import { MaplibreglGeocodingControl } from "./maplibregl-control";
+import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
 
-export class MaptilerGeocodingControl extends MaplibreglGeocodingControl {}
+export class MaptilerGeocodingControl extends MaplibreglGeocodingControl {
+  constructor(options: MaptilerGeocodingControlOptions = {}) {
+    super(options);
+  }
 
-export { ZOOM_DEFAULTS, type FullGeometryStyle, type MapLibreBaseControlOptions as MaptilerControlOptions } from "./maplibregl-control";
+  override setOptions(options: MaptilerGeocodingControlOptions) {
+    super.setOptions(options);
+  }
+}

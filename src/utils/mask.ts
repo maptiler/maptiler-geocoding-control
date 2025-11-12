@@ -7,7 +7,7 @@ import type { Feature, FeatureCollection, MultiPolygon, Polygon } from "geojson"
 import type { BBox } from "../types";
 import { unwrapBbox } from "./geo-utils";
 
-export function setMask(picked: Feature<Polygon | MultiPolygon>, setData: (data?: FeatureCollection<Polygon | MultiPolygon>) => void): void {
+export function getMask(picked: Feature<Polygon | MultiPolygon>): FeatureCollection<Polygon | MultiPolygon> | undefined {
   const diff = difference(
     featureCollection([
       polygon([
@@ -62,5 +62,5 @@ export function setMask(picked: Feature<Polygon | MultiPolygon>, setData: (data?
     }
   }
 
-  setData(featureCollection([flattened.features.length < 2 ? picked : (union(flattened) ?? picked), diff]));
+  return featureCollection([flattened.features.length < 2 ? picked : (union(flattened) ?? picked), diff]);
 }

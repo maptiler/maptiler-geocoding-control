@@ -1,11 +1,10 @@
-/* eslint-disable @typescript-eslint/restrict-plus-operands */
 import { convert } from "geo-coordinates-parser";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { repeat } from "lit/directives/repeat.js";
 
-import type { BBox, ControlOptions, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule } from "../types";
+import type { BBox, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule } from "../types";
 import { wrapNum } from "../utils/geo-utils";
 import { getProximity } from "../utils/proximity";
 
@@ -15,59 +14,52 @@ import "../components/loading-icon";
 import "../components/reverse-geocoding-icon";
 import "../components/search-icon";
 
+import type { MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "./geocoder-events";
+import type { MaptilerGeocoderOptions } from "./geocoder-options";
 import styles from "./geocoder.css?inline";
 
 @customElement("maptiler-geocoder")
-export class MaptilerGeocoderElement extends LitElement implements ControlOptions {
+export class MaptilerGeocoderElement extends LitElement implements MaptilerGeocoderOptions {
   static styles = css`
     ${unsafeCSS(styles)}
   `;
 
-  // @TODO consider moving the default values to where they are used (e.g. this.enableReverse ?? "never") so the default value can be restored using undefined in config
   @property({ attribute: false }) adjustUrl?: (url: URL) => void;
   @property({ type: String }) apiKey?: string;
-  @property({ type: String }) apiUrl: string = import.meta.env.VITE_API_URL;
+  @property({ type: String }) apiUrl?: string;
   @property({ type: Array }) bbox?: BBox;
   @property({ type: String }) class?: string;
-  @property({ type: String }) clearButtonTitle: string = "clear";
+  @property({ type: String }) clearButtonTitle?: string;
   @property({ type: Boolean }) clearListOnPick: boolean = false;
   @property({ type: Boolean }) clearOnBlur: boolean = false;
   @property({ type: Boolean }) collapsed: boolean = false;
-  @property({ type: Array }) country?: string | string[];
-  @property({ type: Number }) debounceSearch: number = 200;
-  @property({ type: String }) enableReverse: EnableReverse = "never";
-  @property({ type: String }) errorMessage: string = "Something went wrong…";
+  @property({ attribute: false }) country?: string | string[];
+  @property({ type: Number }) debounceSearch?: number;
+  @property({ type: String }) enableReverse?: EnableReverse;
+  @property({ type: String }) errorMessage?: string;
   @property({ type: Boolean }) excludeTypes: boolean = false;
   @property({ type: Boolean }) exhaustiveReverseGeocoding: boolean = false;
+  @property({ type: Boolean }) fetchFullGeometryOnPick: boolean = false;
   @property({ type: Object }) fetchParameters?: RequestInit;
   @property({ attribute: false }) filter?: (feature: Feature) => boolean;
-  // @TODO DEFAULTS TO TRUE, shouldn't be Boolean type:
-  @property({ type: Boolean }) fuzzyMatch: boolean = true;
-  @property({ type: String }) iconsBaseUrl: string = `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`;
+  @property({ type: Object }) fuzzyMatch?: boolean | undefined; // type object because undefined is valid value
+  @property({ type: String }) iconsBaseUrl?: string;
   @property({ type: Boolean }) keepListOpen: boolean = false;
-  // @TODO CAN BE SET TO NULL OR UNDEFINED SEPARATELY, shouldn't be Array type:
-  @property({ type: Array }) language?: string | string[] | null;
-  @property({ type: Number }) limit: number = 5;
-  @property({ type: Number }) minLength: number = 2;
-  @property({ type: String }) noResultsMessage: string =
-    "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!";
-  @property({ type: String }) placeholder: string = "Search";
-  // @TODO CAN BE SET TO NULL OR UNDEFINED SEPARATELY, shouldn't be Array type:
-  @property({ type: Array }) proximity: ProximityRule[] | null = [{ type: "server-geolocation" }];
+  @property({ attribute: false }) language?: string | string[] | null;
+  @property({ type: Number }) limit?: number;
+  @property({ type: Number }) minLength?: number;
+  @property({ type: String }) noResultsMessage?: string;
+  @property({ type: String }) placeholder?: string;
+  @property({ type: Array }) proximity?: ProximityRule[] | null;
   @property({ type: Boolean }) reverseActive: boolean = false;
-  @property({ type: String }) reverseButtonTitle: string = "toggle reverse geocoding";
-  // @TODO DEFAULTS TO UNDEFINED, shouldn't be Boolean type:
-  @property({ type: Boolean }) reverseGeocodingExcludeTypes?: boolean;
+  @property({ type: String }) reverseButtonTitle?: string;
+  @property({ type: Object }) reverseGeocodingExcludeTypes?: boolean | undefined; // type object because undefined is valid value
   @property({ type: Number }) reverseGeocodingLimit?: number;
   @property({ type: Array }) reverseGeocodingTypes?: TypeRule[];
-  // @TODO DEFAULTS TO TRUE, shouldn't be Boolean type:
-  @property({ type: Boolean }) selectFirst: boolean = true;
-  @property({ type: String }) showPlaceType: ShowPlaceType = "if-needed";
-  // @TODO DEFAULTS TO TRUE, shouldn't be Boolean type:
-  @property({ type: Boolean }) showResultsWhileTyping: boolean = true;
+  @property({ type: Object }) selectFirst?: boolean | undefined; // type object because undefined is valid value
+  @property({ type: String }) showPlaceType?: ShowPlaceType;
+  @property({ type: Object }) showResultsWhileTyping?: boolean | undefined; // type object because undefined is valid value
   @property({ type: Array }) types?: TypeRule[];
-
-  @property({ type: Boolean }) fetchFullGeometryOnPick: boolean = false;
 
   @query("input") private input!: HTMLInputElement;
 
@@ -90,20 +82,23 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
   get #selected(): Feature | undefined {
     return this.listFeatures?.[this.selectedItemIndex];
   }
-  // // // get #optionsVisible(): boolean {
-  // // //   return !!this.listFeatures?.length && (this.focusedDelayed || this.keepListOpen);
-  // // // }
+  get #isFeatureListVisible(): boolean {
+    return !!this.listFeatures?.length && (this.focusedDelayed || this.keepListOpen);
+  }
   get #isLoading(): boolean {
     return this.abortController !== undefined;
+  }
+  get #isSearchValueTooShort(): boolean {
+    return this.searchValue.length < (this.minLength ?? 2);
   }
 
   protected firstUpdated() {
     this.#isInitialized = true;
   }
 
-  setOptions(options: Partial<ControlOptions>) {
+  setOptions(options: Partial<MaptilerGeocoderOptions>) {
     const elementOptions = { ...options };
-    for (const prop of Object.keys(elementOptions) as Array<keyof ControlOptions>) {
+    for (const prop of Object.keys(elementOptions) as Array<keyof MaptilerGeocoderOptions>) {
       // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
       if (!propertyNames.includes(prop)) delete elementOptions[prop];
     }
@@ -143,15 +138,33 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
    *
    * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
    */
-  focus(options?: FocusOptions) {
+  override focus(options?: FocusOptions) {
     this.input.focus(options);
   }
 
   /**
    * Blur the search input box.
    */
-  blur() {
+  override blur() {
     this.input.blur();
+  }
+
+  override addEventListener<E extends MaptilerGeocoderEventName>(
+    type: E,
+    listener: (this: HTMLElement, e: MaptilerGeocoderEventNameMap[E]) => unknown,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  override addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
+    super.addEventListener(type, listener, options);
+  }
+
+  override removeEventListener<E extends MaptilerGeocoderEventName>(
+    type: E,
+    listener: (this: HTMLElement, e: MaptilerGeocoderEventNameMap[E]) => unknown,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  override removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
+    super.removeEventListener(type, listener, options);
   }
 
   /** @internal */
@@ -166,9 +179,9 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
     }
   }
 
-  #dispatch<T extends keyof MaptilerGeocoderElement.EventNameMap>(
+  #dispatch<T extends keyof MaptilerGeocoderEventNameMap>(
     type: T,
-    ...[detail]: undefined extends MaptilerGeocoderElement.EventNameMap[T]["detail"] ? [] : [detail: MaptilerGeocoderElement.EventNameMap[T]["detail"]]
+    ...[detail]: undefined extends MaptilerGeocoderEventNameMap[T]["detail"] ? [] : [detail: MaptilerGeocoderEventNameMap[T]["detail"]]
   ): void {
     if (!this.#isInitialized) return;
 
@@ -228,10 +241,10 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
     this.error = undefined;
     this.picked = undefined;
 
-    if (this.showResultsWhileTyping) {
+    if (this.showResultsWhileTyping !== false) {
       clearTimeout(this.#searchTimeoutRef);
 
-      if (this.searchValue.length < this.minLength) {
+      if (this.#isSearchValueTooShort) {
         return;
       }
 
@@ -239,7 +252,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
 
       this.#searchTimeoutRef = window.setTimeout(() => {
         this.#search(sv).catch((err: unknown) => (this.error = err));
-      }, this.debounceSearch);
+      }, this.debounceSearch ?? 200);
     } else {
       this.#clearFeatures();
     }
@@ -268,9 +281,11 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
     this.abortController = ac;
 
     try {
+      const apiUrl = this.apiUrl ?? import.meta.env.VITE_API_URL;
       const isReverse = this.#isQueryReverse(searchValue);
 
-      const urlObj = new URL(this.apiUrl + "/" + encodeURIComponent(isReverse ? isReverse.decimalLongitude + "," + isReverse.decimalLatitude : searchValue) + ".json");
+      // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+      const urlObj = new URL(apiUrl + "/" + encodeURIComponent(isReverse ? `${isReverse.decimalLongitude},${isReverse.decimalLatitude}` : searchValue) + ".json");
 
       const sp = urlObj.searchParams;
 
@@ -308,20 +323,22 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
       }
 
       if (!byId && !isReverse) {
-        const coords = await getProximity(this.#centerAndZoom, this.proximity, ac);
+        const proximity = this.proximity ?? [{ type: "server-geolocation" }];
+        const coords = await getProximity(this.#centerAndZoom, proximity, ac);
 
         if (coords) {
           sp.set("proximity", coords);
         }
 
-        if (exact || !this.showResultsWhileTyping) {
+        if (exact || this.showResultsWhileTyping === false) {
           sp.set("autocomplete", "false");
         }
 
-        sp.set("fuzzyMatch", String(this.fuzzyMatch));
+        sp.set("fuzzyMatch", String(this.fuzzyMatch !== false));
       }
 
-      const effReverseGeocodingLimit = this.reverseGeocodingLimit ?? this.limit;
+      const limit = this.limit ?? 5;
+      const effReverseGeocodingLimit = this.reverseGeocodingLimit ?? limit;
 
       if (effReverseGeocodingLimit > 1 && effTypes?.length !== 1) {
         console.warn("For reverse geocoding when limit > 1 then types must contain single value.");
@@ -333,7 +350,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
         }
         // } else if (this.limit !== undefined) {
       } else {
-        sp.set("limit", String(this.limit));
+        sp.set("limit", String(limit));
       }
 
       if (this.apiKey) {
@@ -405,9 +422,11 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
           this.listFeatures.unshift({
             type: "Feature",
             properties: {},
-            id: "reverse_" + isReverse.decimalLongitude + "_" + isReverse.decimalLatitude,
-            text: isReverse.decimalLatitude + ", " + isReverse.decimalLongitude,
-            place_name: isReverse.decimalLatitude + ", " + isReverse.decimalLongitude,
+            /* eslint-disable @typescript-eslint/restrict-template-expressions */
+            id: `reverse_${isReverse.decimalLongitude}_${isReverse.decimalLatitude}`,
+            text: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
+            place_name: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
+            /* eslint-enable @typescript-eslint/restrict-template-expressions */
             place_type: ["reverse"],
             place_type_name: ["reverse"],
             center: [isReverse.decimalLongitude, isReverse.decimalLatitude],
@@ -475,7 +494,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
       this.selectedItemIndex = this.listFeatures.findIndex((listFeature) => listFeature.id === this.picked?.id);
     }
 
-    if (this.selectedItemIndex === (this.picked || this.selectFirst ? 0 : -1) && dir === -1) {
+    if (this.selectedItemIndex === (this.picked || this.selectFirst !== false ? 0 : -1) && dir === -1) {
       this.selectedItemIndex = this.listFeatures.length;
     }
 
@@ -485,7 +504,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
       this.selectedItemIndex = -1;
     }
 
-    if (this.selectedItemIndex < 0 && (this.picked || this.selectFirst)) {
+    if (this.selectedItemIndex < 0 && (this.picked || this.selectFirst !== false)) {
       this.selectedItemIndex = 0;
     }
   }
@@ -508,7 +527,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
   }
 
   #handleMouseLeave() {
-    if (!this.selectFirst || this.picked) {
+    if (!this.selectFirst !== false || this.picked) {
       this.selectedItemIndex = -1;
     }
 
@@ -551,7 +570,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
     //   this.markedFeatures = undefined;
     // }
 
-    if (["searchValue", "minLength"].some((prop) => changedProperties.has(prop)) && this.searchValue.length < this.minLength) {
+    if (["searchValue", "minLength"].some((prop) => changedProperties.has(prop)) && this.#isSearchValueTooShort) {
       this.#clearFeatures();
       this.error = undefined;
     }
@@ -573,7 +592,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
 
     if (
       ["selectFirst", "listFeatures", "selectedItemIndex", "picked"].some((prop) => changedProperties.has(prop)) &&
-      this.selectFirst &&
+      this.selectFirst !== false &&
       this.listFeatures?.length &&
       this.selectedItemIndex == -1 &&
       !this.picked
@@ -595,7 +614,10 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
 
     if (["picked"].some((prop) => changedProperties.has(prop))) {
       if (this.picked) {
-        (this.fetchFullGeometryOnPick ? this.#search(this.picked.id, { byId: true }) : Promise.resolve()).then(
+        (this.fetchFullGeometryOnPick && !this.picked.address && this.picked.geometry.type === "Point" && this.picked.place_type[0] !== "reverse"
+          ? this.#search(this.picked.id, { byId: true })
+          : Promise.resolve()
+        ).then(
           () => {
             this.#dispatch("pick", { feature: this.picked });
           },
@@ -608,9 +630,9 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
       }
     }
 
-    // // // if (["listFeatures", "focusedDelayed"].some((prop) => changedProperties.has(prop))) {
-    // // //   this.#dispatch("optionsvisibilitychange", { optionsVisible: this.#optionsVisible });
-    // // // }
+    if (["listFeatures", "focusedDelayed"].some((prop) => changedProperties.has(prop))) {
+      this.#dispatch(this.#isFeatureListVisible ? "featuresshow" : "featureshide");
+    }
 
     // if (["markedFeatures"].some((prop) => changedProperties.has(prop))) {
     //   this.#dispatch("featuresmarked", { features: this.markedFeatures });
@@ -648,14 +670,14 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
             @keydown=${this.#handleKeyDown}
             @input=${this.#handleInput}
             @change=${() => (this.picked = undefined)}
-            placeholder=${this.placeholder}
-            aria-label=${this.placeholder}
+            placeholder=${this.placeholder ?? "Search"}
+            aria-label=${this.placeholder ?? "Search"}
           />
 
           <div class="clear-button-container ${classMap({ displayable: this.searchValue !== "" })}">
             ${!this.#isLoading
               ? html`
-                  <button type="button" @click=${this.#handleClear} title=${this.clearButtonTitle}>
+                  <button type="button" @click=${this.#handleClear} title=${this.clearButtonTitle ?? "clear"}>
                     <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
                   </button>
                 `
@@ -664,7 +686,12 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
 
           ${this.enableReverse === "button"
             ? html`
-                <button type="button" class=${classMap({ active: this.reverseActive })} title=${this.reverseButtonTitle} @click=${() => (this.reverseActive = !this.reverseActive)}>
+                <button
+                  type="button"
+                  class=${classMap({ active: this.reverseActive })}
+                  title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}
+                  @click=${() => (this.reverseActive = !this.reverseActive)}
+                >
                   <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
                 </button>
               `
@@ -678,7 +705,7 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
               <div class="error">
                 <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
 
-                <div>${this.errorMessage}</div>
+                <div>${this.errorMessage ?? "Something went wrong…"}</div>
                 <div>${this.error}</div>
 
                 <button @click=${() => (this.error = undefined)}>
@@ -686,85 +713,51 @@ export class MaptilerGeocoderElement extends LitElement implements ControlOption
                 </button>
               </div>
             `
-          : !this.focusedDelayed && !this.keepListOpen
+          : (!this.focusedDelayed && !this.keepListOpen) || this.listFeatures === undefined
             ? nothing
-            : this.listFeatures?.length === 0
+            : this.listFeatures.length === 0
               ? html`
                   <div class="no-results">
                     <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
 
-                    <div>${this.noResultsMessage}</div>
+                    <div>
+                      ${this.noResultsMessage ??
+                      "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"}
+                    </div>
                   </div>
                 `
-              : this.listFeatures?.length && (this.focusedDelayed || this.keepListOpen) /* @TODO I believe this condition is fully redundant and can be changed to "else" */
-                ? html`
-                    <ul
-                      class="options"
-                      @mouseleave=${this.#handleMouseLeave}
-                      @blur=${() => undefined /* @TODO This looks unnecessary but maybe it has some usage in svelte regarding event bubbling? */}
-                      @keydown=${this.#handleKeyDown}
-                      role="listbox"
-                    >
-                      ${repeat(
-                        this.listFeatures,
-                        (feature) => feature.id + (feature.address ? "," + feature.address : ""),
-                        (feature, i) => html`
-                          <feature-item
-                            .feature=${feature}
-                            .showPlaceType=${this.showPlaceType}
-                            style=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
-                            @mouseenter=${() => {
-                              this.#handleMouseEnter(i);
-                            }}
-                            @select=${() => {
-                              this.#pick(feature);
-                            }}
-                            @click=${() => {
-                              this.#pick(feature); // @TODO temporary only until select event implemented
-                            }}
-                            .missingIconsCache=${this.#missingIconsCache}
-                            .iconsBaseUrl=${this.iconsBaseUrl}
-                          >
-                            ${feature.place_name}
-                          </feature-item>
-                        `,
-                      )}
-                    </ul>
-                  `
-                : nothing}
+              : html`
+                  <ul class="options" @mouseleave=${this.#handleMouseLeave} @keydown=${this.#handleKeyDown} role="listbox">
+                    ${repeat(
+                      this.listFeatures,
+                      (feature) => feature.id + (feature.address ? "," + feature.address : ""),
+                      (feature, i) => html`
+                        <feature-item
+                          .feature=${feature}
+                          .showPlaceType=${this.showPlaceType ?? "if-needed"}
+                          style=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
+                          @mouseenter=${() => {
+                            this.#handleMouseEnter(i);
+                          }}
+                          @select=${() => {
+                            this.#pick(feature);
+                          }}
+                          @click=${() => {
+                            this.#pick(feature); // @TODO temporary only until select event used above is implemented
+                          }}
+                          .missingIconsCache=${this.#missingIconsCache}
+                          .iconsBaseUrl=${this.iconsBaseUrl ?? `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`}
+                        >
+                          ${feature.place_name}
+                        </feature-item>
+                      `,
+                    )}
+                  </ul>
+                `}
       </form>
     `;
     /* eslint-enable @typescript-eslint/unbound-method */
   }
-}
-
-// eslint-disable-next-line @typescript-eslint/no-namespace
-export namespace MaptilerGeocoderElement {
-  export type ReverseToggleEvent = CustomEvent<{ reverse: boolean }>;
-  export type QueryChangeEvent = CustomEvent<{ query: string; reverseCoords: ReturnType<typeof convert> | false }>;
-  export type QueryClearEvent = CustomEvent<void>;
-  export type RequestEvent = CustomEvent<{ urlObj: URL }>;
-  export type ResponseEvent = CustomEvent<{ url: string; featureCollection: FeatureCollection }>;
-  export type SelectEvent = CustomEvent<{ feature: Feature | undefined }>;
-  export type PickEvent = CustomEvent<{ feature: Feature | undefined }>;
-  export type OptionsVisibilityChangeEvent = CustomEvent<{ optionsVisible: boolean }>; // @TODO change to featuresshow, featureshide or something like that
-  export type FeaturesListedEvent = CustomEvent<{ features: Feature[] | undefined }>; // @TODO maybe add distinct featuresunlisted? or maybe even "clear" and put all related "undefined" events under that one
-  export type FeaturesClearEvent = CustomEvent<void>;
-  export type EventNameMap = {
-    reversetoggle: ReverseToggleEvent;
-    querychange: QueryChangeEvent;
-    queryclear: QueryClearEvent;
-    request: RequestEvent;
-    response: ResponseEvent;
-    select: SelectEvent;
-    pick: PickEvent;
-    optionsvisibilitychange: OptionsVisibilityChangeEvent;
-    featureslisted: FeaturesListedEvent;
-    featuresclear: FeaturesClearEvent;
-
-    focusin: FocusEvent;
-    focusout: FocusEvent;
-  };
 }
 
 declare global {
@@ -791,6 +784,7 @@ const propertyNames = [
   "reverseGeocodingExcludeTypes",
   "exhaustiveReverseGeocoding",
   "fetchParameters",
+  "fetchFullGeometryOnPick",
   "filter",
   "fuzzyMatch",
   "iconsBaseUrl",
@@ -809,4 +803,4 @@ const propertyNames = [
   "showResultsWhileTyping",
   "types",
   "reverseGeocodingTypes",
-] as const satisfies readonly (keyof ControlOptions)[];
+] as const satisfies readonly (keyof MaptilerGeocoderOptions)[];

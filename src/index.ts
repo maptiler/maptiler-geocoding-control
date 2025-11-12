@@ -4,4 +4,6 @@ export * from "./components/loading-icon";
 export * from "./components/reverse-geocoding-icon";
 export * from "./components/search-icon";
 export * from "./geocoder/geocoder";
+export * from "./geocoder/geocoder-events";
+export * from "./geocoder/geocoder-options";
 export * from "./types";
