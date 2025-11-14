@@ -75,6 +75,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @state() private focusedDelayed: boolean = false;
 
   #isInitialized = false;
+  #wasFeatureListVisible = false;
   #searchTimeoutRef?: number;
   #missingIconsCache = new Set<string>();
   #centerAndZoom: [zoom: number, lon: number, lat: number] | undefined;
@@ -631,7 +632,12 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
 
     if (["listFeatures", "focusedDelayed"].some((prop) => changedProperties.has(prop))) {
-      this.#dispatch(this.#isFeatureListVisible ? "featuresshow" : "featureshide");
+      if (this.#isFeatureListVisible) {
+        this.#dispatch("featuresshow");
+        this.#wasFeatureListVisible = true;
+      } else if (this.#wasFeatureListVisible) {
+        this.#dispatch("featureshide");
+      }
     }
 
     // if (["markedFeatures"].some((prop) => changedProperties.has(prop))) {

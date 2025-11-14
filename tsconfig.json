@@ -23,5 +23,5 @@
     "allowJs": true
   },
   "exclude": ["dist"],
-  "include": ["vite.config.ts", "vite.config-dev.ts", "src", "demos"]
+  "include": ["vite.config.ts", "vite.config-dev.ts", "vite.config-test.ts", "vitest-setup-tests.ts", "src", "demos", "test"]
 }
