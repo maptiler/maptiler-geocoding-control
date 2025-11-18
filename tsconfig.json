@@ -8,6 +8,7 @@
     "module": "ESNext",
     "lib": ["es2021", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    "jsx": "react-jsx",
     /* Bundler mode */
     "resolveJsonModule": true,
     "isolatedModules": true,

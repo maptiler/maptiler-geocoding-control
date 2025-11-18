@@ -4,9 +4,12 @@
 
 Following versions are supported with security updateds:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.0.x   | :white_check_mark: |
+| Version | Supported |
+| ------- | --------- |
+| 0.0.x   | ❌        |
+| 1.x.x   | ❌        |
+| 2.x.x   | ❌        |
+| 3.x.x   | ✅        |
 
 ## Reporting a Vulnerability
 

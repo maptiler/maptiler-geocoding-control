@@ -515,9 +515,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   }
 
   #pick(feature: Feature) {
-    if (this.picked && this.picked.id === feature.id) {
-      // this.#goToPicked();
-    } else {
+    if (!this.picked || this.picked.id !== feature.id) {
       this.picked = feature;
       this.searchValue = feature.place_name;
     }
@@ -579,7 +577,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (["focused"].some((prop) => changedProperties.has(prop))) {
       setTimeout(() => {
         this.focusedDelayed = this.focused;
-      });
+      }, 100);
     }
 
     // close dropdown in the next cycle so that the selected item event has the chance to fire
@@ -588,7 +586,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
         if (this.clearOnBlur && !this.focused) {
           this.searchValue = "";
         }
-      });
+      }, 100);
     }
 
     if (
