@@ -1,6 +1,7 @@
 import { readdirSync } from "node:fs";
 import { resolve } from "node:path";
 import { defineConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 import packagejson from "./package.json";
 
 function green(text: string) {
@@ -31,25 +32,7 @@ function centerText(text: string, lineLength: number) {
   return `${left}${ansiCodes}${text}${right}`;
 }
 
-const entrypoints = readdirSync(resolve(__dirname, "demos/public"))
-  .filter((file) => {
-    return file.endsWith(".html");
-  })
-  .reduce<Record<string, string>>((entries, file) => {
-    // const file = path.
-
-    const camelKey = file
-      .replace(/\.html$/, "")
-      .replace(/-([a-z])/g, (g) => g[1].toUpperCase())
-      .replace(/([0-9])/g, "");
-
-    const key = camelKey.charAt(0).toUpperCase() + camelKey.slice(1);
-    const entry = file;
-    return {
-      ...entries,
-      [key]: entry,
-    };
-  }, {});
+const entrypoints = readdirSync(resolve(__dirname, "demos")).filter((file) => file.endsWith(".html"));
 
 export default defineConfig({
   mode: "development",
@@ -58,7 +41,7 @@ export default defineConfig({
     minify: false,
     sourcemap: true,
     rollupOptions: {
-      input: entrypoints,
+      input: entrypoints.map((file) => `./demos/${file}`),
     },
   },
   define: {
@@ -66,6 +49,9 @@ export default defineConfig({
     __MT_NODE_ENV__: JSON.stringify(process.env.NODE_ENV),
   },
   plugins: [
+    viteStaticCopy({
+      targets: [{ src: "../public/icons", dest: "assets" }],
+    }),
     {
       name: "url-override",
       /**
@@ -73,9 +59,11 @@ export default defineConfig({
        */
       configureServer: (server) => {
         const port = server.config.server.port;
-        const urls = Object.values(entrypoints).map((entry) => {
-          return `http://localhost:${port}/${entry}`;
-        });
+        const urls = entrypoints
+          .map((entry) => {
+            return `http://localhost:${port}/${entry === "index.html" ? "" : entry}`;
+          })
+          .sort();
         const lineLength = Math.max(...urls.map((entry) => entry.length)) + 4;
         console.log("\n");
         console.log("┏" + "━".repeat(lineLength) + "┓");

@@ -194,11 +194,3 @@ button:active :global(svg) {
   width: 270px;
   max-width: 270px;
 }
-
-/* @TODO temporary styles until feature-item is reimplemented */
-feature-item[style="selected"] {
-  background: pink;
-}
-feature-item[style="picked"] {
-  background: lime;
-}

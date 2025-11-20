@@ -13,6 +13,7 @@ import "../components/fail-icon";
 import "../components/loading-icon";
 import "../components/reverse-geocoding-icon";
 import "../components/search-icon";
+import "./geocoder-feature-item";
 
 import type { MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "./geocoder-events";
 import type { MaptilerGeocoderOptions } from "./geocoder-options";
@@ -736,24 +737,21 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                       this.listFeatures,
                       (feature) => feature.id + (feature.address ? "," + feature.address : ""),
                       (feature, i) => html`
-                        <feature-item
+                        <maptiler-geocoder-feature-item
                           .feature=${feature}
                           .showPlaceType=${this.showPlaceType ?? "if-needed"}
-                          style=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
+                          itemStyle=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
                           @mouseenter=${() => {
                             this.#handleMouseEnter(i);
                           }}
                           @select=${() => {
                             this.#pick(feature);
                           }}
-                          @click=${() => {
-                            this.#pick(feature); // @TODO temporary only until select event used above is implemented
-                          }}
                           .missingIconsCache=${this.#missingIconsCache}
                           .iconsBaseUrl=${this.iconsBaseUrl ?? `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`}
                         >
                           ${feature.place_name}
-                        </feature-item>
+                        </maptiler-geocoder-feature-item>
                       `,
                     )}
                   </ul>

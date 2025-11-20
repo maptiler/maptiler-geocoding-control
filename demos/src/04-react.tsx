@@ -58,6 +58,7 @@ function App() {
       noResultsMessage: "No such place found!",
       // reverseGeocodingLimit: 5,
       // reverseGeocodingTypes: ["address"],
+      iconsBaseUrl: "/assets/icons/",
     });
 
     control.current.on("select", (data) => {
