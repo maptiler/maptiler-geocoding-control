@@ -48,7 +48,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     this.#options = options;
   }
 
-  onAdd(map: MLMap): MaptilerGeocoderElement {
+  onAdd(map: MLMap): HTMLElement {
     /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
     // Check if Maptiler SDK is present
     if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
@@ -71,7 +71,11 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
     this.#setElementOptions();
     this.#addEventListeners();
-    return this.#element;
+
+    const div = document.createElement("div");
+    div.className = "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
+    div.appendChild(this.#element as Node);
+    return div;
   }
 
   onRemove(): void {

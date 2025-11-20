@@ -15,7 +15,7 @@ const map = new Map({
 
 const geocodingControl = new GeocodingControl({
   enableReverse: "button",
-  collapsed: false,
+  collapsed: true,
   // pickedResultStyle: "full-geometry-including-polygon-center-marker",
   // limit: 20,
   // types: ["poi"],

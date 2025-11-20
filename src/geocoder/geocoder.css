@@ -5,6 +5,7 @@ form {
   z-index: 10;
   border-radius: 4px;
   margin: 0;
+  padding: 2px;
   transition: max-width 0.25s;
   box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
   --color-text: #444952;
@@ -18,7 +19,7 @@ form *:before {
   box-sizing: border-box;
 }
 form.can-collapse {
-  max-width: 29px;
+  max-width: 33px;
 }
 form.can-collapse input::placeholder {
   transition: opacity 0.25s;
