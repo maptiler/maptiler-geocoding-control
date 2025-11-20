@@ -512,7 +512,12 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       return;
     }
 
-    const effFullGeometryStyle = !this.#options.fullGeometryStyle ? undefined : this.#options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.#options.fullGeometryStyle;
+    const effFullGeometryStyle =
+      this.#options.fullGeometryStyle === undefined || this.#options.fullGeometryStyle === true
+        ? DEFAULT_GEOMETRY_STYLE
+        : !this.#options.fullGeometryStyle
+          ? undefined
+          : this.#options.fullGeometryStyle;
     const source = this.#map.getSource<GeoJSONSource>(RESULT_SOURCE);
 
     if ((!effFullGeometryStyle?.fill && !effFullGeometryStyle?.line) || (!source && !this.#savedData)) {
