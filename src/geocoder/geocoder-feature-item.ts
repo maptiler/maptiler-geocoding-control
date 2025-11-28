@@ -163,7 +163,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
               : nothing}
           </span>
 
-          <span class="line2"> ${this.#isReverse ? "" : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>
+          <span class="line2"> ${this.#isReverse ? this.feature?.text : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>
         </span>
       </li>
     `;
