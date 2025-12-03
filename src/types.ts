@@ -58,4 +58,23 @@ export type EnableReverse = "never" | "always" | "button";
 
 export type ShowPlaceType = "never" | "always" | "if-needed";
 
-export type TypeRule = string | [minZoom: number | null | undefined, maxZoom: number | null | undefined, type: string];
+export type TypeRule = PlaceType | [minZoom: number | null | undefined, maxZoom: number | null | undefined, type: PlaceType];
+
+export type PlaceType =
+  | "continental_marine"
+  | "country"
+  | "major_landform"
+  | "region"
+  | "subregion"
+  | "county"
+  | "joint_municipality"
+  | "joint_submunicipality"
+  | "municipality"
+  | "municipal_district"
+  | "locality"
+  | "neighbourhood"
+  | "place"
+  | "postal_code"
+  | "address"
+  | "road"
+  | "poi";

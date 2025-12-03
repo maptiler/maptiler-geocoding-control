@@ -53,12 +53,6 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
   @state() private spriteIcon: SpriteIcon | undefined;
   @state() private index: number = 0;
 
-  // $: {
-  //   index = categories?.length ?? 0;
-
-  //   loadIcon();
-  // }
-
   #loadSprites() {
     spritePromise ??= fetch(`${this.iconsBaseUrl}sprite${scaleUrl}.json`)
       .then((response) => response.json())
@@ -104,6 +98,13 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
 
       this.imageUrl = this.category ? this.iconsBaseUrl + this.category.replace(/ /g, "_") + ".svg" : undefined;
     } while (this.index > -1 && (!this.imageUrl || this.missingIconsCache.has(this.imageUrl)));
+  }
+
+  willUpdate(changedProperties: Map<string, unknown>) {
+    if (changedProperties.has("feature") && this.#categories) {
+      this.index = this.#categories.length;
+      this.#loadIcon();
+    }
   }
 
   render() {

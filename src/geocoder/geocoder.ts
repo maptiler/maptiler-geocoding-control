@@ -62,23 +62,39 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @property({ type: Object }) showResultsWhileTyping?: boolean | undefined; // type object because undefined is valid value
   @property({ type: Array }) types?: TypeRule[];
 
+  /** Reference to the input element the user can type a query into */
   @query("input") private input!: HTMLInputElement;
 
+  /** Value to search via geocoding */
   @state() private searchValue: string = "";
+  /** Features found via geocoding */
   @state() private listFeatures?: Feature[];
+  /** Index of item currently selected from the list of found features */
   @state() private selectedItemIndex: number = -1;
+  /** Feature that has been picked by the user */
   @state() private picked?: Feature;
+  /** Cached found features to be used to restore the features when loading more data for picked feature */
   @state() private cachedFeatures: Feature[] = [];
+  /** Effectively a cache key for cached features */
   @state() private lastSearchUrl: string = "";
+  /** Last error that happened in geocoding, to be shown to user */
   @state() private error: unknown;
-  @state() private abortController?: AbortController; // beware, this one is referenced in template
+  /** AbortController instance used to potentially cancel the current geocoding request*/
+  @state() private abortController?: AbortController;
+  /** Focus state of input element */
   @state() private focused: boolean = false;
+  /** Focus state of input element, delayed for a moment to not close feature list immediately after losing focus */
   @state() private focusedDelayed: boolean = false;
 
+  /** Helps to trigger logic only after this instance gets fully initialized */
   #isInitialized = false;
+  /** Helps to trigger logic running when feature list hides only after it gets opened for the first time */
   #wasFeatureListVisible = false;
+  /** Timeout ref for debouncing logic */
   #searchTimeoutRef?: number;
+  /** Cache for URLs of icons that couldn't be loaded for any reason, as to not try them again unnecessarily */
   #missingIconsCache = new Set<string>();
+  /** Center and zoom of a map potentially connected to this instance */
   #centerAndZoom: [zoom: number, lon: number, lat: number] | undefined;
 
   get #selected(): Feature | undefined {
@@ -98,6 +114,11 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     this.#isInitialized = true;
   }
 
+  /**
+   * Set the options of this instance.
+   *
+   * @param options options to set
+   */
   setOptions(options: Partial<MaptilerGeocoderOptions>) {
     const elementOptions = { ...options };
     for (const prop of Object.keys(elementOptions) as Array<keyof MaptilerGeocoderOptions>) {
@@ -295,8 +316,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
         sp.set("language", Array.isArray(this.language) ? this.language.join(",") : (this.language ?? ""));
       }
 
-      // const [zoom] = mapController?.getCenterAndZoom() ?? [];
-      const zoom = undefined as number | undefined;
+      const [zoom] = this.#centerAndZoom ?? [undefined];
 
       let effTypes = (!isReverse || this.reverseGeocodingTypes === undefined ? this.types : this.reverseGeocodingTypes)
         ?.map((typeRule) =>
@@ -343,14 +363,13 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       const effReverseGeocodingLimit = this.reverseGeocodingLimit ?? limit;
 
       if (effReverseGeocodingLimit > 1 && effTypes?.length !== 1) {
-        console.warn("For reverse geocoding when limit > 1 then types must contain single value.");
+        console.warn("[MapTilerGeocodingControl] Warning: For reverse geocoding when limit > 1 then types must contain single value.");
       }
 
       if (isReverse) {
         if (effReverseGeocodingLimit === 1 || this.exhaustiveReverseGeocoding || effTypes?.length === 1) {
           sp.set("limit", String(effReverseGeocodingLimit));
         }
-        // } else if (this.limit !== undefined) {
       } else {
         sp.set("limit", String(limit));
       }
@@ -368,15 +387,13 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       if (url === this.lastSearchUrl) {
         if (byId) {
           if (this.clearListOnPick) {
-            this.listFeatures = undefined;
-            // this.#dispatch("featuresclear");
-            // this.#clearFeatures();
+            this.#clearFeatures();
           }
 
           this.picked = this.cachedFeatures[0];
         } else {
           this.listFeatures = this.cachedFeatures;
-          // this.#dispatch("featureslisted", { features: this.listFeatures });
+          this.#dispatch("featureslisted", { features: this.listFeatures });
 
           if (this.listFeatures[this.selectedItemIndex]?.id !== this.#selected?.id) {
             this.selectedItemIndex = -1;
@@ -530,11 +547,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (!this.selectFirst !== false || this.picked) {
       this.selectedItemIndex = -1;
     }
-
-    // // re-focus on picked
-    // if (this.flyToSelected) {
-    //   this.#goToPicked();
-    // }
   }
 
   #handleClear() {
@@ -547,28 +559,22 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
   willUpdate(changedProperties: Map<string, unknown>) {
     if (changedProperties.has("error") && this.error) {
-      console.error("Error from geocoding component", this.error);
+      console.error("[MapTilerGeocodingControl] Error:", this.error);
     }
 
     if (changedProperties.has("enableReverse")) {
       this.reverseActive = this.enableReverse === "always";
     }
 
-    // @TODO is this needed or is it handled by a different piece of code??
     if (["picked"].some((prop) => changedProperties.has(prop))) {
       if (this.picked) {
         if (this.clearListOnPick) {
           this.#clearFeatures();
         }
 
-        // this.markedFeatures = undefined;
         this.selectedItemIndex = -1;
       }
     }
-
-    // if (["markedFeatures", "listFeatures"].some((prop) => changedProperties.has(prop)) && this.markedFeatures !== this.listFeatures) {
-    //   this.markedFeatures = undefined;
-    // }
 
     if (["searchValue", "minLength"].some((prop) => changedProperties.has(prop)) && this.#isSearchValueTooShort) {
       this.#clearFeatures();
@@ -578,12 +584,8 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (["focused"].some((prop) => changedProperties.has(prop))) {
       setTimeout(() => {
         this.focusedDelayed = this.focused;
-      }, 100);
-    }
 
-    // close dropdown in the next cycle so that the selected item event has the chance to fire
-    if (["focused"].some((prop) => changedProperties.has(prop))) {
-      setTimeout(() => {
+        // close dropdown in the next cycle so that the selected item event has the chance to fire
         if (this.clearOnBlur && !this.focused) {
           this.searchValue = "";
         }
@@ -599,14 +601,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     ) {
       this.selectedItemIndex = 0;
     }
-
-    // if (["searchValue"].some((prop) => changedProperties.has(prop))) {
-    //   this.#dispatch("querychange", { query: this.searchValue });
-    // }
-
-    // if (["listFeatures"].some((prop) => changedProperties.has(prop))) {
-    //   this.#dispatch("featureslisted", { features: this.listFeatures });
-    // }
 
     if (["listFeatures", "selectedItemIndex"].some((prop) => changedProperties.has(prop))) {
       this.#dispatch("select", { feature: this.#selected });
@@ -639,17 +633,9 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       }
     }
 
-    // if (["markedFeatures"].some((prop) => changedProperties.has(prop))) {
-    //   this.#dispatch("featuresmarked", { features: this.markedFeatures });
-    // }
-
     if (["reverseActive"].some((prop) => changedProperties.has(prop))) {
       this.#dispatch("reversetoggle", { reverse: this.reverseActive });
     }
-
-    // if (["reverseActive"].some((prop) => changedProperties.has(prop)) && mapController) {
-    //   mapController.indicateReverse(this.reverseActive);
-    // }
   }
 
   render() {

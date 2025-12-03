@@ -152,12 +152,18 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     this.#element?.blur();
   }
 
+  /** Markers currently displayed on the map */
   #markers = new Map<Feature, Marker>();
+  /** Marker representing the selected feature */
   #selectedMarker: Marker | undefined;
+  /** Marker representing the picked feature */
   #reverseMarker: Marker | undefined;
+  /** Features currently marked on the map */
   #markedFeatures?: Feature[];
-  #savedData: GeoJSON | undefined; // used to restore features on style switch
-  #prevIdToFly?: string; // was not state nor prop before
+  /** Used to restore features on style switch */
+  #savedData: GeoJSON | undefined;
+  /** Remember last feature that the map flew to as to not do it again */
+  #prevIdToFly?: string;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
     reversetoggle: (event: ReverseToggleEvent) => {
@@ -486,7 +492,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
           marker.togglePopup();
         });
 
-        // element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+        element.classList.toggle("marker-fuzzy", !!feature.matching_text);
 
         this.#markers.set(feature, marker);
       }

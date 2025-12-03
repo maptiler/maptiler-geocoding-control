@@ -12,49 +12,47 @@ export async function getProximity(centerAndZoom: [zoom: number, lon: number, la
       return rule.coordinates.join(",");
     }
 
-    cg: if (rule.type === "client-geolocation") {
+    if (rule.type === "client-geolocation") {
       if (cachedLocation && rule.cachedLocationExpiry && cachedLocation.time + rule.cachedLocationExpiry > Date.now()) {
-        if (!cachedLocation.coords) {
-          break cg;
+        if (cachedLocation.coords) {
+          return cachedLocation.coords;
         }
+      } else {
+        let coords: string | undefined;
 
-        return cachedLocation.coords;
-      }
+        try {
+          coords = await new Promise<string>((resolve, reject) => {
+            ac.signal.addEventListener("abort", () => {
+              reject(Error("aborted"));
+            });
 
-      let coords: string | undefined;
-
-      try {
-        coords = await new Promise<string>((resolve, reject) => {
-          ac.signal.addEventListener("abort", () => {
-            reject(Error("aborted"));
+            navigator.geolocation.getCurrentPosition(
+              (pos) => {
+                resolve([pos.coords.longitude, pos.coords.latitude].map((c) => c.toFixed(6)).join(","));
+              },
+              (err) => {
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                reject(err);
+              },
+              rule,
+            );
           });
 
-          navigator.geolocation.getCurrentPosition(
-            (pos) => {
-              resolve([pos.coords.longitude, pos.coords.latitude].map((c) => c.toFixed(6)).join(","));
-            },
-            (err) => {
-              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-              reject(err);
-            },
-            rule,
-          );
-        });
-
-        return coords;
-      } catch {
-        // ignore
-      } finally {
-        if (rule.cachedLocationExpiry) {
-          cachedLocation = {
-            time: Date.now(),
-            coords,
-          };
+          return coords;
+        } catch {
+          // ignore
+        } finally {
+          if (rule.cachedLocationExpiry) {
+            cachedLocation = {
+              time: Date.now(),
+              coords,
+            };
+          }
         }
-      }
 
-      if (ac.signal.aborted) {
-        return;
+        if (ac.signal.aborted) {
+          return;
+        }
       }
     }
 
