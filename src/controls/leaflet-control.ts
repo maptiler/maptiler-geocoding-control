@@ -155,11 +155,17 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#element?.blur();
   }
 
+  /** Markers currently displayed on the map */
   #markers = new Map<Feature, Marker>();
+  /** Marker representing the selected feature */
   #selectedMarker: Marker | undefined;
+  /** Marker representing the picked feature */
   #reverseMarker: Marker | undefined;
+  /** Features currently marked on the map */
   #markedFeatures?: Feature[];
+  /** Remember last feature that the map flew to as to not do it again */
   #prevIdToFly?: string;
+  /** Layer used for showing geometry results */
   #resultLayer?: GeoJSON;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
@@ -492,7 +498,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
           marker.togglePopup();
         });
 
-        // element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+        element?.classList.toggle("marker-fuzzy", !!feature.matching_text);
 
         this.#markers.set(feature, marker);
       }
