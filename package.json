@@ -58,19 +58,24 @@
   "main": "dist/index.js",
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
+      "types": "./dist/src/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.umd.js"
     },
     "./maplibregl": {
-      "types": "./dist/maplibregl.d.ts",
+      "types": "./dist/src/maplibregl.d.ts",
       "import": "./dist/maplibregl.js",
       "require": "./dist/maplibregl.umd.js"
     },
     "./maptilersdk": {
-      "types": "./dist/maptilersdk.d.ts",
+      "types": "./dist/src/maptilersdk.d.ts",
       "import": "./dist/maptilersdk.js",
       "require": "./dist/maptilersdk.umd.js"
+    },
+    "./leaflet": {
+      "types": "./dist/src/leaflet.public.d.ts",
+      "import": "./dist/leaflet.public.js",
+      "require": "./dist/leaflet.public.umd.js"
     }
   },
   "dependencies": {
