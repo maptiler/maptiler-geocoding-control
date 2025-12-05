@@ -72,6 +72,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
     const div = map.getContainer().ownerDocument.createElement("div");
     div.classList.add("leaflet-ctrl-geocoder", "leaflet-bar");
+    div.style.zIndex = "850";
     div.appendChild(this.#element as Node);
 
     DomEvent.disableClickPropagation(div);
@@ -254,6 +255,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
     this.#element.setOptions(this.options);
     this.#element.fetchFullGeometryOnPick = this.options.pickedResultStyle !== "marker-only";
+    this.#element.openListOnTop = this.options.position === "bottomleft" || this.options.position === "bottomright";
   }
 
   #addEventListeners() {
@@ -454,7 +456,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
     if (this.options.showResultMarkers !== false && this.options.showResultMarkers !== null) {
       for (const feature of markedFeatures ?? []) {
-        if (feature.id === picked?.id) {
+        if (feature.id === picked?.id || feature.place_type.includes("reverse")) {
           continue;
         }
 
@@ -509,7 +511,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", false);
     this.#selectedMarker = undefined;
 
-    if (this.options.markerOnSelected) {
+    if (this.options.markerOnSelected !== false) {
       this.#selectedMarker = this.#markers.get(feature);
       this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", true);
     }

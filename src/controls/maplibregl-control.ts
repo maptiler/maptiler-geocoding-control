@@ -49,6 +49,10 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
   }
 
   onAdd(map: MLMap): HTMLElement {
+    this.#map = map;
+    this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
+    this.#element.classList.add("maplibregl-geocoder");
+
     /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
     // Check if Maptiler SDK is present
     if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
@@ -64,17 +68,20 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
           this.#options.language = match[1];
         }
       }
+
+      this.#element.classList.add("maptiler-geocoder");
     }
     /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
-    this.#map = map;
-    this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
     this.#setElementOptions();
     this.#addEventListeners();
 
-    const div = document.createElement("div");
-    div.className = "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
+    const div = map._container.ownerDocument.createElement("div");
+    div.classList.add("maplibregl-ctrl-geocoder", "maplibregl-ctrl", "maplibregl-ctrl-group");
+    div.style.position = "relative";
+    div.style.zIndex = "3";
     div.appendChild(this.#element as Node);
+    setTimeout(() => this.#element?.setOptions({ openListOnTop: div.matches(".maplibregl-ctrl-bottom-left *, .maplibregl-ctrl-bottom-right *") }));
     return div;
   }
 
@@ -447,7 +454,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
 
     if (this.#options.showResultMarkers !== false && this.#options.showResultMarkers !== null) {
       for (const feature of markedFeatures ?? []) {
-        if (feature.id === picked?.id) {
+        if (feature.id === picked?.id || feature.place_type.includes("reverse")) {
           continue;
         }
 
@@ -503,7 +510,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     this.#selectedMarker?.getElement().classList.toggle("marker-selected", false);
     this.#selectedMarker = undefined;
 
-    if (this.#options.markerOnSelected) {
+    if (this.#options.markerOnSelected !== false) {
       this.#selectedMarker = this.#markers.get(feature);
       this.#selectedMarker?.getElement().classList.toggle("marker-selected", true);
     }

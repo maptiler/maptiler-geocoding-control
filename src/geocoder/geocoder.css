@@ -5,7 +5,6 @@ form {
   z-index: 10;
   border-radius: 4px;
   margin: 0;
-  padding: 2px;
   transition: max-width 0.25s;
   box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
   --color-text: #444952;
@@ -19,17 +18,20 @@ form *:before {
   box-sizing: border-box;
 }
 form.can-collapse {
-  max-width: 33px;
+  max-width: 29px;
 }
 form.can-collapse input::placeholder {
   transition: opacity 0.25s;
   opacity: 0;
 }
-form,
-form:focus-within,
-form:hover {
+form {
   width: 270px;
   max-width: 270px;
+}
+form:focus-within,
+form:hover {
+  width: 270px !important;
+  max-width: 270px !important;
 }
 form input::placeholder,
 form:focus-within input::placeholder,
@@ -91,7 +93,7 @@ div.error {
 div.error div {
   flex-grow: 1;
 }
-div.error :global(svg) {
+div.error maptiler-geocode-fail-icon {
   flex-shrink: 0;
   width: 20px;
   height: 20px;
@@ -99,13 +101,12 @@ div.error :global(svg) {
 div.error button {
   flex-shrink: 0;
 }
-div.error button > :global(svg) {
-  width: 13px;
-  fill: #e25041;
+div.error button maptiler-geocode-clear-icon {
+  --color-icon-button: #e25041;
 }
-div.error button:hover :global(svg),
-div.error button:active :global(svg) {
-  fill: #444952;
+div.error button:hover maptiler-geocode-clear-icon,
+div.error button:active maptiler-geocode-clear-icon {
+  --color-icon-button: inherit;
 }
 div.no-results {
   padding: 14px 24px 14px 16px;
@@ -113,17 +114,13 @@ div.no-results {
   color: #6b7c93;
   box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
 }
-div.no-results :global(svg) {
+div.no-results maptiler-geocode-fail-icon {
   margin-top: 4px;
   flex-shrink: 0;
   width: 20px;
   height: 20px;
-  width: 30px;
-  height: 30px;
 }
-:global(.leaflet-bottom) ul.options,
-:global(.maplibregl-ctrl-bottom-left) ul.options,
-:global(.maplibregl-ctrl-bottom-right) ul.options {
+ul.options.open-on-top {
   top: auto;
   bottom: calc(100% + 6px);
 }
@@ -138,9 +135,9 @@ button {
 button:hover {
   background-color: transparent;
 }
-button:hover :global(svg),
-button:active :global(svg) {
-  fill: #2b8bfb;
+button:hover,
+button:active {
+  --color-icon-button: #2b8bfb;
 }
 .input-group {
   display: flex;
@@ -156,10 +153,6 @@ button:active :global(svg) {
 .search-button {
   flex-shrink: 0;
 }
-:global(.maplibregl-ctrl-geocoder:not(.maptiler-ctrl) .search-button svg) {
-  width: 12px !important;
-  transform: translate(0.5px, 0);
-}
 .clear-button-container {
   display: flex;
   display: none;
@@ -170,28 +163,29 @@ button:active :global(svg) {
   display: flex;
   flex-shrink: 0;
 }
-:global(.maplibregl-ctrl-geocoder) {
-  position: relative;
-  z-index: 3;
-}
-:global(.maptiler-ctrl):not(:empty) {
+:host(.maptiler-geocoder):not(:empty) {
   box-shadow: none;
 }
-:global(.maptiler-ctrl) .input-group {
-  padding-inline: 8px;
+:host(.maptiler-geocoder) .input-group {
   border: white solid 2px;
 }
-:global(.maptiler-ctrl) .input-group:focus-within {
+:host(.maptiler-geocoder) .input-group:focus-within {
   border: #2b8bfb solid 2px;
   outline: 0;
   outline: none;
 }
-:global(.maptiler-ctrl) form.can-collapse {
+:host(.maptiler-geocoder) form.can-collapse {
   max-width: 33px;
 }
-:global(.maptiler-ctrl) form,
-:global(.maptiler-ctrl) form:focus-within,
-:global(.maptiler-ctrl) form:hover {
+:host(.maptiler-geocoder) form,
+:host(.maptiler-geocoder) form:focus-within,
+:host(.maptiler-geocoder) form:hover {
   width: 270px;
   max-width: 270px;
+}
+:host(.leaflet-geocoder) .input-group {
+  border: white solid 1px;
+}
+:host(.leaflet-geocoder) form.can-collapse {
+  max-width: 30px;
 }

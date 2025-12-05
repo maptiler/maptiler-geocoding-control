@@ -30,13 +30,6 @@ export type MaptilerGeocoderOptions = {
   bbox?: BBox;
 
   /**
-   * CSS class for the root element.
-   *
-   * Default: `undefined`.
-   */
-  class?: string;
-
-  /**
    * Title of the clear button.
    *
    * Default: `"clear"`.
@@ -194,6 +187,13 @@ export type MaptilerGeocoderOptions = {
    * ```
    */
   noResultsMessage?: string;
+
+  /**
+   * Opens the result list above the query input instead of below. Used when mounted at the bottom of a map.
+   *
+   * Default: `false`.
+   */
+  openListOnTop?: boolean;
 
   /**
    * Custom placeholder for the input box.
