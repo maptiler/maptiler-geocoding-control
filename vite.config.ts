@@ -1,128 +1,81 @@
-import { svelte } from "@sveltejs/vite-plugin-svelte";
 import process from "node:process";
-import { sveltePreprocess } from "svelte-preprocess";
-import { BuildOptions, defineConfig } from "vite";
-import { syncInfo } from "./sync-info";
+import { type GlobalsOption } from "rollup";
+import { defineConfig, type LibraryOptions } from "vite";
+import dts from "vite-plugin-dts";
+import { externalizeDeps } from "vite-plugin-externalize-deps";
 
-const libs = {
-  leaflet: {
-    fileName: "leaflet",
-    entry: ["src/leaflet.ts"],
-    name: "leafletMaptilerGeocoder",
+const umd = process.env.MODE === "umd";
+
+const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
+  index: {
+    fileName: "index",
+    entry: ["src/index.ts"],
+    name: "maptilerGeocoder",
+    globals: {},
   },
-  maplibre: {
+  // leaflet: {
+  //   fileName: "leaflet",
+  //   entry: ["src/leaflet.ts"],
+  //   name: "maptilerGeocoder",
+  //    globals: {
+  //      leaflet: "L",
+  //    },
+  // },
+  maplibregl: {
     fileName: "maplibregl",
     entry: ["src/maplibregl.ts"],
-    name: "maplibreglMaptilerGeocoder",
+    name: "maptilerGeocoder",
+    globals: {
+      "maplibre-gl": "maplibregl",
+    },
   },
   maptilersdk: {
     fileName: "maptilersdk",
     entry: ["src/maptilersdk.ts"],
-    name: "maptilersdkMaptilerGeocoder",
+    name: "maptilerGeocoder",
+    globals: {
+      // replace MapLibre with MapTiler SDK
+      "maplibre-gl": "maptilersdk",
+      "@maptiler/sdk": "maptilersdk",
+    },
   },
   openlayers: {
     fileName: "openlayers",
     entry: ["src/openlayers.ts"],
-    name: "openlayersMaptilerGeocoder",
-  },
-  react: {
-    fileName: "react",
-    entry: ["src/react.ts"],
-    name: "reactMaptilerGeocoder",
-  },
-  vanilla: {
-    fileName: "vanilla",
-    entry: ["src/vanilla.ts"],
     name: "maptilerGeocoder",
-  },
-  "leaflet-controller": {
-    fileName: "leaflet-controller",
-    entry: ["src/leaflet-controller.ts"],
-    name: "leafletMaptilerGeocodingController",
-  },
-  "maplibregl-controller": {
-    fileName: "maplibregl-controller",
-    entry: ["src/maplibregl-controller.ts"],
-    name: "maplibreglMaptilerGeocodingController",
-  },
-  "openlayers-controller": {
-    fileName: "openlayers-controller",
-    entry: ["src/openlayers-controller.ts"],
-    name: "openlayersMaptilerGeocodingController",
+    globals: (name) => (name.startsWith("ol") ? name.replaceAll("/", ".") : ""),
   },
 };
 
-let lib: BuildOptions["lib"];
+const flavour = flavours[process.env.FLAVOUR!] ?? flavours.standalone;
 
-let rollupOptions: BuildOptions["rollupOptions"];
-
-const flavour = process.env.FLAVOUR;
-
-if (flavour) {
-  if (!(flavour in libs)) {
-    throw new Error("invalid FLAVOUR");
-  }
-
-  lib = libs[flavour as keyof typeof libs];
-
-  rollupOptions = {
-    external: [
-      "@maptiler/sdk",
-      "maplibre-gl",
-      "leaflet",
-      "react",
-      "react-dom",
-      /^ol(\/.*)?/,
-    ],
-    output: [
-      {
-        format: "es",
-        entryFileNames: "[name].js",
-        chunkFileNames: "[name].js",
-        assetFileNames: "[name].[ext]",
-      },
-      {
-        name: lib.name,
-        format: "umd",
-        entryFileNames: "[name].umd.js",
-        chunkFileNames: "[name].umd.js",
-        assetFileNames: "[name].[ext]",
-
-        // Provide global variables to use in the UMD build for externalized deps
-        globals(name) {
-          const global = {
-            "@maptiler/sdk": "maptilersdk",
-            "maplibre-gl": "maplibregl",
-            leaflet: "L",
-            react: "React",
-            "react-dom": "ReactDOM",
-          }[name];
-
-          return (
-            global ?? (name.startsWith("ol") ? name.replace(/\//g, ".") : "")
-          );
-        },
-      },
-    ],
-  };
-}
-
-// https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    {
-      name: "sync-info",
-      buildStart: syncInfo,
-    },
-    svelte({
-      preprocess: sveltePreprocess(),
-    }),
-  ],
+  plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos"] })],
   publicDir: "public",
   build: {
     sourcemap: true,
     emptyOutDir: false,
-    lib,
-    rollupOptions,
+    lib: flavour,
+    rollupOptions: {
+      output: [
+        umd
+          ? {
+              name: flavour.name,
+              format: "umd",
+              entryFileNames: "[name].umd.js",
+              chunkFileNames: "[name].umd.js",
+              assetFileNames: "[name].[ext]",
+
+              // Provide global variables to use in the UMD build for externalized deps
+              globals: flavour.globals,
+            }
+          : {
+              format: "es",
+              entryFileNames: "[name].js",
+              chunkFileNames: "[name].js",
+              assetFileNames: "[name].[ext]",
+            },
+      ],
+    },
   },
 });

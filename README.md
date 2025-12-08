@@ -22,15 +22,15 @@
 
 The _MapTiler Geocoding control_ implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
 
+> ⚠️ _MapTiler Geocoding control_ v3 support for _Leaflet_ (v1 and v2) and _OpenLayers_ is to be added soon. In the meantime, please use _MapTiler Geocoding control_ v2 with these map libraries.
+
 ## Why?
 
 The _Geocoding control_ uses the [MapTiler Geocoding API](https://www.maptiler.com/cloud/geocoding/). You can use the API directly from your web or backend applications or use the [API Client JS](https://docs.maptiler.com/client-js/) library.
 
-With this control, users of
-mapping application can:
+With this control, users of mapping application can:
 
-- Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down
-  to the address level
+- Find any place on Earth (States, Cities, Streets, Addresses, POIs, ...) down to the address level
 - Find and identify objects or place names using a coordinate pair or a single mouse click (reverse geocoding)
 - Restrict the search area to a specific country, bounding box, or proximity
 - Highlight searched results on the map (marker or full geometry)
@@ -39,17 +39,11 @@ mapping application can:
 
 The component can be used as an ES module or UMD module with or without bundler.
 
-Geocoding control is also provided as [React component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/) and [Svelte component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/) and [other libraries](#installation-and-more-usage-examples).
+Geocoding control itself is provided as a [Web component](https://developer.mozilla.org/en-US/docs/Web/API/Web_components) which can be used with [React](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/), [Svelte](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/), and any other modern frontend library, or without any library at all.
 
 ## Install
 
-Install the Geocoding control unsing `npm`:
-
-**⚠️ Warning! ⚠️**
-
-The current version of Geocoding Control is only compatible with Svelte v4, this will potentially cause peer dependency issues when installing with certain versions of npm in Svelte projects (eg if you're using Svelte v5), or if you intend to import the Svelte component directly.
-
-If you are using a this library in a Svelte project you can npm install with `--force` or `--legacy-peer-deps` and use only the **pre-compiled `GeoLocatControl` vanilla module**, not the Svelte component.
+Install the Geocoding control unsing `npm`, together with your map library (MapTiler SDK as an example):
 
 ```shell
 npm install --save @maptiler/geocoding-control @maptiler/sdk
@@ -57,7 +51,7 @@ npm install --save @maptiler/geocoding-control @maptiler/sdk
 
 ## Quick start
 
-Use the component in your mapping application:
+Use the component in your mapping application (MapTiler SDK as an example):
 
 ```js
 import * as maptilersdk from "@maptiler/sdk";
@@ -80,21 +74,22 @@ NOTE: Get your personal [MapTiler API key](https://docs.maptiler.com/cloud/api/a
 
 ## Installation and more usage examples
 
-- [With MapTiler SDK](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/sdk-js/)
-- [With MapLibre GL](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/maplibre-gl-js/)
-- [With Leaflet](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/leaflet/)
-- [With OpenLayers](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/openlayers/)
-- [As a React component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/)
-- [As Svelte component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/)
-- [As vanilla JavaScript module](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/vanilla-js/)
+- [As a standalone Geocoding component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/standalone/) _(to be updated for v3)_
+- [With MapTiler SDK](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/sdk-js/) _(to be updated for v3)_
+- [With MapLibre GL](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/maplibre-gl-js/) _(to be updated for v3)_
+- [With Leaflet](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/leaflet/) _(to be updated for v3)_
+- [With OpenLayers](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/openlayers/) _(to be updated for v3)_
+- [As a React component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/react/) _(to be updated for v3)_
+- [As Svelte component](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/svelte/) _(to be updated for v3)_
+- [As vanilla JavaScript module](https://docs.maptiler.com/sdk-js/modules/geocoding/api/usage/vanilla-js/) _(to be updated for v3)_
 
 ## API Documentation
 
 In addition to the details and examples provided in this `README.md` and our documentation, check out
 
 - [The complete Geocoding service API documentation](https://docs.maptiler.com/cloud/api/geocoding/)
-- [The complete Geocoding control reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/)
-- [UMD global variables](https://docs.maptiler.com/sdk-js/modules/geocoding/#umd-global-variables)
+- [The complete Geocoding control reference](https://docs.maptiler.com/sdk-js/modules/geocoding/api/api-reference/) _(to be updated for v3)_
+- [UMD global variables](https://docs.maptiler.com/sdk-js/modules/geocoding/#umd-global-variables) _(to be updated for v3)_
 
 ## Development
 
@@ -111,6 +106,8 @@ You will find compilation result in the `dist` directory.
 ```bash
 npm install && VITE_API_KEY=YOUR_MAPTILER_API_KEY_HERE npm run dev
 ```
+
+Alternatively, you can provide your API key via `key` URL param.
 
 ### POI icons and bundlers
 

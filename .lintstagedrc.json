@@ -1,4 +1,4 @@
 {
   "*": ["prettier --check"],
-  "*.{ts,svelte}": ["eslint"]
+  "*.{ts}": ["eslint"]
 }

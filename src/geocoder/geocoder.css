@@ -1,0 +1,197 @@
+form {
+  font-family: "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  position: relative;
+  background-color: #fff;
+  z-index: 10;
+  border-radius: 4px;
+  margin: 0;
+  padding: 2px;
+  transition: max-width 0.25s;
+  box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
+  --color-text: #444952;
+  --color-icon-button: #444952;
+  pointer-events: all;
+}
+form,
+form *,
+form *:after,
+form *:before {
+  box-sizing: border-box;
+}
+form.can-collapse {
+  max-width: 33px;
+}
+form.can-collapse input::placeholder {
+  transition: opacity 0.25s;
+  opacity: 0;
+}
+form,
+form:focus-within,
+form:hover {
+  width: 270px;
+  max-width: 270px;
+}
+form input::placeholder,
+form:focus-within input::placeholder,
+form:hover input::placeholder {
+  opacity: 1;
+}
+input {
+  font: inherit;
+  font-size: 14px;
+  flex-grow: 1;
+  min-height: 29px;
+  background-color: transparent;
+  color: #444952;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+input:focus {
+  color: #444952;
+  outline: 0;
+  outline: none;
+  box-shadow: none;
+}
+ul,
+div.error,
+div.no-results {
+  background-color: #fff;
+  border-radius: 4px;
+  left: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  top: calc(100% + 6px);
+  overflow: hidden;
+}
+ul {
+  font-size: 14px;
+  line-height: 16px;
+  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+}
+div.error,
+div.no-results {
+  font: inherit;
+  line-height: 18px;
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+}
+div.error {
+  padding: 16px;
+  font-weight: 600;
+  color: #e25041;
+  background-color: #fbeae8;
+}
+div.error div {
+  flex-grow: 1;
+}
+div.error :global(svg) {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+div.error button {
+  flex-shrink: 0;
+}
+div.error button > :global(svg) {
+  width: 13px;
+  fill: #e25041;
+}
+div.error button:hover :global(svg),
+div.error button:active :global(svg) {
+  fill: #444952;
+}
+div.no-results {
+  padding: 14px 24px 14px 16px;
+  font-weight: 400;
+  color: #6b7c93;
+  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+}
+div.no-results :global(svg) {
+  margin-top: 4px;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  width: 30px;
+  height: 30px;
+}
+:global(.leaflet-bottom) ul.options,
+:global(.maplibregl-ctrl-bottom-left) ul.options,
+:global(.maplibregl-ctrl-bottom-right) ul.options {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+button {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+  height: auto;
+  width: auto;
+}
+button:hover {
+  background-color: transparent;
+}
+button:hover :global(svg),
+button:active :global(svg) {
+  fill: #2b8bfb;
+}
+.input-group {
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+  padding-inline: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.input-group:focus-within {
+  outline: #2b8bfb solid 2px;
+}
+.search-button {
+  flex-shrink: 0;
+}
+:global(.maplibregl-ctrl-geocoder:not(.maptiler-ctrl) .search-button svg) {
+  width: 12px !important;
+  transform: translate(0.5px, 0);
+}
+.clear-button-container {
+  display: flex;
+  display: none;
+  position: relative;
+  align-items: stretch;
+}
+.clear-button-container.displayable {
+  display: flex;
+  flex-shrink: 0;
+}
+:global(.maplibregl-ctrl-geocoder) {
+  position: relative;
+  z-index: 3;
+}
+:global(.maptiler-ctrl):not(:empty) {
+  box-shadow: none;
+}
+:global(.maptiler-ctrl) .input-group {
+  padding-inline: 8px;
+  border: white solid 2px;
+}
+:global(.maptiler-ctrl) .input-group:focus-within {
+  border: #2b8bfb solid 2px;
+  outline: 0;
+  outline: none;
+}
+:global(.maptiler-ctrl) form.can-collapse {
+  max-width: 33px;
+}
+:global(.maptiler-ctrl) form,
+:global(.maptiler-ctrl) form:focus-within,
+:global(.maptiler-ctrl) form:hover {
+  width: 270px;
+  max-width: 270px;
+}

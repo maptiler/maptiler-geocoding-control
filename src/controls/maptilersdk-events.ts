@@ -1,0 +1,31 @@
+import type {
+  FeaturesListedEvent,
+  MaplibreglGeocodingControlEvent,
+  MaplibreglGeocodingControlEventName,
+  MaplibreglGeocodingControlEventNameMap,
+  MarkerClickEvent,
+  MarkerMouseEnterEvent,
+  MarkerMouseLeaveEvent,
+  PickEvent,
+  QueryChangeEvent,
+  RequestEvent,
+  ResponseEvent,
+  ReverseToggleEvent,
+  SelectEvent,
+} from "./maplibregl-events";
+
+export type {
+  FeaturesListedEvent,
+  MaplibreglGeocodingControlEvent as MaptilerGeocodingControlEvent,
+  MaplibreglGeocodingControlEventName as MaptilerGeocodingControlEventName,
+  MaplibreglGeocodingControlEventNameMap as MaptilerGeocodingControlEventNameMap,
+  MarkerClickEvent,
+  MarkerMouseEnterEvent,
+  MarkerMouseLeaveEvent,
+  PickEvent,
+  QueryChangeEvent,
+  RequestEvent,
+  ResponseEvent,
+  ReverseToggleEvent,
+  SelectEvent,
+};
