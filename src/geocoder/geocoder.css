@@ -30,8 +30,8 @@ form {
 }
 form:focus-within,
 form:hover {
-  width: 270px !important;
-  max-width: 270px !important;
+  width: 270px;
+  max-width: 270px;
 }
 form input::placeholder,
 form:focus-within input::placeholder,

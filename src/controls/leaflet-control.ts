@@ -72,7 +72,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
     const div = map.getContainer().ownerDocument.createElement("div");
     div.classList.add("leaflet-ctrl-geocoder", "leaflet-bar");
-    div.style.zIndex = "850";
+    div.style.zIndex = "850"; // Position the geocoder dropdown list above the default Leaflet control z-index of 800
     div.appendChild(this.#element as Node);
 
     DomEvent.disableClickPropagation(div);

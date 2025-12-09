@@ -381,7 +381,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       if (this.#options.marker instanceof Function) {
         this.#reverseMarker = this.#options.marker(this.#map) ?? undefined;
       } else {
-        this.#reverseMarker = this.#createMarker(this.#options.marker).addTo(this.#map);
+        this.#reverseMarker = this.#createMarker(this.#options.marker).setLngLat(coordinates).addTo(this.#map);
         this.#reverseMarker.getElement().classList.add("marker-reverse");
       }
     }
