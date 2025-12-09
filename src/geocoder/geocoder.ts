@@ -29,7 +29,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @property({ type: String }) apiKey?: string;
   @property({ type: String }) apiUrl?: string;
   @property({ type: Array }) bbox?: BBox;
-  @property({ type: String }) class?: string;
   @property({ type: String }) clearButtonTitle?: string;
   @property({ type: Boolean }) clearListOnPick: boolean = false;
   @property({ type: Boolean }) clearOnBlur: boolean = false;
@@ -50,6 +49,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @property({ type: Number }) limit?: number;
   @property({ type: Number }) minLength?: number;
   @property({ type: String }) noResultsMessage?: string;
+  @property({ type: Boolean }) openListOnTop: boolean = false;
   @property({ type: String }) placeholder?: string;
   @property({ type: Array }) proximity?: ProximityRule[] | null;
   @property({ type: Boolean }) reverseActive: boolean = false;
@@ -641,7 +641,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   render() {
     /* eslint-disable @typescript-eslint/unbound-method */
     return html`
-      <form @submit=${this.#handleSubmit} class=${classMap({ [this.class ?? ""]: true, "can-collapse": this.collapsed && this.searchValue === "" })}>
+      <form @submit=${this.#handleSubmit} class=${classMap({ "can-collapse": this.collapsed && this.searchValue === "" })}>
         <div class="input-group">
           <button
             class="search-button"
@@ -697,7 +697,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                 <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
 
                 <div>${this.errorMessage ?? "Something went wrong…"}</div>
-                <div>${this.error}</div>
 
                 <button @click=${() => (this.error = undefined)}>
                   <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
@@ -718,7 +717,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                   </div>
                 `
               : html`
-                  <ul class="options" @mouseleave=${this.#handleMouseLeave} @keydown=${this.#handleKeyDown} role="listbox">
+                  <ul class="options ${classMap({ "open-on-top": this.openListOnTop })}" @mouseleave=${this.#handleMouseLeave} @keydown=${this.#handleKeyDown} role="listbox">
                     ${repeat(
                       this.listFeatures,
                       (feature) => feature.id + (feature.address ? "," + feature.address : ""),
@@ -759,7 +758,6 @@ const propertyNames = [
   "apiKey",
   "apiUrl",
   "bbox",
-  "class",
   "clearButtonTitle",
   "clearListOnPick",
   "clearOnBlur",
@@ -782,6 +780,7 @@ const propertyNames = [
   "reverseGeocodingLimit",
   "minLength",
   "noResultsMessage",
+  "openListOnTop",
   "placeholder",
   "proximity",
   "reverseActive",

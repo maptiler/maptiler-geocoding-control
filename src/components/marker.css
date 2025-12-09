@@ -1,45 +1,34 @@
 svg {
   display: block;
-  fill: #6b7c93;
-  stroke: #6b7c93;
+  fill: var(--maptiler-geocode-marker-fill, #3170fe);
+  stroke: var(--maptiler-geocode-marker-stroke, #3170fe);
   height: 30px;
 }
 
-/* @TODO move extra styles to variables and outside of this component */
-/* :global(.maplibregl-canvas-container .marker-selected) {
-  z-index: 1;
+:host(.marker-selected) {
+  z-index: 2;
 }
 
-:global(.maplibregl-canvas-container) svg path,
-:global(.leaflet-map-pane) svg path {
-  fill: #3170fe;
-  stroke: #3170fe;
+:host(.marker-selected) svg path {
+  fill: var(--maptiler-geocode-marker-reverse-fill, #98b7ff);
+  stroke: var(--maptiler-geocode-marker-reverse-stroke, #3170fe);
 }
 
-:global(.marker-selected) svg path {
-  fill: #98b7ff;
-  stroke: #3170fe;
+:host(.marker-reverse) svg path {
+  fill: var(--maptiler-geocode-marker-reverse-fill, silver);
+  stroke: var(--maptiler-geocode-marker-reverse-stroke, gray);
 }
 
-:global(.marker-reverse) svg path {
-  fill: silver;
-  stroke: gray;
-}
-
-:global(.marker-interactive) {
+:host(.marker-interactive) {
   cursor: pointer !important;
 }
 
-/ * :global(.marker-fuzzy) svg path {
-  fill: silver;
-  stroke: gray;
+:host(.marker-fuzzy) svg path {
+  fill: var(--maptiler-geocode-marker-fuzzy-fill, silver);
+  stroke: var(--maptiler-geocode-marker-fuzzy-stroke, gray);
 }
 
-:global(.marker-fuzzy.marker-selected) svg path {
-  fill: #ddd;
-  stroke: silver;
-} * /
-
-:global(.maptiler-gc-popup > .maplibregl-popup-content) {
-  padding: 2px 8px;
-} */
+:host(.marker-fuzzy.marker-selected) svg path {
+  fill: var(--maptiler-geocode-marker-selected-fuzzy-fill, #ddd);
+  stroke: var(--maptiler-geocode-marker-selected-fuzzy-stroke, silver);
+}
