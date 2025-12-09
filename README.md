@@ -22,7 +22,7 @@
 
 The _MapTiler Geocoding control_ implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
 
-> ⚠️ _MapTiler Geocoding control_ v3 support for _Leaflet_ (v1 and v2) and _OpenLayers_ is to be added soon. In the meantime, please use _MapTiler Geocoding control_ v2 with these map libraries.
+> ⚠️ _MapTiler Geocoding control_ v3 support for _OpenLayers_ is to be added soon. In the meantime, please use _MapTiler Geocoding control_ v2 with this map library.
 
 ## Why?
 
