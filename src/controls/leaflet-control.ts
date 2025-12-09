@@ -356,15 +356,13 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       return;
     }
 
-    if (this.#reverseMarker) {
-      if (!coordinates) {
-        this.#reverseMarker.remove();
+    if (!coordinates) {
+      this.#reverseMarker?.remove();
+      this.#reverseMarker = undefined;
+      return;
+    }
 
-        this.#reverseMarker = undefined;
-      } else {
-        this.#reverseMarker.setLatLng(coordinates);
-      }
-    } else if (coordinates) {
+    if (!this.#reverseMarker) {
       if (this.options.marker instanceof Function) {
         this.#reverseMarker = this.options.marker(this.#map) ?? undefined;
       } else {
@@ -372,6 +370,8 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
         this.#reverseMarker.getElement()?.classList.add("marker-reverse");
       }
     }
+
+    this.#reverseMarker?.setLatLng(coordinates);
   }
 
   #setFeatures(markedFeatures: Feature[] | undefined, picked: Feature | undefined): void {
@@ -507,30 +507,33 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
   #setSelectedMarker(feature: Feature): void {
     this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", false);
+    this.#selectedMarker = undefined;
 
     if (this.options.markerOnSelected) {
       this.#selectedMarker = this.#markers.get(feature);
       this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", true);
-    } else if (this.#selectedMarker) {
-      this.#selectedMarker = undefined;
     }
   }
 
   #addResultLayer() {
-    if (this.#map) {
-      this.#resultLayer = new GeoJSON(undefined, {
-        style:
-          this.options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.options.fullGeometryStyle === false ? undefined : (this.options.fullGeometryStyle ?? undefined),
-        interactive: false,
-      }).addTo(this.#map);
+    if (!this.#map) {
+      return;
     }
+
+    this.#resultLayer = new GeoJSON(undefined, {
+      style:
+        this.options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.options.fullGeometryStyle === false ? undefined : (this.options.fullGeometryStyle ?? undefined),
+      interactive: false,
+    }).addTo(this.#map);
   }
 
   #removeResultLayer() {
-    if (this.#map && this.#resultLayer) {
-      this.#resultLayer.removeFrom(this.#map);
-      this.#resultLayer = undefined;
+    if (!this.#map) {
+      return;
     }
+
+    this.#resultLayer?.removeFrom(this.#map);
+    this.#resultLayer = undefined;
   }
 
   #createMarker(center: LatLng | LatLngLiteral, options: MarkerOptions | true | undefined) {

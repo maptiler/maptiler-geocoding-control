@@ -364,22 +364,22 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       return;
     }
 
-    if (this.#reverseMarker) {
-      if (!coordinates) {
-        this.#reverseMarker.remove();
+    if (!coordinates) {
+      this.#reverseMarker?.remove();
+      this.#reverseMarker = undefined;
+      return;
+    }
 
-        this.#reverseMarker = undefined;
-      } else {
-        this.#reverseMarker.setLngLat(coordinates);
-      }
-    } else if (coordinates) {
+    if (!this.#reverseMarker) {
       if (this.#options.marker instanceof Function) {
         this.#reverseMarker = this.#options.marker(this.#map) ?? undefined;
       } else {
-        this.#reverseMarker = this.#createMarker(this.#options.marker).setLngLat(coordinates).addTo(this.#map);
+        this.#reverseMarker = this.#createMarker(this.#options.marker).addTo(this.#map);
         this.#reverseMarker.getElement().classList.add("marker-reverse");
       }
     }
+
+    this.#reverseMarker?.setLngLat(coordinates);
   }
 
   #setFeatures(markedFeatures: Feature[] | undefined, picked: Feature | undefined): void {
@@ -501,12 +501,11 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
 
   #setSelectedMarker(feature: Feature): void {
     this.#selectedMarker?.getElement().classList.toggle("marker-selected", false);
+    this.#selectedMarker = undefined;
 
     if (this.#options.markerOnSelected) {
       this.#selectedMarker = this.#markers.get(feature);
       this.#selectedMarker?.getElement().classList.toggle("marker-selected", true);
-    } else if (this.#selectedMarker) {
-      this.#selectedMarker = undefined;
     }
   }
 
