@@ -3,6 +3,7 @@ demos
 public
 src
 !dist/src
+test
 *.tgz
 .github
 .husky
@@ -10,3 +11,6 @@ src
 vite*
 .*
 tsconfig.json
+tsconfig.*.json
+eslint.config.js
+tmp

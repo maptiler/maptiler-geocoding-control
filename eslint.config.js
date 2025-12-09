@@ -3,7 +3,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-  globalIgnores(["dist/", "vite.config*.ts", "**/eslint.config.js"]),
+  globalIgnores(["dist/", "vite.config*.ts", "**/eslint.config.js", "tmp/"]),
   // https://typescript-eslint.io/getting-started/typed-linting/
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,

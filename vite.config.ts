@@ -13,14 +13,14 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
     name: "maptilerGeocoder",
     globals: {},
   },
-  // leaflet: {
-  //   fileName: "leaflet",
-  //   entry: ["src/leaflet.ts"],
-  //   name: "maptilerGeocoder",
-  //    globals: {
-  //      leaflet: "L",
-  //    },
-  // },
+  leaflet: {
+    fileName: "leaflet",
+    entry: ["src/leaflet.public.ts"],
+    name: "maptilerGeocoder",
+    globals: {
+      leaflet: "L",
+    },
+  },
   maplibregl: {
     fileName: "maplibregl",
     entry: ["src/maplibregl.ts"],
@@ -47,7 +47,9 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
   },
 };
 
-const flavour = flavours[process.env.FLAVOUR!] ?? flavours.standalone;
+const flavour = flavours[process.env.FLAVOUR!];
+if (!process.env.FLAVOUR) throw new Error("No flavour specified for build!");
+if (!flavour) throw new Error(`Flavour "${process.env.FLAVOUR}" is not valid for build!`);
 
 export default defineConfig({
   plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos"] })],

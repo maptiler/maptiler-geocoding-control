@@ -1,10 +1,26 @@
+import bbox from "@turf/bbox";
 import { feature, featureCollection } from "@turf/helpers";
 import union from "@turf/union";
-import type { GeoJSON, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
-import maplibregl from "maplibre-gl";
+import type { GeometryCollection, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
+import {
+  Control,
+  type ControlOptions,
+  DivIcon,
+  DomEvent,
+  Evented,
+  GeoJSON,
+  type LatLng,
+  type LatLngLiteral,
+  type LeafletMouseEvent,
+  type Map as LMap,
+  Marker,
+  type MarkerOptions,
+  Popup,
+  type PopupOptions,
+} from "leaflet";
 
-import type { BBox, Feature, Position } from "../types";
-import { unwrapBbox } from "../utils/geo-utils";
+import type { BBox, Feature } from "../types";
+import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils";
 import { getMask } from "../utils/mask";
 
 import "../geocoder/geocoder";
@@ -23,63 +39,50 @@ import type {
 
 import "../components/marker";
 
-import type { MaplibreglGeocodingControlEventName, MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events";
-import { DEFAULT_GEOMETRY_STYLE, type MaplibreglGeocodingControlOptions, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS } from "./maplibregl-options";
+import type { LeafletGeocodingControlEventName, LeafletGeocodingControlEventNameMap } from "./leaflet-events";
+import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAULTS } from "./leaflet-options";
 
-const Evented = maplibregl.Evented;
-const Marker = maplibregl.Marker;
-const Popup = maplibregl.Popup;
-type Evented = maplibregl.Evented;
-type GeoJSONSource = maplibregl.GeoJSONSource;
-type IControl = maplibregl.IControl;
-type MapMouseEvent = maplibregl.MapMouseEvent;
-type Marker = maplibregl.Marker;
-type MarkerOptions = maplibregl.MarkerOptions;
-type MLMap = maplibregl.Map;
-type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
+/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
+/** Base class for Control needs to extend both Control and Evented */
+abstract class EventedControl<Options extends ControlOptions> extends Control {
+  override options!: Options;
+}
+Object.assign(EventedControl.prototype, Evented.prototype);
+interface EventedControl<Options extends ControlOptions> extends Control, Evented {
+  options: Options;
+}
+/* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
-export class MaplibreglGeocodingControl extends Evented implements IControl {
-  #options: MaplibreglGeocodingControlOptions;
-  #map?: MLMap;
+export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingControlOptions> {
+  #map?: LMap;
   #element?: MaptilerGeocoderElement;
 
-  constructor(options: MaplibreglGeocodingControlOptions = {}) {
-    super();
-    this.#options = options;
+  constructor(options: LeafletGeocodingControlOptions = {}) {
+    super(options);
   }
 
-  onAdd(map: MLMap): HTMLElement {
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-    // Check if Maptiler SDK is present
-    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
-      const { primaryLanguage, apiKey } = map.getSdkConfig();
-
-      if (this.#options.apiKey === undefined) {
-        this.#options.apiKey = apiKey;
-      }
-
-      if (this.#options.language === undefined) {
-        const match = primaryLanguage.code?.match(/^([a-z]{2,3})($|_|-)/);
-        if (match) {
-          this.#options.language = match[1];
-        }
-      }
-    }
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-
+  onAdd(map: LMap): HTMLElement {
     this.#map = map;
-    this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
+    this.#element = map.getContainer().ownerDocument.createElement("maptiler-geocoder");
+    this.#element.classList.add("leaflet-geocoder");
+
     this.#setElementOptions();
     this.#addEventListeners();
+    this.#addResultLayer();
 
-    const div = document.createElement("div");
-    div.className = "mapboxgl-ctrl-geocoder mapboxgl-ctrl maplibregl-ctrl-geocoder maplibregl-ctrl mapboxgl-ctrl-group";
+    const div = map.getContainer().ownerDocument.createElement("div");
+    div.classList.add("leaflet-ctrl-geocoder", "leaflet-bar");
     div.appendChild(this.#element as Node);
+
+    DomEvent.disableClickPropagation(div);
+    DomEvent.disableScrollPropagation(div);
+
     return div;
   }
 
   onRemove(): void {
     this.#removeEventListeners();
+    this.#removeResultLayer();
     this.#map = undefined;
     this.#element = undefined;
   }
@@ -89,8 +92,8 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
    *
    * @param options options to update
    */
-  setOptions(options: MaplibreglGeocodingControlOptions) {
-    Object.assign(this.#options, options);
+  setOptions(options: LeafletGeocodingControlOptions) {
+    Object.assign(this.options, options);
     this.#setElementOptions();
   }
 
@@ -160,23 +163,23 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
   #reverseMarker: Marker | undefined;
   /** Features currently marked on the map */
   #markedFeatures?: Feature[];
-  /** Used to restore features on style switch */
-  #savedData: GeoJSON | undefined;
   /** Remember last feature that the map flew to as to not do it again */
   #prevIdToFly?: string;
+  /** Layer used for showing geometry results */
+  #resultLayer?: GeoJSON;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
     reversetoggle: (event: ReverseToggleEvent) => {
-      const canvasContainer = this.#map?.getCanvasContainer();
-      if (canvasContainer) {
-        canvasContainer.style.cursor = event.detail.reverse ? "crosshair" : "";
+      const container = this.#map?.getContainer();
+      if (container) {
+        container.style.cursor = event.detail.reverse ? "crosshair" : "";
       }
       this.#dispatch("reversetoggle", event.detail);
     },
     querychange: (event: QueryChangeEvent) => {
       const coords = (event as QueryChangeEvent).detail.reverseCoords;
 
-      this.#setReverseMarker(coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined);
+      this.#setReverseMarker(coords ? { lng: coords.decimalLongitude, lat: coords.decimalLatitude } : undefined);
       this.#dispatch("querychange", event.detail);
     },
     queryclear: () => {
@@ -191,8 +194,8 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     },
     select: (event: SelectEvent) => {
       const selected = (event as SelectEvent).detail.feature;
-      if (selected && this.#flyToEnabled && this.#options.flyToSelected) {
-        this.#flyTo(selected.center, this.#computeZoom(selected));
+      if (selected && this.#flyToEnabled && this.options.flyToSelected) {
+        this.#flyTo({ lng: selected.center[0], lat: selected.center[1] }, this.#computeZoom(selected));
       }
       if (this.#markedFeatures && selected) {
         this.#setSelectedMarker(selected);
@@ -241,23 +244,16 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       const center = this.#map?.getCenter();
       this.#element?.handleMapChange(zoom && center ? [zoom, center.lng, center.lat] : undefined);
     },
-    click: (e: MapMouseEvent) => {
-      this.#element?.handleMapClick([e.lngLat.lng, e.lngLat.lat]);
-    },
-    styledata: () => {
-      setTimeout(() => {
-        if (this.#savedData) {
-          this.#syncFullGeometryLayer();
-        }
-      });
+    click: (e: LeafletMouseEvent) => {
+      this.#element?.handleMapClick([e.latlng.lng, e.latlng.lat]);
     },
   };
 
   #setElementOptions() {
     if (!this.#element) return;
 
-    this.#element.setOptions(this.#options);
-    this.#element.fetchFullGeometryOnPick = this.#options.pickedResultStyle !== "marker-only";
+    this.#element.setOptions(this.options);
+    this.#element.fetchFullGeometryOnPick = this.options.pickedResultStyle !== "marker-only";
   }
 
   #addEventListeners() {
@@ -267,9 +263,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#element.addEventListener(type as MaptilerGeocoderEventName, listener as EventListener);
     }
 
-    for (const [type, listener] of Object.entries(this.#mapEventListeners)) {
-      this.#map.on(type, listener);
-    }
+    this.#map.on(this.#mapEventListeners);
   }
 
   #removeEventListeners() {
@@ -279,18 +273,16 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#element.removeEventListener(type as MaptilerGeocoderEventName, listener as EventListener);
     }
 
-    for (const [type, listener] of Object.entries(this.#mapEventListeners)) {
-      this.#map.off(type, listener);
-    }
+    this.#map.off(this.#mapEventListeners);
   }
 
-  #dispatch<E extends MaplibreglGeocodingControlEventName>(type: E, detail?: MaplibreglGeocodingControlEventNameMap[E]): this {
-    return super.fire({ type, ...(detail ?? {}) } as MLEvent);
+  #dispatch<E extends LeafletGeocodingControlEventName>(type: E, detail?: LeafletGeocodingControlEventNameMap[E]): this {
+    return super.fire(type, detail);
   }
 
   #goToPicked(picked: Feature) {
     if (picked.bbox[0] === picked.bbox[2] && picked.bbox[1] === picked.bbox[3]) {
-      this.#flyTo(picked.center, this.#computeZoom(picked));
+      this.#flyTo({ lng: picked.center[0], lat: picked.center[1] }, this.#computeZoom(picked));
     } else {
       this.#fitBounds(unwrapBbox(picked.bbox), 50, this.#computeZoom(picked));
     }
@@ -322,7 +314,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     }
 
     const index = feature.id.replace(/\..*/, "");
-    const zoomMap = this.#options.zoom ?? ZOOM_DEFAULTS;
+    const zoomMap = this.options.zoom ?? ZOOM_DEFAULTS;
 
     return (
       (Array.isArray(feature.properties?.categories)
@@ -336,31 +328,31 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
   }
 
   get #flyToEnabled() {
-    return Boolean(this.#options.flyTo) || this.#options.flyTo === undefined;
+    return Boolean(this.options.flyTo) || this.options.flyTo === undefined;
   }
   get #flyToOptions() {
-    return typeof this.#options.flyTo === "boolean" ? {} : this.#options.flyTo;
+    return typeof this.options.flyTo === "boolean" ? {} : this.options.flyTo;
   }
   get #fitBoundsOptions() {
-    return typeof this.#options.flyTo === "boolean" ? {} : this.#options.flyTo;
+    return typeof this.options.flyTo === "boolean" ? {} : this.options.flyTo;
   }
 
-  #flyTo(center: Position, zoom?: number): void {
-    this.#map?.flyTo({ center, ...(zoom ? { zoom } : {}), ...this.#flyToOptions });
+  #flyTo(center: LatLng | LatLngLiteral, zoom?: number): void {
+    this.#map?.flyTo(center, zoom, this.#flyToOptions ?? undefined);
   }
 
   #fitBounds(bbox: BBox, padding: number, maxZoom?: number): void {
     this.#map?.fitBounds(
       [
-        [bbox[0], bbox[1]],
-        [bbox[2], bbox[3]],
+        [bbox[1], bbox[0]],
+        [bbox[3], bbox[2]],
       ],
-      { padding, ...(maxZoom ? { maxZoom } : {}), ...this.#fitBoundsOptions },
+      { padding: [padding, padding], ...(maxZoom ? { maxZoom } : {}), ...this.#fitBoundsOptions },
     );
   }
 
-  #setReverseMarker(coordinates?: Position) {
-    if (this.#options.marker === false || this.#options.marker === null || !this.#map) {
+  #setReverseMarker(coordinates?: LatLng | LatLngLiteral) {
+    if (this.options.marker === false || this.options.marker === null || !this.#map) {
       return;
     }
 
@@ -371,15 +363,15 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     }
 
     if (!this.#reverseMarker) {
-      if (this.#options.marker instanceof Function) {
-        this.#reverseMarker = this.#options.marker(this.#map) ?? undefined;
+      if (this.options.marker instanceof Function) {
+        this.#reverseMarker = this.options.marker(this.#map) ?? undefined;
       } else {
-        this.#reverseMarker = this.#createMarker(this.#options.marker).addTo(this.#map);
-        this.#reverseMarker.getElement().classList.add("marker-reverse");
+        this.#reverseMarker = this.#createMarker(coordinates, this.options.marker).addTo(this.#map);
+        this.#reverseMarker.getElement()?.classList.add("marker-reverse");
       }
     }
 
-    this.#reverseMarker?.setLngLat(coordinates);
+    this.#reverseMarker?.setLatLng(coordinates);
   }
 
   #setFeatures(markedFeatures: Feature[] | undefined, picked: Feature | undefined): void {
@@ -393,13 +385,15 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
 
     this.#markers = new Map();
 
-    this.#setAndSaveData(undefined);
+    this.#resultLayer?.clearLayers();
 
     const addMarker = () => {
-      if (!picked || !this.#map || this.#options.marker === false || this.#options.marker === null) return;
+      if (!picked || !this.#map || this.options.marker === false || this.options.marker === null) return;
 
       const marker =
-        this.#options.marker instanceof Function ? this.#options.marker(this.#map, picked) : this.#createMarker(this.#options.marker).setLngLat(picked.center).addTo(this.#map);
+        this.options.marker instanceof Function
+          ? this.options.marker(this.#map, picked)
+          : this.#createMarker({ lng: picked.center[0], lat: picked.center[1] }, this.options.marker).addTo(this.#map);
       if (marker) {
         this.#markers.set(picked, marker);
       }
@@ -416,7 +410,20 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
         if (unioned) {
           const mask = getMask({ ...picked, geometry: unioned.geometry });
           if (mask) {
-            this.#setAndSaveData(mask);
+            // leaflet doesn't repeat features every 360 degrees along longitude so we clone it manually to the direction(s) which could be displayed when auto-zoomed on the feature
+            const features = [...mask.features];
+            const bb = unwrapBbox(bbox(picked) as BBox);
+            const span = bb[2] - bb[0];
+
+            if (bb[0] - span / 4 < -180) {
+              features.push(...shiftPolyCollection(mask, -360).features);
+            }
+
+            if (bb[2] + span / 4 > 180) {
+              features.push(...shiftPolyCollection(mask, 360).features);
+            }
+
+            this.#resultLayer?.addData(featureCollection(features));
           }
         }
       } else {
@@ -425,27 +432,27 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
         );
 
         if (lineGeometries.length > 0) {
-          this.#setAndSaveData({
+          this.#resultLayer?.addData({
             ...picked,
             geometry: { type: "GeometryCollection", geometries: lineGeometries },
-          });
+          } as Feature<GeometryCollection>);
         }
       }
     } else if (picked?.geometry.type.endsWith("Polygon")) {
       const mask = getMask(picked as Feature<Polygon | MultiPolygon>);
       if (mask) {
-        this.#setAndSaveData(mask);
+        this.#resultLayer?.addData(mask);
       }
-      if (this.#options.pickedResultStyle === "full-geometry-including-polygon-center-marker") {
+      if (this.options.pickedResultStyle === "full-geometry-including-polygon-center-marker") {
         addMarker();
       }
     } else if (picked?.geometry.type.endsWith("LineString")) {
-      this.#setAndSaveData(picked);
+      this.#resultLayer?.addData(picked);
     } else if (picked?.geometry.type.endsWith("Point")) {
       addMarker();
     }
 
-    if (this.#options.showResultMarkers !== false && this.#options.showResultMarkers !== null) {
+    if (this.options.showResultMarkers !== false && this.options.showResultMarkers !== null) {
       for (const feature of markedFeatures ?? []) {
         if (feature.id === picked?.id) {
           continue;
@@ -453,46 +460,45 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
 
         let marker;
 
-        if (this.#options.showResultMarkers instanceof Function) {
-          marker = this.#options.showResultMarkers(this.#map, feature);
+        if (this.options.showResultMarkers instanceof Function) {
+          marker = this.options.showResultMarkers(this.#map, feature);
 
           if (!marker) {
             continue;
           }
         } else {
-          marker = this.#createMarker(this.#options.showResultMarkers)
-            .setLngLat(feature.center)
-            .setPopup(
+          marker = this.#createMarker({ lng: feature.center[0], lat: feature.center[1] }, this.options.showResultMarkers)
+            .bindPopup(
               new Popup({
-                offset: [1, -27],
+                offset: [0.3, -21],
                 closeButton: false,
                 closeOnMove: true,
                 className: "maptiler-gc-popup",
-              }).setText(feature.place_type[0] === "reverse" ? feature.place_name : feature.place_name.replace(/,.*/, "")),
+              } as PopupOptions).setContent(feature.place_type[0] === "reverse" ? feature.place_name : feature.place_name.replace(/,.*/, "")),
             )
             .addTo(this.#map);
 
-          marker.getElement().classList.add("marker-interactive");
+          marker.getElement()?.classList.add("marker-interactive");
         }
 
         const element = marker.getElement();
 
-        element.addEventListener("click", (e) => {
+        element?.addEventListener("click", (e) => {
           e.stopPropagation();
           this.#dispatch("markerclick", { feature, marker });
         });
 
-        element.addEventListener("mouseenter", () => {
+        element?.addEventListener("mouseenter", () => {
           this.#dispatch("markermouseenter", { feature, marker });
           marker.togglePopup();
         });
 
-        element.addEventListener("mouseleave", () => {
+        element?.addEventListener("mouseleave", () => {
           this.#dispatch("markermouseleave", { feature, marker });
           marker.togglePopup();
         });
 
-        element.classList.toggle("marker-fuzzy", !!feature.matching_text);
+        element?.classList.toggle("marker-fuzzy", !!feature.matching_text);
 
         this.#markers.set(feature, marker);
       }
@@ -500,73 +506,40 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
   }
 
   #setSelectedMarker(feature: Feature): void {
-    this.#selectedMarker?.getElement().classList.toggle("marker-selected", false);
+    this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", false);
     this.#selectedMarker = undefined;
 
-    if (this.#options.markerOnSelected) {
+    if (this.options.markerOnSelected) {
       this.#selectedMarker = this.#markers.get(feature);
-      this.#selectedMarker?.getElement().classList.toggle("marker-selected", true);
+      this.#selectedMarker?.getElement()?.classList.toggle("marker-selected", true);
     }
   }
 
-  #syncFullGeometryLayer() {
-    if (!this.#map?.loaded) {
-      void this.#map?.once("load", () => {
-        this.#syncFullGeometryLayer();
-      });
+  #addResultLayer() {
+    if (!this.#map) {
       return;
     }
 
-    const effFullGeometryStyle =
-      this.#options.fullGeometryStyle === undefined || this.#options.fullGeometryStyle === true
-        ? DEFAULT_GEOMETRY_STYLE
-        : !this.#options.fullGeometryStyle
-          ? undefined
-          : this.#options.fullGeometryStyle;
-    const source = this.#map.getSource<GeoJSONSource>(RESULT_SOURCE);
+    this.#resultLayer = new GeoJSON(undefined, {
+      style:
+        this.options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.options.fullGeometryStyle === false ? undefined : (this.options.fullGeometryStyle ?? undefined),
+      interactive: false,
+    }).addTo(this.#map);
+  }
 
-    if ((!effFullGeometryStyle?.fill && !effFullGeometryStyle?.line) || (!source && !this.#savedData)) {
+  #removeResultLayer() {
+    if (!this.#map) {
       return;
     }
 
-    if (source) {
-      source.setData(this.#savedData ?? featureCollection([]));
-    } else if (this.#savedData) {
-      this.#map.addSource(RESULT_SOURCE, {
-        type: "geojson",
-        data: this.#savedData,
-      });
-    }
-
-    if (!this.#map.getLayer(RESULT_LAYER_FILL) && effFullGeometryStyle.fill) {
-      this.#map.addLayer({
-        ...effFullGeometryStyle.fill,
-        id: RESULT_LAYER_FILL,
-        type: "fill",
-        source: RESULT_SOURCE,
-      });
-    }
-
-    if (!this.#map.getLayer(RESULT_LAYER_LINE) && effFullGeometryStyle.line) {
-      this.#map.addLayer({
-        ...effFullGeometryStyle.line,
-        id: RESULT_LAYER_LINE,
-        type: "line",
-        source: RESULT_SOURCE,
-      });
-    }
+    this.#resultLayer?.removeFrom(this.#map);
+    this.#resultLayer = undefined;
   }
 
-  #setAndSaveData(data?: GeoJSON) {
-    this.#savedData = data;
-
-    this.#syncFullGeometryLayer();
-  }
-
-  #createMarker(options: MarkerOptions | true | undefined) {
+  #createMarker(center: LatLng | LatLngLiteral, options: MarkerOptions | true | undefined) {
     if (typeof options !== "object") {
-      options = { element: this.#map?._container.ownerDocument.createElement("maptiler-geocode-marker"), offset: [1, -13] };
+      options = { icon: new DivIcon({ html: this.#map?.getContainer().ownerDocument.createElement("maptiler-geocode-marker"), iconAnchor: [12.3, 30], className: "" }) };
     }
-    return new Marker(options);
+    return new Marker(center, options);
   }
 }
