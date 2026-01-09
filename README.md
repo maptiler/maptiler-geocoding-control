@@ -96,8 +96,6 @@ For detailed guides, API reference, and advanced examples, visit our comprehensi
 
 ## 💬 Support
 
-_Links to support pages. Link to official documentation; link to the specific page within the documentation or, failing that, to the main documentation page._
-
 - 📚 [Documentation](https://docs.maptiler.com/sdk-js/modules/geocoding/) - Comprehensive guides and API reference
 - ✉️ [Contact us](https://maptiler.com/contact) - Get in touch or submit a request
 - 🐦 [Twitter/X](https://twitter.com/maptiler) - Follow us for updates
