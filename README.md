@@ -117,6 +117,7 @@ We love contributions from the community! Whether it's bug reports, feature requ
 - Ensure your code follows our style guidelines
 - Give your pull request a clear, descriptive summary
 - Open a Pull Request with a comprehensive description
+- Read the [CONTRIBUTING](./CONTRIBUTING.md) file
 
 ### Development
 
