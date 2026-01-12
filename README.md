@@ -16,6 +16,7 @@ The _MapTiler Geocoding control_ implements a powerful search box in your maps o
 📖 [Documentation](https://docs.maptiler.com/sdk-js/modules/geocoding/) &nbsp; 📦 [NPM Package](https://www.npmjs.com/package/@maptiler/geocoding-control) &nbsp; 🌐 [Website](https://www.maptiler.com/search/) &nbsp; 🔑 [Get API Key](https://cloud.maptiler.com/account/keys/)
 
 ---
+
 <br>
 
 <details> <summary><b>Table of Contents</b></summary>
