@@ -147,7 +147,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("reversetoggle", event.detail);
     },
     querychange: (event: QueryChangeEvent) => {
-      const coords = (event as QueryChangeEvent).detail.reverseCoords;
+      const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? { lng: coords.decimalLongitude, lat: coords.decimalLatitude } : undefined);
       this.#dispatch("querychange", event.detail);
@@ -163,7 +163,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("response", event.detail);
     },
     select: (event: SelectEvent) => {
-      const selected = (event as SelectEvent).detail.feature;
+      const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.options.flyToSelected) {
         this.#flyTo({ lng: selected.center[0], lat: selected.center[1] }, this.#computeZoom(selected));
       }
@@ -173,7 +173,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("select", event.detail);
     },
     pick: (event: PickEvent) => {
-      const picked = (event as PickEvent).detail.feature;
+      const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
         this.#setFeatures(this.#markedFeatures, picked);
@@ -190,7 +190,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("featureshide");
     },
     featureslisted: (event: FeaturesListedEvent) => {
-      const features = (event as FeaturesListedEvent).detail.features;
+      const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
       this.#zoomToResults(features);
@@ -493,7 +493,11 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
 
     this.#resultLayer = new GeoJSON(undefined, {
       style:
-        this.options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.options.fullGeometryStyle === false ? undefined : (this.options.fullGeometryStyle ?? undefined),
+        this.options.fullGeometryStyle === undefined || this.options.fullGeometryStyle === true
+          ? DEFAULT_GEOMETRY_STYLE
+          : this.options.fullGeometryStyle === false
+            ? undefined
+            : (this.options.fullGeometryStyle ?? undefined),
       interactive: false,
     }).addTo(this.#map);
   }

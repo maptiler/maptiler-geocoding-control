@@ -10,8 +10,8 @@ svg {
 }
 
 :host(.marker-selected) svg path {
-  fill: var(--maptiler-geocode-marker-reverse-fill, #98b7ff);
-  stroke: var(--maptiler-geocode-marker-reverse-stroke, #3170fe);
+  fill: var(--maptiler-geocode-marker-selected-fill, #98b7ff);
+  stroke: var(--maptiler-geocode-marker-selected-stroke, #3170fe);
 }
 
 :host(.marker-reverse) svg path {

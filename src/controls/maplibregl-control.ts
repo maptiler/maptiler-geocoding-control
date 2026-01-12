@@ -38,6 +38,13 @@ type Marker = maplibregl.Marker;
 type MarkerOptions = maplibregl.MarkerOptions;
 type MLMap = maplibregl.Map;
 type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
+type Subscription = maplibregl.Subscription;
+
+type EventHandlingMethod<Return> = <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void) => Return;
+interface EventOnceHandlingMethod<Return> {
+  <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void): Return;
+  <Type extends MaptilerGeocoderEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocoderEventNameMap[Type]>;
+}
 
 export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
   #options: MaplibreglGeocodingControlOptions;
@@ -128,6 +135,10 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     this.#element?.blur();
   }
 
+  declare on: EventHandlingMethod<Subscription>;
+  declare off: EventHandlingMethod<this>;
+  declare once: EventOnceHandlingMethod<this>;
+
   /** Markers currently displayed on the map */
   #markers = new Map<Feature, Marker>();
   /** Marker representing the selected feature */
@@ -150,7 +161,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       this.#dispatch("reversetoggle", event.detail);
     },
     querychange: (event: QueryChangeEvent) => {
-      const coords = (event as QueryChangeEvent).detail.reverseCoords;
+      const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined);
       this.#dispatch("querychange", event.detail);
@@ -166,7 +177,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       this.#dispatch("response", event.detail);
     },
     select: (event: SelectEvent) => {
-      const selected = (event as SelectEvent).detail.feature;
+      const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.#options.flyToSelected) {
         this.#flyTo(selected.center, this.#computeZoom(selected));
       }
@@ -176,7 +187,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       this.#dispatch("select", event.detail);
     },
     pick: (event: PickEvent) => {
-      const picked = (event as PickEvent).detail.feature;
+      const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
         this.#setFeatures(this.#markedFeatures, picked);
@@ -193,7 +204,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       this.#dispatch("featureshide");
     },
     featureslisted: (event: FeaturesListedEvent) => {
-      const features = (event as FeaturesListedEvent).detail.features;
+      const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
       this.#zoomToResults(features);

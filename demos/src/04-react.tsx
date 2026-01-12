@@ -61,29 +61,38 @@ function App() {
       iconsBaseUrl: "/assets/icons/",
     });
 
+    control.current.on("reversetoggle", (data) => {
+      log("reversetoggle", data);
+    });
+    control.current.on("querychange", (data) => {
+      log("querychange", data);
+    });
+    control.current.on("queryclear", (data) => {
+      log("queryclear", data);
+    });
+    control.current.on("request", (data) => {
+      log("request", data);
+    });
+    control.current.on("response", (data) => {
+      log("response", data);
+    });
     control.current.on("select", (data) => {
       log("select", data);
     });
     control.current.on("pick", (data) => {
       log("pick", data);
     });
+    control.current.on("featuresshow", (data) => {
+      log("featuresshow", data);
+    });
+    control.current.on("featureshide", (data) => {
+      log("featureshide", data);
+    });
     control.current.on("featureslisted", (data) => {
-      log("featuresListed", data);
+      log("featureslisted", data);
     });
-    control.current.on("featuresmarked", (data) => {
-      log("featuresMarked", data);
-    });
-    control.current.on("optionsvisibilitychange", (data) => {
-      log("optionsVisibilityChange", data);
-    });
-    control.current.on("querychange", (data) => {
-      log("queryChange", data);
-    });
-    control.current.on("reversetoggle", (data) => {
-      log("reverseToggle", data);
-    });
-    control.current.on("response", (data) => {
-      log("response", data);
+    control.current.on("featuresclear", (data) => {
+      log("featuresclear", data);
     });
 
     map.current.addControl(control.current);
