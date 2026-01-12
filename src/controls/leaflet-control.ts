@@ -36,6 +36,7 @@ import type {
   ReverseToggleEvent,
   SelectEvent,
 } from "../geocoder/geocoder-events";
+import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
 
@@ -53,7 +54,7 @@ interface EventedControl<Options extends ControlOptions> extends Control, Evente
 }
 /* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
-export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingControlOptions> {
+export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingControlOptions> implements GeocodingControlBase<LeafletGeocodingControlOptions> {
   #map?: LMap;
   #element?: MaptilerGeocoderElement;
 
@@ -61,6 +62,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     super(options);
   }
 
+  /** @internal Not to be called directly */
   onAdd(map: LMap): HTMLElement {
     this.#map = map;
     this.#element = map.getContainer().ownerDocument.createElement("maptiler-geocoder");
@@ -81,6 +83,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     return div;
   }
 
+  /** @internal Not to be called directly */
   onRemove(): void {
     this.#removeEventListeners();
     this.#removeResultLayer();
@@ -88,70 +91,36 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#element = undefined;
   }
 
-  /**
-   * Update the control options.
-   *
-   * @param options options to update
-   */
   setOptions(options: LeafletGeocodingControlOptions) {
     Object.assign(this.options, options);
     this.#setElementOptions();
   }
 
-  /**
-   * Set the content of search input box.
-   *
-   * @param value text to set
-   */
   setQuery(value: string) {
     this.#element?.setQuery(value);
   }
 
-  /**
-   * Set the content of search input box and immediately submit it.
-   *
-   * @param value text to set and submit
-   */
   submitQuery(value: string) {
     this.#element?.submitQuery(value);
   }
 
-  /**
-   * Clear geocoding search results from the map.
-   */
   clearMap() {
     this.#markedFeatures = [];
     this.#setFeatures(undefined, undefined);
   }
 
-  /**
-   * Clear search result list.
-   */
   clearList() {
     this.#element?.clearList();
   }
 
-  /**
-   * Set reverse geocoding mode.
-   *
-   * @param reverseActive reverse geocoding active
-   */
   setReverseMode(reverseActive: boolean) {
     this.setOptions({ reverseActive });
   }
 
-  /**
-   * Focus the search input box.
-   *
-   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
-   */
   focus(options?: FocusOptions) {
     this.#element?.focus(options);
   }
 
-  /**
-   * Blur the search input box.
-   */
   blur() {
     this.#element?.blur();
   }

@@ -37,6 +37,7 @@ import type {
   ReverseToggleEvent,
   SelectEvent,
 } from "../geocoder/geocoder-events";
+import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
 
@@ -53,7 +54,7 @@ interface EventHandlingMethod {
 
 const EPSG_SYSTEM = "EPSG:4326";
 
-export class OpenLayersGeocodingControl extends Control {
+export class OpenLayersGeocodingControl extends Control implements GeocodingControlBase<OpenLayersGeocodingControlOptions> {
   #options: OpenLayersGeocodingControlOptions;
   #map?: OLMap;
   #element: MaptilerGeocoderElement;
@@ -78,6 +79,7 @@ export class OpenLayersGeocodingControl extends Control {
     div.appendChild(this.#element as Node);
   }
 
+  /** @internal Not to be called directly */
   override setMap(map: OLMap | null) {
     super.setMap(map);
 
@@ -94,70 +96,36 @@ export class OpenLayersGeocodingControl extends Control {
     }
   }
 
-  /**
-   * Update the control options.
-   *
-   * @param options options to update
-   */
   setOptions(options: OpenLayersGeocodingControlOptions) {
     Object.assign(this.#options, options);
     this.#setElementOptions();
   }
 
-  /**
-   * Set the content of search input box.
-   *
-   * @param value text to set
-   */
   setQuery(value: string) {
     this.#element.setQuery(value);
   }
 
-  /**
-   * Set the content of search input box and immediately submit it.
-   *
-   * @param value text to set and submit
-   */
   submitQuery(value: string) {
     this.#element.submitQuery(value);
   }
 
-  /**
-   * Clear geocoding search results from the map.
-   */
   clearMap() {
     this.#markedFeatures = [];
     this.#setFeatures(undefined, undefined);
   }
 
-  /**
-   * Clear search result list.
-   */
   clearList() {
     this.#element.clearList();
   }
 
-  /**
-   * Set reverse geocoding mode.
-   *
-   * @param reverseActive reverse geocoding active
-   */
   setReverseMode(reverseActive: boolean) {
     this.setOptions({ reverseActive });
   }
 
-  /**
-   * Focus the search input box.
-   *
-   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
-   */
   focus(options?: FocusOptions) {
     this.#element.focus(options);
   }
 
-  /**
-   * Blur the search input box.
-   */
   blur() {
     this.#element.blur();
   }
