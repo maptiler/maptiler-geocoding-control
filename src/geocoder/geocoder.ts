@@ -607,7 +607,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
 
     if (["picked"].some((prop) => changedProperties.has(prop))) {
-      if (this.picked) {
+      if (this.picked && this.picked.id !== (changedProperties.get("picked") as Feature | undefined)?.id) {
         (this.fetchFullGeometryOnPick && !this.picked.address && this.picked.geometry.type === "Point" && this.picked.place_type[0] !== "reverse"
           ? this.#search(this.picked.id, { byId: true })
           : Promise.resolve()
