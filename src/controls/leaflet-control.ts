@@ -492,12 +492,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     }
 
     this.#resultLayer = new GeoJSON(undefined, {
-      style:
-        this.options.fullGeometryStyle === undefined || this.options.fullGeometryStyle === true
-          ? DEFAULT_GEOMETRY_STYLE
-          : this.options.fullGeometryStyle === false
-            ? undefined
-            : (this.options.fullGeometryStyle ?? undefined),
+      style: this.#getFullGeometryStyle(),
       interactive: false,
     }).addTo(this.#map);
   }
@@ -516,5 +511,12 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       options = { icon: new DivIcon({ html: this.#map?.getContainer().ownerDocument.createElement("maptiler-geocode-marker"), iconAnchor: [12.3, 30], className: "" }) };
     }
     return new Marker(center, options);
+  }
+
+  #getFullGeometryStyle() {
+    const { fullGeometryStyle } = this.options;
+    if (fullGeometryStyle === true || fullGeometryStyle === undefined) return DEFAULT_GEOMETRY_STYLE;
+    if (fullGeometryStyle === false || fullGeometryStyle === null) return undefined;
+    return fullGeometryStyle;
   }
 }

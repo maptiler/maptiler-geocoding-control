@@ -504,13 +504,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       updateWhileAnimating: true,
     });
     this.#resultLayer.setSource(this.#resultSource);
-    this.#resultLayer.setStyle(
-      this.#options.fullGeometryStyle === undefined || this.#options.fullGeometryStyle === true
-        ? DEFAULT_GEOMETRY_STYLE(this.#options)
-        : this.#options.fullGeometryStyle === false
-          ? undefined
-          : this.#options.fullGeometryStyle,
-    );
+    this.#resultLayer.setStyle(this.#getFullGeometryStyle());
 
     this.#map.addLayer(this.#resultLayer);
   }
@@ -534,5 +528,12 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
 
   #transformCoordinateToPosition(coordinate: Coordinate): Position {
     return toLonLat(coordinate, this.#getProjection()) as Position;
+  }
+
+  #getFullGeometryStyle() {
+    const { fullGeometryStyle } = this.#options;
+    if (fullGeometryStyle === true || fullGeometryStyle === undefined) return DEFAULT_GEOMETRY_STYLE(this.#options);
+    if (fullGeometryStyle === false || fullGeometryStyle === null) return undefined;
+    return fullGeometryStyle;
   }
 }

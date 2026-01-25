@@ -504,12 +504,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       return;
     }
 
-    const effFullGeometryStyle =
-      this.#options.fullGeometryStyle === undefined || this.#options.fullGeometryStyle === true
-        ? DEFAULT_GEOMETRY_STYLE
-        : !this.#options.fullGeometryStyle
-          ? undefined
-          : this.#options.fullGeometryStyle;
+    const effFullGeometryStyle = this.#getFullGeometryStyle();
     const source = this.#map.getSource<GeoJSONSource>(RESULT_SOURCE);
 
     if ((!effFullGeometryStyle?.fill && !effFullGeometryStyle?.line) || (!source && !this.#savedData)) {
@@ -555,5 +550,12 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       options = { element: this.#map?._container.ownerDocument.createElement("maptiler-geocode-marker"), offset: [1, -13] };
     }
     return new Marker(options);
+  }
+
+  #getFullGeometryStyle() {
+    const { fullGeometryStyle } = this.#options;
+    if (fullGeometryStyle === true || fullGeometryStyle === undefined) return DEFAULT_GEOMETRY_STYLE;
+    if (fullGeometryStyle === false || fullGeometryStyle === null) return undefined;
+    return fullGeometryStyle;
   }
 }
