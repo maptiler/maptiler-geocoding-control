@@ -40,10 +40,13 @@ type MLMap = maplibregl.Map;
 type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
 type Subscription = maplibregl.Subscription;
 
-type EventHandlingMethod<Return> = <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void) => Return;
+type EventHandlingMethod<Return> = <Type extends MaplibreglGeocodingControlEventName>(
+  type: Type,
+  listener: (event: MaplibreglGeocodingControlEventNameMap[Type]) => void,
+) => Return;
 interface EventOnceHandlingMethod<Return> {
-  <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void): Return;
-  <Type extends MaptilerGeocoderEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocoderEventNameMap[Type]>;
+  <Type extends MaplibreglGeocodingControlEventName>(type: Type, listener: (event: MaplibreglGeocodingControlEventNameMap[Type]) => void): Return;
+  <Type extends MaplibreglGeocodingControlEventName>(type: Type, listener?: undefined): Promise<MaplibreglGeocodingControlEventNameMap[Type]>;
 }
 
 export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
