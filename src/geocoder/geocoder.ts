@@ -4,7 +4,7 @@ import { customElement, property, query, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { repeat } from "lit/directives/repeat.js";
 
-import type { BBox, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule } from "../types";
+import type { BBox, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types";
 import { wrapNum } from "../utils/geo-utils";
 import { getProximity } from "../utils/proximity";
 
@@ -61,6 +61,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @property({ type: String }) showPlaceType?: ShowPlaceType;
   @property({ type: Object }) showResultsWhileTyping?: boolean | undefined; // type object because undefined is valid value
   @property({ type: Array }) types?: TypeRule[];
+  @property({ type: String }) worldview?: Worldview;
 
   /** Reference to the input element the user can type a query into */
   @query("input") private input!: HTMLInputElement;
@@ -342,6 +343,10 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
       if (this.country) {
         sp.set("country", Array.isArray(this.country) ? this.country.join(",") : this.country);
+      }
+
+      if (this.worldview) {
+        sp.set("worldview", this.worldview);
       }
 
       if (!byId && !isReverse) {
@@ -790,4 +795,5 @@ const propertyNames = [
   "showResultsWhileTyping",
   "types",
   "reverseGeocodingTypes",
+  "worldview",
 ] as const satisfies readonly (keyof MaptilerGeocoderOptions)[];
