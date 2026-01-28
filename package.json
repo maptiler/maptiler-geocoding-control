@@ -76,6 +76,11 @@
       "types": "./dist/src/leaflet.public.d.ts",
       "import": "./dist/leaflet.public.js",
       "require": "./dist/leaflet.public.umd.js"
+    },
+    "./openlayers": {
+      "types": "./dist/src/openlayers.public.d.ts",
+      "import": "./dist/openlayers.public.js",
+      "require": "./dist/openlayers.public.umd.js"
     }
   },
   "dependencies": {

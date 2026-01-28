@@ -36,6 +36,7 @@ import type {
   ReverseToggleEvent,
   SelectEvent,
 } from "../geocoder/geocoder-events";
+import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
 
@@ -53,7 +54,7 @@ interface EventedControl<Options extends ControlOptions> extends Control, Evente
 }
 /* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
-export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingControlOptions> {
+export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingControlOptions> implements GeocodingControlBase<LeafletGeocodingControlOptions> {
   #map?: LMap;
   #element?: MaptilerGeocoderElement;
 
@@ -61,6 +62,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     super(options);
   }
 
+  /** @internal Not to be called directly */
   onAdd(map: LMap): HTMLElement {
     this.#map = map;
     this.#element = map.getContainer().ownerDocument.createElement("maptiler-geocoder");
@@ -81,6 +83,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     return div;
   }
 
+  /** @internal Not to be called directly */
   onRemove(): void {
     this.#removeEventListeners();
     this.#removeResultLayer();
@@ -88,70 +91,36 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#element = undefined;
   }
 
-  /**
-   * Update the control options.
-   *
-   * @param options options to update
-   */
   setOptions(options: LeafletGeocodingControlOptions) {
     Object.assign(this.options, options);
     this.#setElementOptions();
   }
 
-  /**
-   * Set the content of search input box.
-   *
-   * @param value text to set
-   */
   setQuery(value: string) {
     this.#element?.setQuery(value);
   }
 
-  /**
-   * Set the content of search input box and immediately submit it.
-   *
-   * @param value text to set and submit
-   */
   submitQuery(value: string) {
     this.#element?.submitQuery(value);
   }
 
-  /**
-   * Clear geocoding search results from the map.
-   */
   clearMap() {
     this.#markedFeatures = [];
     this.#setFeatures(undefined, undefined);
   }
 
-  /**
-   * Clear search result list.
-   */
   clearList() {
     this.#element?.clearList();
   }
 
-  /**
-   * Set reverse geocoding mode.
-   *
-   * @param reverseActive reverse geocoding active
-   */
   setReverseMode(reverseActive: boolean) {
     this.setOptions({ reverseActive });
   }
 
-  /**
-   * Focus the search input box.
-   *
-   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
-   */
   focus(options?: FocusOptions) {
     this.#element?.focus(options);
   }
 
-  /**
-   * Blur the search input box.
-   */
   blur() {
     this.#element?.blur();
   }
@@ -178,7 +147,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("reversetoggle", event.detail);
     },
     querychange: (event: QueryChangeEvent) => {
-      const coords = (event as QueryChangeEvent).detail.reverseCoords;
+      const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? { lng: coords.decimalLongitude, lat: coords.decimalLatitude } : undefined);
       this.#dispatch("querychange", event.detail);
@@ -194,7 +163,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("response", event.detail);
     },
     select: (event: SelectEvent) => {
-      const selected = (event as SelectEvent).detail.feature;
+      const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.options.flyToSelected) {
         this.#flyTo({ lng: selected.center[0], lat: selected.center[1] }, this.#computeZoom(selected));
       }
@@ -204,7 +173,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("select", event.detail);
     },
     pick: (event: PickEvent) => {
-      const picked = (event as PickEvent).detail.feature;
+      const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
         this.#setFeatures(this.#markedFeatures, picked);
@@ -221,7 +190,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#dispatch("featureshide");
     },
     featureslisted: (event: FeaturesListedEvent) => {
-      const features = (event as FeaturesListedEvent).detail.features;
+      const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
       this.#zoomToResults(features);
@@ -523,8 +492,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     }
 
     this.#resultLayer = new GeoJSON(undefined, {
-      style:
-        this.options.fullGeometryStyle === true ? DEFAULT_GEOMETRY_STYLE : this.options.fullGeometryStyle === false ? undefined : (this.options.fullGeometryStyle ?? undefined),
+      style: this.#getFullGeometryStyle(),
       interactive: false,
     }).addTo(this.#map);
   }
@@ -543,5 +511,12 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       options = { icon: new DivIcon({ html: this.#map?.getContainer().ownerDocument.createElement("maptiler-geocode-marker"), iconAnchor: [12.3, 30], className: "" }) };
     }
     return new Marker(center, options);
+  }
+
+  #getFullGeometryStyle() {
+    const { fullGeometryStyle } = this.options;
+    if (fullGeometryStyle === true || fullGeometryStyle === undefined) return DEFAULT_GEOMETRY_STYLE;
+    if (fullGeometryStyle === false || fullGeometryStyle === null) return undefined;
+    return fullGeometryStyle;
   }
 }

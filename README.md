@@ -54,7 +54,6 @@ Use the component in your mapping application (MapTiler SDK as an example):
 import * as maptilersdk from "@maptiler/sdk";
 import { GeocodingControl } from "@maptiler/geocoding-control/maptilersdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
-import "@maptiler/geocoding-control/style.css";
 
 maptilersdk.config.apiKey = "YOUR_MAPTILER_API_KEY_HERE";
 

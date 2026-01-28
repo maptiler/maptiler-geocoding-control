@@ -20,6 +20,7 @@ import type {
   ReverseToggleEvent,
   SelectEvent,
 } from "../geocoder/geocoder-events";
+import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
 
@@ -37,8 +38,15 @@ type Marker = maplibregl.Marker;
 type MarkerOptions = maplibregl.MarkerOptions;
 type MLMap = maplibregl.Map;
 type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
+type Subscription = maplibregl.Subscription;
 
-export class MaplibreglGeocodingControl extends Evented implements IControl {
+type EventHandlingMethod<Return> = <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void) => Return;
+interface EventOnceHandlingMethod<Return> {
+  <Type extends MaptilerGeocoderEventName>(type: Type, listener: (event: MaptilerGeocoderEventNameMap[Type]) => void): Return;
+  <Type extends MaptilerGeocoderEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocoderEventNameMap[Type]>;
+}
+
+export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
   #options: MaplibreglGeocodingControlOptions;
   #map?: MLMap;
   #element?: MaptilerGeocoderElement;
@@ -48,6 +56,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     this.#options = options;
   }
 
+  /** @internal Not to be called directly */
   onAdd(map: MLMap): HTMLElement {
     this.#map = map;
     this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
@@ -85,79 +94,50 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
     return div;
   }
 
+  /** @internal Not to be called directly */
   onRemove(): void {
     this.#removeEventListeners();
     this.#map = undefined;
     this.#element = undefined;
   }
 
-  /**
-   * Update the control options.
-   *
-   * @param options options to update
-   */
   setOptions(options: MaplibreglGeocodingControlOptions) {
     Object.assign(this.#options, options);
     this.#setElementOptions();
   }
 
-  /**
-   * Set the content of search input box.
-   *
-   * @param value text to set
-   */
   setQuery(value: string) {
     this.#element?.setQuery(value);
   }
 
-  /**
-   * Set the content of search input box and immediately submit it.
-   *
-   * @param value text to set and submit
-   */
   submitQuery(value: string) {
     this.#element?.submitQuery(value);
   }
 
-  /**
-   * Clear geocoding search results from the map.
-   */
   clearMap() {
     this.#markedFeatures = [];
     this.#setFeatures(undefined, undefined);
   }
 
-  /**
-   * Clear search result list.
-   */
   clearList() {
     this.#element?.clearList();
   }
 
-  /**
-   * Set reverse geocoding mode.
-   *
-   * @param reverseActive reverse geocoding active
-   */
   setReverseMode(reverseActive: boolean) {
     this.setOptions({ reverseActive });
   }
 
-  /**
-   * Focus the search input box.
-   *
-   * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
-   */
   focus(options?: FocusOptions) {
     this.#element?.focus(options);
   }
 
-  /**
-   * Blur the search input box.
-   */
   blur() {
     this.#element?.blur();
   }
+
+  declare on: EventHandlingMethod<Subscription>;
+  declare off: EventHandlingMethod<this>;
+  declare once: EventOnceHandlingMethod<this>;
 
   /** Markers currently displayed on the map */
   #markers = new Map<Feature, Marker>();
@@ -181,7 +161,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#dispatch("reversetoggle", event.detail);
     },
     querychange: (event: QueryChangeEvent) => {
-      const coords = (event as QueryChangeEvent).detail.reverseCoords;
+      const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined);
       this.#dispatch("querychange", event.detail);
@@ -197,7 +177,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#dispatch("response", event.detail);
     },
     select: (event: SelectEvent) => {
-      const selected = (event as SelectEvent).detail.feature;
+      const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.#options.flyToSelected) {
         this.#flyTo(selected.center, this.#computeZoom(selected));
       }
@@ -207,7 +187,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#dispatch("select", event.detail);
     },
     pick: (event: PickEvent) => {
-      const picked = (event as PickEvent).detail.feature;
+      const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
         this.#setFeatures(this.#markedFeatures, picked);
@@ -224,7 +204,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       this.#dispatch("featureshide");
     },
     featureslisted: (event: FeaturesListedEvent) => {
-      const features = (event as FeaturesListedEvent).detail.features;
+      const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
       this.#zoomToResults(features);
@@ -524,12 +504,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       return;
     }
 
-    const effFullGeometryStyle =
-      this.#options.fullGeometryStyle === undefined || this.#options.fullGeometryStyle === true
-        ? DEFAULT_GEOMETRY_STYLE
-        : !this.#options.fullGeometryStyle
-          ? undefined
-          : this.#options.fullGeometryStyle;
+    const effFullGeometryStyle = this.#getFullGeometryStyle();
     const source = this.#map.getSource<GeoJSONSource>(RESULT_SOURCE);
 
     if ((!effFullGeometryStyle?.fill && !effFullGeometryStyle?.line) || (!source && !this.#savedData)) {
@@ -575,5 +550,12 @@ export class MaplibreglGeocodingControl extends Evented implements IControl {
       options = { element: this.#map?._container.ownerDocument.createElement("maptiler-geocode-marker"), offset: [1, -13] };
     }
     return new Marker(options);
+  }
+
+  #getFullGeometryStyle() {
+    const { fullGeometryStyle } = this.#options;
+    if (fullGeometryStyle === true || fullGeometryStyle === undefined) return DEFAULT_GEOMETRY_STYLE;
+    if (fullGeometryStyle === false || fullGeometryStyle === null) return undefined;
+    return fullGeometryStyle;
   }
 }
