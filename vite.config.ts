@@ -41,7 +41,7 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
   },
   openlayers: {
     fileName: "openlayers",
-    entry: ["src/openlayers.ts"],
+    entry: ["src/openlayers.public.ts"],
     name: "maptilerGeocoder",
     globals: (name) => (name.startsWith("ol") ? name.replaceAll("/", ".") : ""),
   },
@@ -52,7 +52,7 @@ if (!process.env.FLAVOUR) throw new Error("No flavour specified for build!");
 if (!flavour) throw new Error(`Flavour "${process.env.FLAVOUR}" is not valid for build!`);
 
 export default defineConfig({
-  plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos"] })],
+  plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos", "vite.config*", "vitest-setup-tests.ts"] })],
   publicDir: "public",
   build: {
     sourcemap: true,

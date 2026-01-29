@@ -31,7 +31,7 @@
   "scripts": {
     "dev": "vite -c vite.config-dev.ts",
     "make": "npm run clean && npm run build && npm run check-version",
-    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maplibregl && npm run build:maplibregl:umd && npm run build:leaflet && npm run build:leaflet:umd",
+    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maplibregl && npm run build:maplibregl:umd && npm run build:leaflet && npm run build:leaflet:umd && npm run build:openlayers && npm run build:openlayers:umd",
     "build:index": "FLAVOUR=index vite build",
     "build:index:umd": "FLAVOUR=index MODE=umd vite build",
     "build:maptilersdk": "FLAVOUR=maptilersdk vite build",
@@ -40,6 +40,8 @@
     "build:maplibregl:umd": "FLAVOUR=maplibregl MODE=umd vite build",
     "build:leaflet": "FLAVOUR=leaflet vite build",
     "build:leaflet:umd": "FLAVOUR=leaflet MODE=umd vite build",
+    "build:openlayers": "FLAVOUR=openlayers vite build",
+    "build:openlayers:umd": "FLAVOUR=openlayers MODE=umd vite build",
     "check-version": "npm run check-version:leaflet-v1.5 && npm run check-version:leaflet-v1.7 && npm run check-version:leaflet-v1.9 && npm run check-version:leaflet-v2",
     "check-version:leaflet-v1.5": "tsc -p tsconfig.leaflet-v1.5.json",
     "check-version:leaflet-v1.7": "tsc -p tsconfig.leaflet-v1.7.json",
