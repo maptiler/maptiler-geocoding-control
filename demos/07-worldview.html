@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>MapTiler Geocoding Control example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      #map {
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        background: #ccc;
+      }
+
+      .maplibregl-ctrl-top-left {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding-right: 3.5rem;
+      }
+      .maplibregl-ctrl-top-left .maplibregl-ctrl {
+        margin-bottom: 3.5rem !important;
+      }
+      .maplibregl-ctrl-geocoder::before {
+        display: block;
+        color: #eee;
+        background-color: #333;
+        padding-inline: 0.5em;
+        border-top-left-radius: 3px;
+        border-top-right-radius: 3px;
+      }
+      .maplibregl-ctrl-geocoder:nth-child(1)::before {
+        content: "no worldview";
+      }
+      .maplibregl-ctrl-geocoder:nth-child(2)::before {
+        content: "automatically detect worldview";
+      }
+      .maplibregl-ctrl-geocoder:nth-child(3)::before {
+        content: "🇨🇭 Switzerland worldview";
+      }
+      .maplibregl-ctrl-geocoder:nth-child(4)::before {
+        content: "🇺🇸 US worldview";
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <script type="module" src="/src/07-worldview.ts"></script>
+  </body>
+</html>

@@ -78,3 +78,5 @@ export type PlaceType =
   | "address"
   | "road"
   | "poi";
+
+export type Worldview = "ch" | "us" | "auto";

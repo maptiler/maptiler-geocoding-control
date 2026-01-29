@@ -1,4 +1,4 @@
-import type { BBox, EnableReverse, Feature, ProximityRule, ShowPlaceType, TypeRule } from "../types";
+import type { BBox, EnableReverse, Feature, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types";
 
 export type MaptilerGeocoderOptions = {
   /**
@@ -288,4 +288,21 @@ export type MaptilerGeocoderOptions = {
    * Default: `undefined` (uses server default feature types).
    */
   types?: TypeRule[];
+
+  /**
+   * Some of the geographical boundaries and names are disputed. When worldview option is
+   * selected, the Geocoding API responses will be aligned with the borders and names recognized
+   * by the selected country. This affects filtering by country, the context returned with
+   * the given feature and also some of the labels (e.g., Gulf of Mexico vs. Gulf of America).
+   *
+   * Available options:
+   * - `"ch"`: Use the worldview of Switzerland
+   * - `"us"`: Use the worldview of US
+   * - `"auto"`: Automatically determine the worldview by the location of the client
+   * - `undefined`: Do not use any particular worldview (disputed areas are returned without country information,
+   *                countries with disputed borders are returned without full geometry)
+   *
+   * Default: `undefined` (no worldview).
+   */
+  worldview?: Worldview;
 };
