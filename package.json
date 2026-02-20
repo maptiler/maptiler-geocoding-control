@@ -129,7 +129,7 @@
     "vitest": "^4.0.8"
   },
   "peerDependencies": {
-    "@maptiler/sdk": "1 - 4",
+    "@maptiler/sdk": "1.0.7 - 4",
     "leaflet": "1.5 - 2",
     "maplibre-gl": "2 - 5",
     "ol": "6 - 10"

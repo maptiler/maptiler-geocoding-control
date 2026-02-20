@@ -96,6 +96,10 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     }
   }
 
+  getOptions(): OpenLayersGeocodingControlOptions {
+    return { ...this.#options };
+  }
+
   setOptions(options: OpenLayersGeocodingControlOptions) {
     Object.assign(this.#options, options);
     this.#setElementOptions();
@@ -224,7 +228,6 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     postrender: () => {
       const zoom = this.#map?.getView().getZoom();
       const center = this.#map?.getView().getCenter();
-      console.log("PRR", zoom, center, [zoom, ...this.#transformCoordinateToPosition(center!)]);
       this.#element.handleMapChange(zoom && center ? [zoom, ...this.#transformCoordinateToPosition(center!)] : undefined);
     },
     click: (e: MapBrowserEvent<PointerEvent>) => {

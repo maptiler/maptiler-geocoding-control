@@ -50,13 +50,13 @@ interface EventOnceHandlingMethod<Return> {
 }
 
 export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
-  #options: MaplibreglGeocodingControlOptions;
+  #options: MaplibreglGeocodingControlOptions = {};
   #map?: MLMap;
   #element?: MaptilerGeocoderElement;
 
   constructor(options: MaplibreglGeocodingControlOptions = {}) {
     super();
-    this.#options = options;
+    this.setOptions(options);
   }
 
   /** @internal Not to be called directly */
@@ -64,26 +64,6 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     this.#map = map;
     this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
     this.#element.classList.add("maplibregl-geocoder");
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-    // Check if Maptiler SDK is present
-    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
-      const { primaryLanguage, apiKey } = map.getSdkConfig();
-
-      if (this.#options.apiKey === undefined) {
-        this.#options.apiKey = apiKey;
-      }
-
-      if (this.#options.language === undefined) {
-        const match = primaryLanguage.code?.match(/^([a-z]{2,3})($|_|-)/);
-        if (match) {
-          this.#options.language = match[1];
-        }
-      }
-
-      this.#element.classList.add("maptiler-geocoder");
-    }
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
     this.#setElementOptions();
     this.#addEventListeners();
@@ -102,6 +82,10 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     this.#removeEventListeners();
     this.#map = undefined;
     this.#element = undefined;
+  }
+
+  getOptions(): MaplibreglGeocodingControlOptions {
+    return { ...this.#options };
   }
 
   setOptions(options: MaplibreglGeocodingControlOptions) {

@@ -91,6 +91,10 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#element = undefined;
   }
 
+  getOptions(): LeafletGeocodingControlOptions {
+    return { ...this.options };
+  }
+
   setOptions(options: LeafletGeocodingControlOptions) {
     Object.assign(this.options, options);
     this.#setElementOptions();
