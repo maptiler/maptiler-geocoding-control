@@ -1,4 +1,4 @@
-import type { Map as SDKMap } from "@maptiler/sdk";
+import { type Map as SDKMap, config } from "@maptiler/sdk";
 import type { GeocodingControlBase } from "./base-control";
 import { MaplibreglGeocodingControl } from "./maplibregl-control";
 import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
@@ -48,7 +48,12 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
       ...options,
       adjustUrl: (url: URL) => {
         originalAdjustUrl?.(url);
-        if (options.session !== false && this.#map && (!options.apiUrl || new URL(options.apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)) {
+        const opts = this.getOptions();
+        if (
+          (config.session ? options.session !== false : options.session === true) &&
+          this.#map &&
+          (!opts.apiUrl || new URL(opts.apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)
+        ) {
           url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
         }
       },
