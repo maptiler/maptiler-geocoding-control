@@ -1,12 +1,14 @@
 import process from "node:process";
 import { type GlobalsOption } from "rollup";
+import { type Options as ReplaceOptions } from "unplugin-replace";
+import replace from "unplugin-replace/vite";
 import { defineConfig, type LibraryOptions } from "vite";
 import dts from "vite-plugin-dts";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
 
 const umd = process.env.MODE === "umd";
 
-const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
+const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { replace?: ReplaceOptions["values"] }> = {
   index: {
     fileName: "index",
     entry: ["src/index.ts"],
@@ -33,9 +35,11 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption }> = {
     fileName: "maptilersdk",
     entry: ["src/maptilersdk.ts"],
     name: "maptilerGeocoder",
-    globals: {
+    replace: [
       // replace MapLibre with MapTiler SDK
-      "maplibre-gl": "maptilersdk",
+      { find: /from "maplibre-gl"/, replacement: 'from "@maptiler/sdk"' },
+    ],
+    globals: {
       "@maptiler/sdk": "maptilersdk",
     },
   },
@@ -52,7 +56,7 @@ if (!process.env.FLAVOUR) throw new Error("No flavour specified for build!");
 if (!flavour) throw new Error(`Flavour "${process.env.FLAVOUR}" is not valid for build!`);
 
 export default defineConfig({
-  plugins: [externalizeDeps({ deps: !umd }), umd ? undefined : dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts"] })],
+  plugins: [externalizeDeps({ deps: !umd }), umd ? replace({ values: flavour.replace }) : dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts"] })],
   publicDir: "public",
   build: {
     sourcemap: true,
