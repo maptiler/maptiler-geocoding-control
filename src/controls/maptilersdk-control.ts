@@ -1,4 +1,5 @@
 import { type Map as SDKMap, config } from "@maptiler/sdk";
+import { name, version } from "../../package.json";
 import type { GeocodingControlBase } from "./base-control";
 import { MaplibreglGeocodingControl } from "./maplibregl-control";
 import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
@@ -13,6 +14,8 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
   /** @internal Not to be called directly */
   override onAdd(map: SDKMap): HTMLElement {
     this.#map = map;
+
+    map.telemetry.registerModule(name, version);
 
     const options = this.getOptions();
     const { primaryLanguage, apiKey } = map.getSdkConfig();
