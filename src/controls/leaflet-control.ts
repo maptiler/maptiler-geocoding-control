@@ -11,6 +11,7 @@ import {
   GeoJSON,
   type LatLng,
   type LatLngLiteral,
+  type LeafletEvent,
   type LeafletMouseEvent,
   type Map as LMap,
   Marker,
@@ -25,17 +26,7 @@ import { getMask } from "../utils/mask";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type {
-  FeaturesListedEvent,
-  MaptilerGeocoderEventName,
-  MaptilerGeocoderEventNameMap,
-  PickEvent,
-  QueryChangeEvent,
-  RequestEvent,
-  ResponseEvent,
-  ReverseToggleEvent,
-  SelectEvent,
-} from "../geocoder/geocoder-events";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
 import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
@@ -143,14 +134,14 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
   #resultLayer?: GeoJSON;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
-    reversetoggle: (event: ReverseToggleEvent) => {
+    reversetoggle: (event: MaptilerGeocoderEvent.ReverseToggleEvent) => {
       const container = this.#map?.getContainer();
       if (container) {
         container.style.cursor = event.detail.reverse ? "crosshair" : "";
       }
       this.#dispatch("reversetoggle", event.detail);
     },
-    querychange: (event: QueryChangeEvent) => {
+    querychange: (event: MaptilerGeocoderEvent.QueryChangeEvent) => {
       const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? { lng: coords.decimalLongitude, lat: coords.decimalLatitude } : undefined);
@@ -160,13 +151,13 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       this.#setReverseMarker(undefined);
       this.#dispatch("queryclear");
     },
-    request: (event: RequestEvent) => {
+    request: (event: MaptilerGeocoderEvent.RequestEvent) => {
       this.#dispatch("request", event.detail);
     },
-    response: (event: ResponseEvent) => {
+    response: (event: MaptilerGeocoderEvent.ResponseEvent) => {
       this.#dispatch("response", event.detail);
     },
-    select: (event: SelectEvent) => {
+    select: (event: MaptilerGeocoderEvent.SelectEvent) => {
       const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.options.flyToSelected) {
         this.#flyTo({ lng: selected.center[0], lat: selected.center[1] }, this.#computeZoom(selected));
@@ -176,7 +167,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       }
       this.#dispatch("select", event.detail);
     },
-    pick: (event: PickEvent) => {
+    pick: (event: MaptilerGeocoderEvent.PickEvent) => {
       const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
@@ -193,7 +184,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     featureshide: () => {
       this.#dispatch("featureshide");
     },
-    featureslisted: (event: FeaturesListedEvent) => {
+    featureslisted: (event: MaptilerGeocoderEvent.FeaturesListedEvent) => {
       const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
@@ -251,7 +242,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     this.#map.off(this.#mapEventListeners);
   }
 
-  #dispatch<E extends LeafletGeocodingControlEventName>(type: E, detail?: LeafletGeocodingControlEventNameMap[E]): this {
+  #dispatch<E extends LeafletGeocodingControlEventName>(type: E, detail?: Omit<LeafletGeocodingControlEventNameMap[E], keyof LeafletEvent>): this {
     return super.fire(type, detail);
   }
 

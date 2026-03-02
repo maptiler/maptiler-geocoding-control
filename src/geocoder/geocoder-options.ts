@@ -138,9 +138,7 @@ export type MaptilerGeocoderOptions = {
   /**
    * Base URL for POI icons.
    *
-   * Default:
-   * - `"icons/"` for Svelte apps.
-   * - `"https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/"` for others.
+   * Default: `"https://cdn.maptiler.com/maptiler-geocoding-control/v${version}/icons/"`
    */
   iconsBaseUrl?: string;
 

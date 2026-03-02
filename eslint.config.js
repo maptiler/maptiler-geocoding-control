@@ -68,6 +68,7 @@ export default defineConfig(
       },
     },
     rules: {
+      "@typescript-eslint/no-namespace": "off",
       "import/default-imports-only": [
         "error",
         {

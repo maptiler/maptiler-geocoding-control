@@ -1,8 +1,15 @@
-import { type Map as SDKMap, config } from "@maptiler/sdk";
+import { config, type Map as SDKMap, type Subscription } from "@maptiler/sdk";
 import { name, version } from "../../package.json";
 import type { GeocodingControlBase } from "./base-control";
 import { MaplibreglGeocodingControl } from "./maplibregl-control";
+import type { MaptilerGeocodingControlEventName, MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events";
 import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
+
+type EventHandlingMethod<Return> = <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void) => Return;
+interface EventOnceHandlingMethod<Return> {
+  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void): Return;
+  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocodingControlEventNameMap[Type]>;
+}
 
 export class MaptilerGeocodingControl extends MaplibreglGeocodingControl implements GeocodingControlBase<MaptilerGeocodingControlOptions> {
   #map?: SDKMap;
@@ -62,4 +69,8 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
       },
     });
   }
+
+  declare on: EventHandlingMethod<Subscription>;
+  declare off: EventHandlingMethod<this>;
+  declare once: EventOnceHandlingMethod<this>;
 }
