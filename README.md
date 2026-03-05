@@ -6,8 +6,6 @@ The Javascript & TypeScript Map Control component for <a href="https://www.mapti
 
 The _MapTiler Geocoding control_ implements a powerful search box in your maps or online forms, enabling your application users to find any place on Earth down to individual addresses. Use the search box control with [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) (or other map libraries like [Leaflet](https://docs.maptiler.com/leaflet/), [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js), [OpenLayers](https://docs.maptiler.com/openlayers/)).
 
-> ⚠️ _MapTiler Geocoding control_ v3 support for _Leaflet_ (v1 and v2) and _OpenLayers_ is to be added soon. In the meantime, please use _MapTiler Geocoding control_ v2 with these map libraries.
-
 [![](https://img.shields.io/npm/v/@maptiler/geocoding-control?style=for-the-badge&labelColor=D3DBEC&color=f2f6ff&logo=npm&logoColor=333359)](https://www.npmjs.com/package/@maptiler/geocoding-control)
 ![](https://img.shields.io/badge/-white?style=for-the-badge&logo=javascript)![](https://img.shields.io/badge/-white?style=for-the-badge&logo=typescript)![](https://img.shields.io/badge/-white?style=for-the-badge&logo=react&logoColor=61dafb)![](https://img.shields.io/badge/-white?style=for-the-badge&logo=svelte&logoColor=FF3E00)
 

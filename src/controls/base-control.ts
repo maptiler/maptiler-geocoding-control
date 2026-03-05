@@ -1,5 +1,10 @@
 export interface GeocodingControlBase<Options extends object> {
   /**
+   * Get copy of the control options.
+   */
+  getOptions(): Options;
+
+  /**
    * Update the control options.
    *
    * @param options options to update

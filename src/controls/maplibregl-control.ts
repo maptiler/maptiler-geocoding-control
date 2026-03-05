@@ -9,17 +9,7 @@ import { getMask } from "../utils/mask";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type {
-  FeaturesListedEvent,
-  MaptilerGeocoderEventName,
-  MaptilerGeocoderEventNameMap,
-  PickEvent,
-  QueryChangeEvent,
-  RequestEvent,
-  ResponseEvent,
-  ReverseToggleEvent,
-  SelectEvent,
-} from "../geocoder/geocoder-events";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
 import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
@@ -50,13 +40,13 @@ interface EventOnceHandlingMethod<Return> {
 }
 
 export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
-  #options: MaplibreglGeocodingControlOptions;
+  #options: MaplibreglGeocodingControlOptions = {};
   #map?: MLMap;
   #element?: MaptilerGeocoderElement;
 
   constructor(options: MaplibreglGeocodingControlOptions = {}) {
     super();
-    this.#options = options;
+    this.setOptions(options);
   }
 
   /** @internal Not to be called directly */
@@ -64,26 +54,6 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     this.#map = map;
     this.#element = map._container.ownerDocument.createElement("maptiler-geocoder");
     this.#element.classList.add("maplibregl-geocoder");
-
-    /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
-    // Check if Maptiler SDK is present
-    if ("getSdkConfig" in map && typeof map.getSdkConfig === "function") {
-      const { primaryLanguage, apiKey } = map.getSdkConfig();
-
-      if (this.#options.apiKey === undefined) {
-        this.#options.apiKey = apiKey;
-      }
-
-      if (this.#options.language === undefined) {
-        const match = primaryLanguage.code?.match(/^([a-z]{2,3})($|_|-)/);
-        if (match) {
-          this.#options.language = match[1];
-        }
-      }
-
-      this.#element.classList.add("maptiler-geocoder");
-    }
-    /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
     this.#setElementOptions();
     this.#addEventListeners();
@@ -102,6 +72,10 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     this.#removeEventListeners();
     this.#map = undefined;
     this.#element = undefined;
+  }
+
+  getOptions(): MaplibreglGeocodingControlOptions {
+    return { ...this.#options };
   }
 
   setOptions(options: MaplibreglGeocodingControlOptions) {
@@ -156,14 +130,14 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
   #prevIdToFly?: string;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
-    reversetoggle: (event: ReverseToggleEvent) => {
+    reversetoggle: (event: MaptilerGeocoderEvent.ReverseToggleEvent) => {
       const canvasContainer = this.#map?.getCanvasContainer();
       if (canvasContainer) {
         canvasContainer.style.cursor = event.detail.reverse ? "crosshair" : "";
       }
       this.#dispatch("reversetoggle", event.detail);
     },
-    querychange: (event: QueryChangeEvent) => {
+    querychange: (event: MaptilerGeocoderEvent.QueryChangeEvent) => {
       const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined);
@@ -173,13 +147,13 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       this.#setReverseMarker(undefined);
       this.#dispatch("queryclear");
     },
-    request: (event: RequestEvent) => {
+    request: (event: MaptilerGeocoderEvent.RequestEvent) => {
       this.#dispatch("request", event.detail);
     },
-    response: (event: ResponseEvent) => {
+    response: (event: MaptilerGeocoderEvent.ResponseEvent) => {
       this.#dispatch("response", event.detail);
     },
-    select: (event: SelectEvent) => {
+    select: (event: MaptilerGeocoderEvent.SelectEvent) => {
       const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.#options.flyToSelected) {
         this.#flyTo(selected.center, this.#computeZoom(selected));
@@ -189,7 +163,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       }
       this.#dispatch("select", event.detail);
     },
-    pick: (event: PickEvent) => {
+    pick: (event: MaptilerGeocoderEvent.PickEvent) => {
       const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
@@ -206,7 +180,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     featureshide: () => {
       this.#dispatch("featureshide");
     },
-    featureslisted: (event: FeaturesListedEvent) => {
+    featureslisted: (event: MaptilerGeocoderEvent.FeaturesListedEvent) => {
       const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
@@ -274,7 +248,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     }
   }
 
-  #dispatch<E extends MaplibreglGeocodingControlEventName>(type: E, detail?: MaplibreglGeocodingControlEventNameMap[E]): this {
+  #dispatch<E extends MaplibreglGeocodingControlEventName>(type: E, detail?: Omit<MaplibreglGeocodingControlEventNameMap[E], "type" | "target">): this {
     return super.fire({ type, ...(detail ?? {}) } as MLEvent);
   }
 

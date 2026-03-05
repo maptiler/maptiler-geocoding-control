@@ -1,34 +1,64 @@
 import maplibregl from "maplibre-gl";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
 import type { Feature } from "../types";
+import type { MaplibreglGeocodingControl } from "./maplibregl-control";
+
 type Marker = maplibregl.Marker;
+type MLEvent = Extract<Parameters<maplibregl.Evented["fire"]>[0], object>;
 
-import type * as Geocoder from "../geocoder/geocoder-events";
+type BaseEvent = MLEvent & { target: MaplibreglGeocodingControl };
 
-export type ReverseToggleEvent = Geocoder.ReverseToggleEvent["detail"];
-export type QueryChangeEvent = Geocoder.QueryChangeEvent["detail"];
-export type FeaturesListedEvent = Geocoder.FeaturesListedEvent["detail"];
-export type RequestEvent = Geocoder.RequestEvent["detail"];
-export type ResponseEvent = Geocoder.ResponseEvent["detail"];
-export type SelectEvent = Geocoder.SelectEvent["detail"];
-export type PickEvent = Geocoder.PickEvent["detail"];
-export type MarkerClickEvent = { feature: Feature; marker: Marker };
-export type MarkerMouseEnterEvent = { feature: Feature; marker: Marker };
-export type MarkerMouseLeaveEvent = { feature: Feature; marker: Marker };
+export namespace MaplibreglGeocodingControlEvent {
+  export type ReverseToggleEvent = BaseEvent & MaptilerGeocoderEvent.ReverseToggleEvent["detail"];
+  export type QueryChangeEvent = BaseEvent & MaptilerGeocoderEvent.QueryChangeEvent["detail"];
+  export type QueryClearEvent = BaseEvent;
+  export type RequestEvent = BaseEvent & MaptilerGeocoderEvent.RequestEvent["detail"];
+  export type ResponseEvent = BaseEvent & MaptilerGeocoderEvent.ResponseEvent["detail"];
+  export type SelectEvent = BaseEvent & MaptilerGeocoderEvent.SelectEvent["detail"];
+  export type PickEvent = BaseEvent & MaptilerGeocoderEvent.PickEvent["detail"];
+  export type FeaturesShowEvent = BaseEvent;
+  export type FeaturesHideEvent = BaseEvent;
+  export type FeaturesListedEvent = BaseEvent & MaptilerGeocoderEvent.FeaturesListedEvent["detail"];
+  export type FeaturesClearEvent = BaseEvent;
+  export type FocusInEvent = BaseEvent;
+  export type FocusOutEvent = BaseEvent;
+  export type MarkerClickEvent = BaseEvent & { feature: Feature; marker: Marker };
+  export type MarkerMouseEnterEvent = BaseEvent & { feature: Feature; marker: Marker };
+  export type MarkerMouseLeaveEvent = BaseEvent & { feature: Feature; marker: Marker };
+}
+
+export type ReverseToggleEvent = MaplibreglGeocodingControlEvent.ReverseToggleEvent;
+export type QueryChangeEvent = MaplibreglGeocodingControlEvent.QueryChangeEvent;
+export type QueryClearEvent = MaplibreglGeocodingControlEvent.QueryClearEvent;
+export type RequestEvent = MaplibreglGeocodingControlEvent.RequestEvent;
+export type ResponseEvent = MaplibreglGeocodingControlEvent.ResponseEvent;
+export type SelectEvent = MaplibreglGeocodingControlEvent.SelectEvent;
+export type PickEvent = MaplibreglGeocodingControlEvent.PickEvent;
+export type FeaturesShowEvent = MaplibreglGeocodingControlEvent.FeaturesShowEvent;
+export type FeaturesHideEvent = MaplibreglGeocodingControlEvent.FeaturesHideEvent;
+export type FeaturesListedEvent = MaplibreglGeocodingControlEvent.FeaturesListedEvent;
+export type FeaturesClearEvent = MaplibreglGeocodingControlEvent.FeaturesClearEvent;
+export type FocusInEvent = MaplibreglGeocodingControlEvent.FocusInEvent;
+export type FocusOutEvent = MaplibreglGeocodingControlEvent.FocusOutEvent;
+export type MarkerClickEvent = MaplibreglGeocodingControlEvent.MarkerClickEvent;
+export type MarkerMouseEnterEvent = MaplibreglGeocodingControlEvent.MarkerMouseEnterEvent;
+export type MarkerMouseLeaveEvent = MaplibreglGeocodingControlEvent.MarkerMouseLeaveEvent;
+
 export type MaplibreglGeocodingControlEventNameMap = {
   reversetoggle: ReverseToggleEvent;
   querychange: QueryChangeEvent;
-  queryclear: never;
+  queryclear: QueryClearEvent;
   request: RequestEvent;
   response: ResponseEvent;
   select: SelectEvent;
   pick: PickEvent;
-  featuresshow: never;
-  featureshide: never;
+  featuresshow: FeaturesShowEvent;
+  featureshide: FeaturesHideEvent;
   featureslisted: FeaturesListedEvent;
-  featuresclear: never;
+  featuresclear: FeaturesClearEvent;
 
-  focusin: never;
-  focusout: never;
+  focusin: FocusInEvent;
+  focusout: FocusOutEvent;
 
   markerclick: MarkerClickEvent;
   markermouseenter: MarkerMouseEnterEvent;

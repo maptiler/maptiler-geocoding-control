@@ -7,7 +7,7 @@ import type { EventTypes } from "ol/Observable";
 import { Control } from "ol/control";
 import type { Coordinate } from "ol/coordinate";
 import type { EventsKey, ListenerFunction } from "ol/events";
-import type BaseEvent from "ol/events/Event";
+import OLEvent from "ol/events/Event";
 import {
   GeometryCollection as OlGeometryCollection,
   LineString as OlLineString,
@@ -26,17 +26,7 @@ import { getMask } from "../utils/mask";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type {
-  FeaturesListedEvent,
-  MaptilerGeocoderEventName,
-  MaptilerGeocoderEventNameMap,
-  PickEvent,
-  QueryChangeEvent,
-  RequestEvent,
-  ResponseEvent,
-  ReverseToggleEvent,
-  SelectEvent,
-} from "../geocoder/geocoder-events";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
 import type { GeocodingControlBase } from "./base-control";
 
 import "../components/marker";
@@ -44,12 +34,12 @@ import "../components/marker";
 import type { OpenLayersGeocodingControlEventName, OpenLayersGeocodingControlEventNameMap } from "./openlayers-events";
 import { DEFAULT_GEOMETRY_STYLE, ZOOM_DEFAULTS, type OpenLayersGeocodingControlOptions } from "./openlayers-options";
 
-type TypedBaseEvent<Type extends OpenLayersGeocodingControlEventName> = BaseEvent & { type: Type } & OpenLayersGeocodingControlEventNameMap[Type];
+type TypedBaseEvent<Type extends OpenLayersGeocodingControlEventName> = OLEvent & { type: Type } & OpenLayersGeocodingControlEventNameMap[Type];
 
 interface EventHandlingMethod {
-  (type: EventTypes | ObjectEventTypes, listener: (event: BaseEvent) => unknown): EventsKey;
+  (type: EventTypes | ObjectEventTypes, listener: (event: OLEvent) => unknown): EventsKey;
   <Type extends OpenLayersGeocodingControlEventName>(type: Type, listener: (event: TypedBaseEvent<Type>) => unknown): EventsKey;
-  (type: Array<EventTypes | ObjectEventTypes | OpenLayersGeocodingControlEventName>, listener: (event: BaseEvent) => unknown): EventsKey[];
+  (type: Array<EventTypes | ObjectEventTypes | OpenLayersGeocodingControlEventName>, listener: (event: OLEvent) => unknown): EventsKey[];
 }
 
 const EPSG_SYSTEM = "EPSG:4326";
@@ -94,6 +84,10 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       this.#addEventListeners();
       this.#addResultLayer();
     }
+  }
+
+  getOptions(): OpenLayersGeocodingControlOptions {
+    return { ...this.#options };
   }
 
   setOptions(options: OpenLayersGeocodingControlOptions) {
@@ -154,11 +148,11 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
   #indicatingReverse = false;
 
   #elementEventListeners: { [EventName in MaptilerGeocoderEventName]: (e: MaptilerGeocoderEventNameMap[EventName]) => void } = {
-    reversetoggle: (event: ReverseToggleEvent) => {
+    reversetoggle: (event: MaptilerGeocoderEvent.ReverseToggleEvent) => {
       this.#indicatingReverse = event.detail.reverse;
       this.#dispatch("reversetoggle", event.detail);
     },
-    querychange: (event: QueryChangeEvent) => {
+    querychange: (event: MaptilerGeocoderEvent.QueryChangeEvent) => {
       const coords = event.detail.reverseCoords;
 
       this.#setReverseMarker(coords ? [coords.decimalLongitude, coords.decimalLatitude] : undefined);
@@ -168,13 +162,13 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       this.#setReverseMarker(undefined);
       this.#dispatch("queryclear");
     },
-    request: (event: RequestEvent) => {
+    request: (event: MaptilerGeocoderEvent.RequestEvent) => {
       this.#dispatch("request", event.detail);
     },
-    response: (event: ResponseEvent) => {
+    response: (event: MaptilerGeocoderEvent.ResponseEvent) => {
       this.#dispatch("response", event.detail);
     },
-    select: (event: SelectEvent) => {
+    select: (event: MaptilerGeocoderEvent.SelectEvent) => {
       const selected = event.detail.feature;
       if (selected && this.#flyToEnabled && this.#options.flyToSelected) {
         this.#flyTo(selected.center, this.#computeZoom(selected));
@@ -184,7 +178,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       }
       this.#dispatch("select", event.detail);
     },
-    pick: (event: PickEvent) => {
+    pick: (event: MaptilerGeocoderEvent.PickEvent) => {
       const picked = event.detail.feature;
       if (picked && picked.id !== this.#prevIdToFly && this.#flyToEnabled) {
         this.#goToPicked(picked);
@@ -201,7 +195,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     featureshide: () => {
       this.#dispatch("featureshide");
     },
-    featureslisted: (event: FeaturesListedEvent) => {
+    featureslisted: (event: MaptilerGeocoderEvent.FeaturesListedEvent) => {
       const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
@@ -224,7 +218,6 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     postrender: () => {
       const zoom = this.#map?.getView().getZoom();
       const center = this.#map?.getView().getCenter();
-      console.log("PRR", zoom, center, [zoom, ...this.#transformCoordinateToPosition(center!)]);
       this.#element.handleMapChange(zoom && center ? [zoom, ...this.#transformCoordinateToPosition(center!)] : undefined);
     },
     click: (e: MapBrowserEvent<PointerEvent>) => {
@@ -301,8 +294,8 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     }
   }
 
-  #dispatch<E extends OpenLayersGeocodingControlEventName>(type: E, detail?: OpenLayersGeocodingControlEventNameMap[E]): void {
-    this.dispatchEvent({ type, ...(detail ?? {}) } as BaseEvent);
+  #dispatch<E extends OpenLayersGeocodingControlEventName>(type: E, detail?: Omit<OpenLayersGeocodingControlEventNameMap[E], keyof OLEvent>): void {
+    this.dispatchEvent(Object.assign(new OLEvent(type), detail));
   }
 
   #goToPicked(picked: Feature) {
