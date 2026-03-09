@@ -9,7 +9,7 @@ import Text from "ol/style/Text";
 import type { FlatStyleLike } from "ol/style/flat";
 
 import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
-import type { PickedResultStyle } from "../types";
+import type { FlyToFeatures, PickedResultStyle } from "../types";
 
 export type OpenLayersGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "fetchFullGeometryOnPick"> & {
   /**
@@ -46,6 +46,17 @@ export type OpenLayersGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "f
    * Default value is `true`.
    */
   flyTo?: null | boolean | (AnimationOptions & FitOptions);
+
+  /**
+   * Specifies if found features (shown in result list) should be also animated to on the map. `flyTo` muset be enabled in any way for this to have any effect.
+   *
+   * - If `false` or `"never"` then animating the map to found features is disabled.
+   * - If `true` or `"always"` then animating the map to found features is enabled.
+   * - If `"external"` then animating the map to found features is enabled only when explicitly calling `setQuery` or `submitQuery` methods.
+   *
+   * Default: `"external"`.
+   */
+  flyToFeatures?: boolean | FlyToFeatures;
 
   /**
    * Specifies if selected (not picked) feature should be also animated to on the map.

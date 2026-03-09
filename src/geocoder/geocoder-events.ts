@@ -11,7 +11,7 @@ export namespace MaptilerGeocoderEvent {
   export type PickEvent = CustomEvent<{ feature: Feature | undefined }>;
   export type FeaturesShowEvent = CustomEvent<void>;
   export type FeaturesHideEvent = CustomEvent<void>;
-  export type FeaturesListedEvent = CustomEvent<{ features: Feature[] | undefined }>;
+  export type FeaturesListedEvent = CustomEvent<{ features: Feature[] | undefined; external: boolean }>;
   export type FeaturesClearEvent = CustomEvent<void>;
 }
 

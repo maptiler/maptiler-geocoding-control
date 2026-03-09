@@ -184,7 +184,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
       const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
-      this.#zoomToResults(features);
+      this.#zoomToResults(event);
       this.#dispatch("featureslisted", event.detail);
     },
     featuresclear: () => {
@@ -260,8 +260,16 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     }
   }
 
-  #zoomToResults(features: Feature[] | undefined) {
-    if (!features || features.length === 0 || !this.#flyToEnabled) return;
+  #zoomToResults({ detail: { features, external } }: MaptilerGeocoderEvent.FeaturesListedEvent) {
+    if (
+      !features ||
+      features.length === 0 ||
+      !this.#flyToEnabled ||
+      this.#options.flyToFeatures === false ||
+      this.#options.flyToFeatures === "never" ||
+      (!external && (this.#options.flyToFeatures === undefined || this.#options.flyToFeatures === "external"))
+    )
+      return;
 
     const fuzzyOnly = features.every((feature) => feature.matching_text);
     const bbox = features.reduce<BBox>(

@@ -135,7 +135,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
    * @param value text to set
    */
   setQuery(value: string) {
-    this.#changeSearchValue(value);
+    this.#changeSearchValue(value, { external: true });
     this.#focusInputAndSelectText();
   }
 
@@ -234,7 +234,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
       this.selectedItemIndex = -1;
     } else if (this.searchValue) {
-      this.#search(this.searchValue, { exact: true })
+      this.#search(this.searchValue, { exact: true, external: event === undefined })
         .then(() => {
           this.picked = undefined;
         })
@@ -258,7 +258,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     });
   }
 
-  #changeSearchValue(searchValue: string) {
+  #changeSearchValue(searchValue: string, { external = false }: { external?: boolean } = {}) {
     this.searchValue = searchValue;
     this.#dispatch("querychange", { query: this.searchValue, reverseCoords: this.#isQueryReverse(searchValue) });
 
@@ -275,7 +275,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       const sv = this.searchValue;
 
       this.#searchTimeoutRef = window.setTimeout(() => {
-        this.#search(sv).catch((err: unknown) => (this.error = err));
+        this.#search(sv, { external }).catch((err: unknown) => (this.error = err));
       }, this.debounceSearch ?? 200);
     } else {
       this.#clearFeatures();
@@ -297,7 +297,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     this.#handleSubmit();
   }
 
-  async #search(searchValue: string, { byId = false, exact = false }: undefined | { byId?: boolean; exact?: boolean } = {}) {
+  async #search(searchValue: string, { byId = false, exact = false, external = false }: undefined | { byId?: boolean; exact?: boolean; external?: boolean } = {}) {
     this.error = undefined;
 
     this.abortController?.abort();
@@ -398,7 +398,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
           this.picked = this.cachedFeatures[0];
         } else {
           this.listFeatures = this.cachedFeatures;
-          this.#dispatch("featureslisted", { features: this.listFeatures });
+          this.#dispatch("featureslisted", { features: this.listFeatures, external });
 
           if (this.listFeatures[this.selectedItemIndex]?.id !== this.#selected?.id) {
             this.selectedItemIndex = -1;
@@ -462,7 +462,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
           });
         }
 
-        this.#dispatch("featureslisted", { features: this.listFeatures });
+        this.#dispatch("featureslisted", { features: this.listFeatures, external });
 
         this.cachedFeatures = this.listFeatures;
 

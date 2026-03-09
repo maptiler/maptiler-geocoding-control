@@ -1,7 +1,7 @@
 import type { ControlOptions, Map as LMap, Marker, MarkerOptions, PathOptions, StyleFunction, ZoomPanOptions } from "leaflet";
 
 import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
-import type { Feature, PickedResultStyle } from "../types";
+import type { Feature, FlyToFeatures, PickedResultStyle } from "../types";
 
 export type LeafletGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "fetchFullGeometryOnPick"> & {
   /**
@@ -50,6 +50,17 @@ export type LeafletGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "fetc
    * Default value is `true`.
    */
   flyTo?: null | boolean | ZoomPanOptions;
+
+  /**
+   * Specifies if found features (shown in result list) should be also animated to on the map. `flyTo` muset be enabled in any way for this to have any effect.
+   *
+   * - If `false` or `"never"` then animating the map to found features is disabled.
+   * - If `true` or `"always"` then animating the map to found features is enabled.
+   * - If `"external"` then animating the map to found features is enabled only when explicitly calling `setQuery` or `submitQuery` methods.
+   *
+   * Default: `"external"`.
+   */
+  flyToFeatures?: boolean | FlyToFeatures;
 
   /**
    * Specifies if selected (not picked) feature should be also animated to on the map.
