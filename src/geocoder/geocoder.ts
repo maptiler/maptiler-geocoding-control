@@ -446,8 +446,8 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             properties: {},
             /* eslint-disable @typescript-eslint/restrict-template-expressions */
             id: `reverse_${isReverse.decimalLongitude}_${isReverse.decimalLatitude}`,
-            text: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
-            place_name: isReverse.toCoordinateFormat("DMS"),
+            place_name: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
+            text: isReverse.toCoordinateFormat("DMS"),
             /* eslint-enable @typescript-eslint/restrict-template-expressions */
             place_type: ["reverse"],
             place_type_name: ["reverse"],
