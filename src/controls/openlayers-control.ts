@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { MultiPolygon, Polygon } from "geojson";
-import type { Map as OLMap } from "ol";
-import { Feature as OlFeature, type MapBrowserEvent } from "ol";
+import { Feature as OlFeature, type MapBrowserEvent, type Map as OLMap } from "ol";
 import type { Types as ObjectEventTypes } from "ol/ObjectEventType";
 import type { EventTypes } from "ol/Observable";
 import { Control } from "ol/control";
@@ -139,7 +138,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
   /** Remember last feature that the map flew to as to not do it again */
   #prevIdToFly?: string;
   /** Layer used for showing results */
-  #resultLayer?: VectorLayer;
+  #resultLayer?: VectorLayer<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   /** Source connected to layer used for showing results */
   #resultSource?: VectorSource;
   /** Last marker the mouse was over, used to detech mouseover and mouseleave events on markers */
