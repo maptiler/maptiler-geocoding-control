@@ -21,6 +21,7 @@ import styles from "./geocoder.css?inline";
 
 @customElement("maptiler-geocoder")
 export class MaptilerGeocoderElement extends LitElement implements MaptilerGeocoderOptions {
+  /** @internal */
   static styles = css`
     ${unsafeCSS(styles)}
   `;

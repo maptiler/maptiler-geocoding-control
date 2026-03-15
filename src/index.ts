@@ -1,3 +1,4 @@
+/** @module @maptiler/geocoding-control */
 export * from "./components/clear-icon";
 export * from "./components/fail-icon";
 export * from "./components/loading-icon";

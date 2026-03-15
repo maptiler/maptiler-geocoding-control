@@ -37,7 +37,7 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
     name: "maptilerGeocoder",
     replace: [
       // replace MapLibre with MapTiler SDK
-      { find: /from "maplibre-gl"/, replacement: 'from "@maptiler/sdk"' },
+      { find: /from "maplibre-gl"/g, replacement: 'from "@maptiler/sdk"' },
     ],
     globals: {
       "@maptiler/sdk": "maptilersdk",

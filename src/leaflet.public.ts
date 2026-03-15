@@ -1,3 +1,4 @@
+/** @module @maptiler/geocoding-control/leaflet */
 export * from ".";
 export * from "./components/marker";
 export * from "./controls/leaflet-control";

@@ -1,12 +1,4 @@
-import maplibregl from "maplibre-gl";
-
-type FillLayerSpecification = maplibregl.FillLayerSpecification;
-type FitBoundsOptions = maplibregl.FitBoundsOptions;
-type FlyToOptions = maplibregl.FlyToOptions;
-type LineLayerSpecification = maplibregl.LineLayerSpecification;
-type Marker = maplibregl.Marker;
-type MarkerOptions = maplibregl.MarkerOptions;
-type MLMap = maplibregl.Map;
+import type { FillLayerSpecification, FitBoundsOptions, FlyToOptions, LineLayerSpecification, Marker, MarkerOptions, Map as MLMap } from "maplibre-gl";
 
 import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
 import type { Feature, FlyToFeatures, PickedResultStyle } from "../types";

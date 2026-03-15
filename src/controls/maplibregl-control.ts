@@ -1,6 +1,7 @@
 import { feature, featureCollection } from "@turf/helpers";
 import union from "@turf/union";
 import type { GeoJSON, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
+import type { Evented, GeoJSONSource, IControl, MapMouseEvent, Marker, MarkerOptions, Map as MLMap, Subscription } from "maplibre-gl";
 import maplibregl from "maplibre-gl";
 
 import type { BBox, Feature, Position } from "../types";
@@ -17,18 +18,7 @@ import "../components/marker";
 import type { MaplibreglGeocodingControlEventName, MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events";
 import { DEFAULT_GEOMETRY_STYLE, type MaplibreglGeocodingControlOptions, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS } from "./maplibregl-options";
 
-const Evented = maplibregl.Evented;
-const Marker = maplibregl.Marker;
-const Popup = maplibregl.Popup;
-type Evented = maplibregl.Evented;
-type GeoJSONSource = maplibregl.GeoJSONSource;
-type IControl = maplibregl.IControl;
-type MapMouseEvent = maplibregl.MapMouseEvent;
-type Marker = maplibregl.Marker;
-type MarkerOptions = maplibregl.MarkerOptions;
-type MLMap = maplibregl.Map;
 type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
-type Subscription = maplibregl.Subscription;
 
 type EventHandlingMethod<Return> = <Type extends MaplibreglGeocodingControlEventName>(
   type: Type,
@@ -39,7 +29,7 @@ interface EventOnceHandlingMethod<Return> {
   <Type extends MaplibreglGeocodingControlEventName>(type: Type, listener?: undefined): Promise<MaplibreglGeocodingControlEventNameMap[Type]>;
 }
 
-export class MaplibreglGeocodingControl extends Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
+export class MaplibreglGeocodingControl extends maplibregl.Evented implements IControl, GeocodingControlBase<MaplibreglGeocodingControlOptions> {
   #options: MaplibreglGeocodingControlOptions = {};
   #map?: MLMap;
   #element?: MaptilerGeocoderElement;
@@ -435,7 +425,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
           marker = this.#createMarker(this.#options.showResultMarkers)
             .setLngLat(feature.center)
             .setPopup(
-              new Popup({
+              new maplibregl.Popup({
                 offset: [1, -27],
                 closeButton: false,
                 closeOnMove: true,
@@ -534,7 +524,7 @@ export class MaplibreglGeocodingControl extends Evented implements IControl, Geo
     if (typeof options !== "object") {
       options = { element: this.#map?._container.ownerDocument.createElement("maptiler-geocode-marker"), offset: [1, -13] };
     }
-    return new Marker(options);
+    return new maplibregl.Marker(options);
   }
 
   #getFullGeometryStyle() {

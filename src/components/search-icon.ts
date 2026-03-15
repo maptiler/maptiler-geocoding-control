@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-search-icon")
 export class MaptilerGeocodeSearchIconElement extends LitElement {
+  /** @internal */
   static styles = css`
     circle {
       stroke-width: 1.875;

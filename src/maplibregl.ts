@@ -1,3 +1,4 @@
+/** @module @maptiler/geocoding-control/maplibregl */
 export * from ".";
 export * from "./components/marker";
 export * from "./controls/maplibregl-control";
