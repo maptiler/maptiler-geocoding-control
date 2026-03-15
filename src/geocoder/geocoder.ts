@@ -143,7 +143,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
    * @param value text to set and submit
    */
   submitQuery(value: string) {
-    this.#submitSearchValue(value);
+    this.#submitSearchValue(value, { external: true });
   }
 
   /**
@@ -216,7 +216,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     );
   }
 
-  #handleSubmit(event?: Event) {
+  #handleSubmit(event?: Event, { external = false }: { external?: boolean } = {}) {
     event?.preventDefault();
 
     this.focused = false;
@@ -232,7 +232,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
       this.selectedItemIndex = -1;
     } else if (this.searchValue) {
-      this.#search(this.searchValue, { exact: true, external: event === undefined })
+      this.#search(this.searchValue, { exact: true, external })
         .then(() => {
           this.picked = undefined;
         })
@@ -287,12 +287,12 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
   }
 
-  #submitSearchValue(searchValue: string) {
+  #submitSearchValue(searchValue: string, { external = false }: { external?: boolean } = {}) {
     this.searchValue = searchValue;
     this.#dispatch("querychange", { query: this.searchValue, reverseCoords: this.#isQueryReverse(searchValue) });
 
     this.selectedItemIndex = -1;
-    this.#handleSubmit();
+    this.#handleSubmit(undefined, { external });
   }
 
   async #search(searchValue: string, { byId = false, exact = false, external = false }: undefined | { byId?: boolean; exact?: boolean; external?: boolean } = {}) {
