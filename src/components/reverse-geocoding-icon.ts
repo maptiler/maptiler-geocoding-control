@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-reverse-geocoding-icon")
 export class MaptilerGeocodeReverseGeocodingIconElement extends LitElement {
+  /** @internal */
   static styles = css`
     svg {
       display: block;

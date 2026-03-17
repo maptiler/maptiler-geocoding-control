@@ -1,10 +1,9 @@
-import maplibregl from "maplibre-gl";
+import type { Evented, Marker } from "maplibre-gl";
 import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
 import type { Feature } from "../types";
 import type { MaplibreglGeocodingControl } from "./maplibregl-control";
 
-type Marker = maplibregl.Marker;
-type MLEvent = Extract<Parameters<maplibregl.Evented["fire"]>[0], object>;
+type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
 
 type BaseEvent = MLEvent & { target: MaplibreglGeocodingControl };
 

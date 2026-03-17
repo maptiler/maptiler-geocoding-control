@@ -43,3 +43,4 @@ node_modules/
 *.sw?
 
 dist
+/tsconfig.check-version.json

@@ -21,6 +21,7 @@ import styles from "./geocoder.css?inline";
 
 @customElement("maptiler-geocoder")
 export class MaptilerGeocoderElement extends LitElement implements MaptilerGeocoderOptions {
+  /** @internal */
   static styles = css`
     ${unsafeCSS(styles)}
   `;
@@ -84,13 +85,13 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @state() private abortController?: AbortController;
   /** Focus state of input element */
   @state() private focused: boolean = false;
-  /** Focus state of input element, delayed for a moment to not close feature list immediately after losing focus */
-  @state() private focusedDelayed: boolean = false;
+  /** Visibility state of feature list */
+  @state() private isFeatureListVisible = false;
+  /** Feature list is currently interacted with using pointer device so it should not be closed even though input lost focus */
+  @state() private isFeatureListInteractedWith = false;
 
   /** Helps to trigger logic only after this instance gets fully initialized */
   #isInitialized = false;
-  /** Helps to trigger logic running when feature list hides only after it gets opened for the first time */
-  #wasFeatureListVisible = false;
   /** Timeout ref for debouncing logic */
   #searchTimeoutRef?: number;
   /** Cache for URLs of icons that couldn't be loaded for any reason, as to not try them again unnecessarily */
@@ -100,9 +101,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
   get #selected(): Feature | undefined {
     return this.listFeatures?.[this.selectedItemIndex];
-  }
-  get #isFeatureListVisible(): boolean {
-    return !!this.listFeatures?.length && (this.focusedDelayed || this.keepListOpen);
   }
   get #isLoading(): boolean {
     return this.abortController !== undefined;
@@ -135,7 +133,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
    * @param value text to set
    */
   setQuery(value: string) {
-    this.#changeSearchValue(value);
+    this.#changeSearchValue(value, { external: true });
     this.#focusInputAndSelectText();
   }
 
@@ -145,7 +143,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
    * @param value text to set and submit
    */
   submitQuery(value: string) {
-    this.#submitSearchValue(value);
+    this.#submitSearchValue(value, { external: true });
   }
 
   /**
@@ -218,7 +216,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     );
   }
 
-  #handleSubmit(event?: Event) {
+  #handleSubmit(event?: Event, { external = false }: { external?: boolean } = {}) {
     event?.preventDefault();
 
     this.focused = false;
@@ -234,7 +232,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
       this.selectedItemIndex = -1;
     } else if (this.searchValue) {
-      this.#search(this.searchValue, { exact: true })
+      this.#search(this.searchValue, { exact: true, external })
         .then(() => {
           this.picked = undefined;
         })
@@ -258,7 +256,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     });
   }
 
-  #changeSearchValue(searchValue: string) {
+  #changeSearchValue(searchValue: string, { external = false }: { external?: boolean } = {}) {
     this.searchValue = searchValue;
     this.#dispatch("querychange", { query: this.searchValue, reverseCoords: this.#isQueryReverse(searchValue) });
 
@@ -275,7 +273,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       const sv = this.searchValue;
 
       this.#searchTimeoutRef = window.setTimeout(() => {
-        this.#search(sv).catch((err: unknown) => (this.error = err));
+        this.#search(sv, { external }).catch((err: unknown) => (this.error = err));
       }, this.debounceSearch ?? 200);
     } else {
       this.#clearFeatures();
@@ -289,15 +287,15 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
   }
 
-  #submitSearchValue(searchValue: string) {
+  #submitSearchValue(searchValue: string, { external = false }: { external?: boolean } = {}) {
     this.searchValue = searchValue;
     this.#dispatch("querychange", { query: this.searchValue, reverseCoords: this.#isQueryReverse(searchValue) });
 
     this.selectedItemIndex = -1;
-    this.#handleSubmit();
+    this.#handleSubmit(undefined, { external });
   }
 
-  async #search(searchValue: string, { byId = false, exact = false }: undefined | { byId?: boolean; exact?: boolean } = {}) {
+  async #search(searchValue: string, { byId = false, exact = false, external = false }: undefined | { byId?: boolean; exact?: boolean; external?: boolean } = {}) {
     this.error = undefined;
 
     this.abortController?.abort();
@@ -398,7 +396,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
           this.picked = this.cachedFeatures[0];
         } else {
           this.listFeatures = this.cachedFeatures;
-          this.#dispatch("featureslisted", { features: this.listFeatures });
+          this.#dispatch("featureslisted", { features: this.listFeatures, external });
 
           if (this.listFeatures[this.selectedItemIndex]?.id !== this.#selected?.id) {
             this.selectedItemIndex = -1;
@@ -448,8 +446,8 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             properties: {},
             /* eslint-disable @typescript-eslint/restrict-template-expressions */
             id: `reverse_${isReverse.decimalLongitude}_${isReverse.decimalLatitude}`,
-            text: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
-            place_name: isReverse.toCoordinateFormat("DMS"),
+            place_name: `${isReverse.decimalLatitude}, ${isReverse.decimalLongitude}`,
+            text: isReverse.toCoordinateFormat("DMS"),
             /* eslint-enable @typescript-eslint/restrict-template-expressions */
             place_type: ["reverse"],
             place_type_name: ["reverse"],
@@ -462,7 +460,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
           });
         }
 
-        this.#dispatch("featureslisted", { features: this.listFeatures });
+        this.#dispatch("featureslisted", { features: this.listFeatures, external });
 
         this.cachedFeatures = this.listFeatures;
 
@@ -544,14 +542,27 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
   }
 
-  #handleMouseEnter(index: number) {
+  #handlePointerEnter(index: number) {
     this.selectedItemIndex = index;
   }
 
-  #handleMouseLeave() {
+  #handlePointerLeave() {
     if (!this.selectFirst !== false || this.picked) {
       this.selectedItemIndex = -1;
     }
+    if (this.isFeatureListInteractedWith) {
+      this.isFeatureListInteractedWith = false;
+    }
+  }
+
+  #handlePointerDown() {
+    this.isFeatureListInteractedWith = true;
+  }
+
+  #handlePointerUp() {
+    setTimeout(() => {
+      this.isFeatureListInteractedWith = false;
+    });
   }
 
   #handleClear() {
@@ -586,15 +597,10 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       this.error = undefined;
     }
 
-    if (["focused"].some((prop) => changedProperties.has(prop))) {
-      setTimeout(() => {
-        this.focusedDelayed = this.focused;
-
-        // close dropdown in the next cycle so that the selected item event has the chance to fire
-        if (this.clearOnBlur && !this.focused) {
-          this.searchValue = "";
-        }
-      }, 100);
+    if (["focused", "listIsInteractedWith"].some((prop) => changedProperties.has(prop))) {
+      if (this.clearOnBlur && !this.focused && !this.isFeatureListInteractedWith) {
+        this.searchValue = "";
+      }
     }
 
     if (
@@ -629,11 +635,14 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       }
     }
 
-    if (["listFeatures", "focusedDelayed"].some((prop) => changedProperties.has(prop))) {
-      if (this.#isFeatureListVisible) {
+    if (["listFeatures", "focused", "isFeatureListInteractedWith", "keepListOpen"].some((prop) => changedProperties.has(prop))) {
+      this.isFeatureListVisible = !!this.listFeatures?.length && (this.focused || this.isFeatureListInteractedWith || this.keepListOpen);
+    }
+
+    if (["isFeatureListVisible"].some((prop) => changedProperties.has(prop))) {
+      if (this.isFeatureListVisible) {
         this.#dispatch("featuresshow");
-        this.#wasFeatureListVisible = true;
-      } else if (this.#wasFeatureListVisible) {
+      } else {
         this.#dispatch("featureshide");
       }
     }
@@ -708,7 +717,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                 </button>
               </div>
             `
-          : (!this.focusedDelayed && !this.keepListOpen) || this.listFeatures === undefined
+          : (!this.focused && !this.isFeatureListInteractedWith && !this.keepListOpen) || this.listFeatures === undefined
             ? nothing
             : this.listFeatures.length === 0
               ? html`
@@ -722,7 +731,14 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                   </div>
                 `
               : html`
-                  <ul class="options ${classMap({ "open-on-top": this.openListOnTop })}" @mouseleave=${this.#handleMouseLeave} @keydown=${this.#handleKeyDown} role="listbox">
+                  <ul
+                    class="options ${classMap({ "open-on-top": this.openListOnTop })}"
+                    @pointerleave=${this.#handlePointerLeave}
+                    @pointerdown=${this.#handlePointerDown}
+                    @pointerup=${this.#handlePointerUp}
+                    @keydown=${this.#handleKeyDown}
+                    role="listbox"
+                  >
                     ${repeat(
                       this.listFeatures,
                       (feature) => feature.id + (feature.address ? "," + feature.address : ""),
@@ -731,17 +747,15 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                           .feature=${feature}
                           .showPlaceType=${this.showPlaceType ?? "if-needed"}
                           itemStyle=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
-                          @mouseenter=${() => {
-                            this.#handleMouseEnter(i);
+                          @pointerenter=${() => {
+                            this.#handlePointerEnter(i);
                           }}
                           @select=${() => {
                             this.#pick(feature);
                           }}
                           .missingIconsCache=${this.#missingIconsCache}
                           .iconsBaseUrl=${this.iconsBaseUrl ?? `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`}
-                        >
-                          ${feature.place_name}
-                        </maptiler-geocoder-feature-item>
+                        />
                       `,
                     )}
                   </ul>

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { MultiPolygon, Polygon } from "geojson";
-import type { Map as OLMap } from "ol";
-import { Feature as OlFeature, type MapBrowserEvent } from "ol";
+import { Feature as OlFeature, type MapBrowserEvent, type Map as OLMap } from "ol";
 import type { Types as ObjectEventTypes } from "ol/ObjectEventType";
 import type { EventTypes } from "ol/Observable";
 import { Control } from "ol/control";
@@ -139,7 +138,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
   /** Remember last feature that the map flew to as to not do it again */
   #prevIdToFly?: string;
   /** Layer used for showing results */
-  #resultLayer?: VectorLayer;
+  #resultLayer?: VectorLayer<any>; // eslint-disable-line @typescript-eslint/no-explicit-any
   /** Source connected to layer used for showing results */
   #resultSource?: VectorSource;
   /** Last marker the mouse was over, used to detech mouseover and mouseleave events on markers */
@@ -199,7 +198,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       const features = event.detail.features;
       this.#markedFeatures = features;
       this.#setFeatures(this.#markedFeatures, undefined);
-      this.#zoomToResults(features);
+      this.#zoomToResults(event);
       this.#dispatch("featureslisted", event.detail);
     },
     featuresclear: () => {
@@ -306,8 +305,16 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
     }
   }
 
-  #zoomToResults(features: Feature[] | undefined) {
-    if (!features || features.length === 0 || !this.#flyToEnabled) return;
+  #zoomToResults({ detail: { features, external } }: MaptilerGeocoderEvent.FeaturesListedEvent) {
+    if (
+      !features ||
+      features.length === 0 ||
+      !this.#flyToEnabled ||
+      this.#options.flyToFeatures === false ||
+      this.#options.flyToFeatures === "never" ||
+      (!external && (this.#options.flyToFeatures === undefined || this.#options.flyToFeatures === "external"))
+    )
+      return;
 
     const fuzzyOnly = features.every((feature) => feature.matching_text);
     const bbox = features.reduce<BBox>(

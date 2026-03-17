@@ -365,7 +365,7 @@ describe("standalone control", () => {
     element.setQuery("svitavy");
     await wait(200); // debounce
 
-    element.shadowRoot!.querySelector("feature-item:nth-child(3)")!.dispatchEvent(new Event("mouseenter"));
+    element.shadowRoot!.querySelector("maptiler-geocoder-feature-item:nth-child(3)")!.dispatchEvent(new Event("pointerenter"));
     await wait();
 
     expect(listener).toHaveBeenCalledTimes(2);
@@ -399,7 +399,7 @@ describe("standalone control", () => {
     element.setQuery("svitavy");
     await wait(200); // debounce
 
-    element.shadowRoot!.querySelector("feature-item:nth-child(3)")!.dispatchEvent(new Event("click"));
+    element.shadowRoot!.querySelector("maptiler-geocoder-feature-item:nth-child(3)")!.dispatchEvent(new Event("select"));
     await wait();
 
     expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { feature: features[2] } }));
@@ -433,7 +433,7 @@ describe("standalone control", () => {
     await wait(200); // debounce
 
     expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: null }));
-    expect(element.shadowRoot!.querySelectorAll("feature-item").length).not.toBe(0);
+    expect(element.shadowRoot!.querySelectorAll("maptiler-geocoder-feature-item").length).not.toBe(0);
   });
 
   it("should dispatch featureshide event when list of features is removed from DOM", async () => {
@@ -450,7 +450,7 @@ describe("standalone control", () => {
     await wait();
 
     expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: null }));
-    expect(element.shadowRoot!.querySelectorAll("feature-item").length).toBe(0);
+    expect(element.shadowRoot!.querySelectorAll("maptiler-geocoder-feature-item").length).toBe(0);
   });
 
   it("should dispatch featureslisted event when list of features is loaded from API", async () => {
@@ -463,7 +463,7 @@ describe("standalone control", () => {
     element.setQuery("svitavy");
     await wait(200); // debounce
 
-    expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { features } }));
+    expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: expect.objectContaining({ features }) }));
   });
 
   it("should dispatch featuresclear event when list of features is forgotten", async () => {

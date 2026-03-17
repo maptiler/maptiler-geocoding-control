@@ -28,6 +28,7 @@ let spritePromise: Promise<void> | undefined;
 
 @customElement("maptiler-geocoder-feature-item")
 export class MaptilerGeocoderFeatureItemElement extends LitElement {
+  /** @internal */
   static styles = css`
     ${unsafeCSS(styles)}
   `;

@@ -1,15 +1,7 @@
-import maplibregl from "maplibre-gl";
-
-type FillLayerSpecification = maplibregl.FillLayerSpecification;
-type FitBoundsOptions = maplibregl.FitBoundsOptions;
-type FlyToOptions = maplibregl.FlyToOptions;
-type LineLayerSpecification = maplibregl.LineLayerSpecification;
-type Marker = maplibregl.Marker;
-type MarkerOptions = maplibregl.MarkerOptions;
-type MLMap = maplibregl.Map;
+import type { FillLayerSpecification, FitBoundsOptions, FlyToOptions, LineLayerSpecification, Marker, MarkerOptions, Map as MLMap } from "maplibre-gl";
 
 import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
-import type { Feature, PickedResultStyle } from "../types";
+import type { Feature, FlyToFeatures, PickedResultStyle } from "../types";
 
 export type MaplibreglGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "apiKey" | "fetchFullGeometryOnPick"> & {
   /**
@@ -66,7 +58,18 @@ export type MaplibreglGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "a
   flyTo?: null | boolean | (FlyToOptions & FitBoundsOptions);
 
   /**
-   * Specifies if selected (not picked) feature should be also animated to on the map.
+   * Specifies if found features (shown in result list) should be also animated to on the map. `flyTo` muset be enabled in any way for this to have any effect.
+   *
+   * - If `false` or `"never"` then animating the map to found features is disabled.
+   * - If `true` or `"always"` then animating the map to found features is enabled.
+   * - If `"external"` then animating the map to found features is enabled only when explicitly calling `setQuery` or `submitQuery` methods.
+   *
+   * Default: `"external"`.
+   */
+  flyToFeatures?: boolean | FlyToFeatures;
+
+  /**
+   * Specifies if selected (not picked) feature should be also animated to on the map. `flyTo` muset be enabled in any way for this to have any effect.
    *
    * Default: `false`.
    */

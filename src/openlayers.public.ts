@@ -1,3 +1,4 @@
+/** @module @maptiler/geocoding-control/openlayers */
 export * from ".";
 export * from "./components/marker";
 export * from "./controls/openlayers-control";

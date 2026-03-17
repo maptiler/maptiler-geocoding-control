@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-fail-icon")
 export class MaptilerGeocodeFailIconElement extends LitElement {
+  /** @internal */
   static styles = css`
     svg {
       display: block;

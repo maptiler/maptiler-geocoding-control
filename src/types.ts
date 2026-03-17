@@ -54,6 +54,8 @@ export type ProximityRule = {
 
 export type PickedResultStyle = "marker-only" | "full-geometry" | "full-geometry-including-polygon-center-marker";
 
+export type FlyToFeatures = "never" | "always" | "external";
+
 export type EnableReverse = "never" | "always" | "button";
 
 export type ShowPlaceType = "never" | "always" | "if-needed";

@@ -1,3 +1,4 @@
+/** @module @maptiler/geocoding-control/maptilersdk */
 export * from ".";
 export * from "./components/marker";
 export * from "./controls/maptilersdk-control";

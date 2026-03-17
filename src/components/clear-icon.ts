@@ -3,6 +3,7 @@ import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-clear-icon")
 export class MaptilerGeocodeClearIconElement extends LitElement {
+  /** @internal */
   static styles = css`
     svg {
       display: block;

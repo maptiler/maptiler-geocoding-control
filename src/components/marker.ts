@@ -5,6 +5,7 @@ import styles from "./marker.css?inline";
 
 @customElement("maptiler-geocode-marker")
 export class MaptilerGeocodeMarkerElement extends LitElement {
+  /** @internal */
   static styles = css`
     ${unsafeCSS(styles)}
   `;
