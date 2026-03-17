@@ -11,13 +11,13 @@ const umd = process.env.MODE === "umd";
 const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { replace?: ReplaceOptions["values"] }> = {
   index: {
     fileName: "index",
-    entry: ["src/index.ts"],
+    entry: { index: "src/index.ts" },
     name: "maptilerGeocoder",
     globals: {},
   },
   leaflet: {
     fileName: "leaflet",
-    entry: ["src/leaflet.public.ts"],
+    entry: { leaflet: "src/leaflet.public.ts" },
     name: "maptilerGeocoder",
     globals: {
       leaflet: "L",
@@ -25,7 +25,7 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
   },
   maplibregl: {
     fileName: "maplibregl",
-    entry: ["src/maplibregl.ts"],
+    entry: { maplibregl: "src/maplibregl.public.ts" },
     name: "maptilerGeocoder",
     globals: {
       "maplibre-gl": "maplibregl",
@@ -33,7 +33,7 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
   },
   maptilersdk: {
     fileName: "maptilersdk",
-    entry: ["src/maptilersdk.ts"],
+    entry: { maptilersdk: "src/maptilersdk.public.ts" },
     name: "maptilerGeocoder",
     replace: [
       // replace MapLibre with MapTiler SDK
@@ -45,7 +45,7 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
   },
   openlayers: {
     fileName: "openlayers",
-    entry: ["src/openlayers.public.ts"],
+    entry: { openlayers: "src/openlayers.public.ts" },
     name: "maptilerGeocoder",
     globals: (name) => (name.startsWith("ol") ? name.replaceAll("/", ".") : ""),
   },
@@ -56,7 +56,10 @@ if (!process.env.FLAVOUR) throw new Error("No flavour specified for build!");
 if (!flavour) throw new Error(`Flavour "${process.env.FLAVOUR}" is not valid for build!`);
 
 export default defineConfig({
-  plugins: [externalizeDeps({ deps: !umd }), umd ? replace({ values: flavour.replace }) : dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts"] })],
+  plugins: [
+    externalizeDeps({ deps: !umd }),
+    umd ? replace({ values: flavour.replace ?? [] }) : dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts", "check-version.js"] }),
+  ],
   publicDir: "public",
   build: {
     sourcemap: true,

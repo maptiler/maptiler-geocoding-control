@@ -59,7 +59,7 @@ globalThis.HTMLCanvasElement.prototype.getContext = () => new WebGL2RenderingCon
 
 import { Map as SDKMap } from "@maptiler/sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MaplibreglGeocodingControl, type MaplibreglGeocodingControlOptions } from "../src/maplibregl";
+import { MaplibreglGeocodingControl, type MaplibreglGeocodingControlOptions } from "../src/maplibregl.public";
 
 const wait = (ms = 0) => new Promise((res) => setTimeout(res, ms));
 

@@ -3,7 +3,7 @@ import "@maptiler/sdk/dist/maptiler-sdk.css";
 import { createElement, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 
-import { GeocodingControl, type EnableReverse } from "../../src/maptilersdk";
+import { GeocodingControl, type EnableReverse } from "../../src/maptilersdk.public";
 import { getApiKey } from "./demo-utils";
 
 const appElement = document.getElementById("app");

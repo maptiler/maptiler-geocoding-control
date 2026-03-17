@@ -1,7 +1,7 @@
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 
-import { GeocodingControl } from "../../src/maplibregl";
+import { GeocodingControl } from "../../src/maplibregl.public";
 
 import { getApiKey } from "./demo-utils";
 

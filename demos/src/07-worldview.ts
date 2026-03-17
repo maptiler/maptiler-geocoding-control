@@ -1,7 +1,7 @@
 import { Map, MapStyle } from "@maptiler/sdk";
 import "@maptiler/sdk/dist/maptiler-sdk.css";
 
-import { GeocodingControl, TypeRule } from "../../src/maptilersdk";
+import { GeocodingControl, TypeRule } from "../../src/maptilersdk.public";
 
 import { getApiKey } from "./demo-utils";
 

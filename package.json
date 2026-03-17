@@ -61,24 +61,24 @@
       "require": "./dist/index.umd.js"
     },
     "./maplibregl": {
-      "types": "./dist/src/maplibregl.d.ts",
+      "types": "./dist/src/maplibregl.public.d.ts",
       "import": "./dist/maplibregl.js",
       "require": "./dist/maplibregl.umd.js"
     },
     "./maptilersdk": {
-      "types": "./dist/src/maptilersdk.d.ts",
+      "types": "./dist/src/maptilersdk.public.d.ts",
       "import": "./dist/maptilersdk.js",
       "require": "./dist/maptilersdk.umd.js"
     },
     "./leaflet": {
       "types": "./dist/src/leaflet.public.d.ts",
-      "import": "./dist/leaflet.public.js",
-      "require": "./dist/leaflet.public.umd.js"
+      "import": "./dist/leaflet.js",
+      "require": "./dist/leaflet.umd.js"
     },
     "./openlayers": {
       "types": "./dist/src/openlayers.public.d.ts",
-      "import": "./dist/openlayers.public.js",
-      "require": "./dist/openlayers.public.umd.js"
+      "import": "./dist/openlayers.js",
+      "require": "./dist/openlayers.umd.js"
     }
   },
   "dependencies": {
