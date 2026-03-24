@@ -472,7 +472,7 @@ export class MaplibreglGeocodingControl extends maplibregl.Evented implements IC
   }
 
   #syncFullGeometryLayer() {
-    if (!this.#map?.loaded) {
+    if (!this.#map?._loaded) {
       void this.#map?.once("load", () => {
         this.#syncFullGeometryLayer();
       });
