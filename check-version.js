@@ -26,6 +26,13 @@ const checks = [
       "maplibre-gl": ["../node_modules/@maptiler/sdk--v3.11/node_modules/maplibre-gl/dist/maplibre-gl.d.ts", "../node_modules/maplibre-gl/dist/maplibre-gl.d.ts"],
     },
   },
+  {
+    entrypoint: "src/maptilersdk.ts",
+    paths: {
+      "@maptiler/sdk": ["../node_modules/@maptiler/sdk--v4.0/dist/maptiler-sdk.d.ts"],
+      "maplibre-gl": ["../node_modules/@maptiler/sdk--v4.0/node_modules/maplibre-gl/dist/maplibre-gl.d.ts", "../node_modules/maplibre-gl/dist/maplibre-gl.d.ts"],
+    },
+  },
   { entrypoint: "src/maplibregl.ts" },
   { entrypoint: "src/maplibregl.ts", paths: { "maplibre-gl": ["../node_modules/maplibre-gl--v5.0/dist/maplibre-gl.d.ts"] } },
   { entrypoint: "src/maplibregl.ts", paths: { "maplibre-gl": ["../node_modules/maplibre-gl--v5.5/dist/maplibre-gl.d.ts"] } },
