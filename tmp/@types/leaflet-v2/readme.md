@@ -1,0 +1,1 @@
+Copy of [commit `a5598ff`](https://github.com/Falke-Design/DefinitelyTyped/tree/a5598ff30adcbf620cce164aefd54e966b62363d/types/leaflet) since the [pull request](https://github.com/DefinitelyTyped/DefinitelyTyped/pull/73485) that should merge this into DT is currently blocked.

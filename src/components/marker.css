@@ -1,0 +1,34 @@
+svg {
+  display: block;
+  fill: var(--maptiler-geocode-marker-fill, #3170fe);
+  stroke: var(--maptiler-geocode-marker-stroke, #3170fe);
+  height: 30px;
+}
+
+:host(.marker-selected) {
+  z-index: 2;
+}
+
+:host(.marker-selected) svg path {
+  fill: var(--maptiler-geocode-marker-selected-fill, #98b7ff);
+  stroke: var(--maptiler-geocode-marker-selected-stroke, #3170fe);
+}
+
+:host(.marker-reverse) svg path {
+  fill: var(--maptiler-geocode-marker-reverse-fill, silver);
+  stroke: var(--maptiler-geocode-marker-reverse-stroke, gray);
+}
+
+:host(.marker-interactive) {
+  cursor: pointer !important;
+}
+
+:host(.marker-fuzzy) svg path {
+  fill: var(--maptiler-geocode-marker-fuzzy-fill, silver);
+  stroke: var(--maptiler-geocode-marker-fuzzy-stroke, gray);
+}
+
+:host(.marker-fuzzy.marker-selected) svg path {
+  fill: var(--maptiler-geocode-marker-selected-fuzzy-fill, #ddd);
+  stroke: var(--maptiler-geocode-marker-selected-fuzzy-stroke, silver);
+}

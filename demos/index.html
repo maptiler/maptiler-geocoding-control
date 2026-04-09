@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MapTiler Geocoding Control Demos</title>
+
+    <style>
+      body {
+        position: relative;
+        background: #ffaa07;
+        display: flex;
+        justify-content: center;
+      }
+
+      #container {
+        position: relative;
+        top: 20%;
+        padding: 20px 32px 32px 32px;
+        background: white;
+        border: black 3px solid;
+        filter: drop-shadow(12px 12px 0px rgba(0, 0, 0, 0.33));
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        justify-content: center;
+        gap: 24px;
+      }
+
+      a {
+        text-decoration: none;
+        color: rgba(0, 0, 0, 0.5);
+        transition: all 0.3s;
+        text-transform: uppercase;
+        font-weight: 400;
+      }
+
+      a:hover {
+        color: #000;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div>
+      <div id="container">
+        <img src="/maptiler-sdk-logo.svg" width="400px" />
+        <a href="01-standalone.html">Standalone →</a>
+        <a href="02-maptiler-sdk.html">MapTiler SDK →</a>
+        <a href="03-maplibregl.html">MapLibre GL →</a>
+        <a href="04-react.html">React →</a>
+        <a href="05-leaflet.html">Leaflet →</a>
+        <a href="06-openlayers.html">OpenLayers →</a>
+        <a href="07-worldview.html">Worldview →</a>
+      </div>
+    </div>
+  </body>
+</html>

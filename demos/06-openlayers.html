@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <title>MapTiler Geocoding Control example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      #map {
+        position: absolute;
+        width: 100vw;
+        height: 100vh;
+        background: #ccc;
+      }
+
+      .openlayers-ctrl-geocoder {
+        position: absolute;
+        top: 0.5em;
+        right: 0.5em;
+      }
+
+      .openlayers-ctrl-geocoder + .openlayers-ctrl-geocoder {
+        right: auto;
+        left: 2.5em;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="map"></div>
+    <script type="module" src="/src/06-openlayers.ts"></script>
+  </body>
+</html>

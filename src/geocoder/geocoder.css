@@ -1,0 +1,191 @@
+form {
+  font-family: "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  position: relative;
+  background-color: #fff;
+  z-index: 10;
+  border-radius: 4px;
+  margin: 0;
+  transition: max-width 0.25s;
+  box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
+  --color-text: #444952;
+  --color-icon-button: #444952;
+  pointer-events: all;
+}
+form,
+form *,
+form *:after,
+form *:before {
+  box-sizing: border-box;
+}
+form.can-collapse {
+  max-width: 29px;
+}
+form.can-collapse input::placeholder {
+  transition: opacity 0.25s;
+  opacity: 0;
+}
+form {
+  width: 270px;
+  max-width: 270px;
+}
+form:focus-within,
+form:hover {
+  width: 270px;
+  max-width: 270px;
+}
+form input::placeholder,
+form:focus-within input::placeholder,
+form:hover input::placeholder {
+  opacity: 1;
+}
+input {
+  font: inherit;
+  font-size: 14px;
+  flex-grow: 1;
+  min-height: 29px;
+  background-color: transparent;
+  color: #444952;
+  white-space: nowrap;
+  overflow: hidden;
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+input:focus {
+  color: #444952;
+  outline: 0;
+  outline: none;
+  box-shadow: none;
+}
+ul,
+div.error,
+div.no-results {
+  background-color: #fff;
+  border-radius: 4px;
+  left: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  top: calc(100% + 6px);
+  overflow: hidden;
+}
+ul {
+  font-size: 14px;
+  line-height: 16px;
+  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+}
+div.error,
+div.no-results {
+  font: inherit;
+  line-height: 18px;
+  font-size: 12px;
+  display: flex;
+  gap: 16px;
+}
+div.error {
+  padding: 16px;
+  font-weight: 600;
+  color: #e25041;
+  background-color: #fbeae8;
+}
+div.error div {
+  flex-grow: 1;
+}
+div.error maptiler-geocode-fail-icon {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+div.error button {
+  flex-shrink: 0;
+}
+div.error button maptiler-geocode-clear-icon {
+  --color-icon-button: #e25041;
+}
+div.error button:hover maptiler-geocode-clear-icon,
+div.error button:active maptiler-geocode-clear-icon {
+  --color-icon-button: inherit;
+}
+div.no-results {
+  padding: 14px 24px 14px 16px;
+  font-weight: 400;
+  color: #6b7c93;
+  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+}
+div.no-results maptiler-geocode-fail-icon {
+  margin-top: 4px;
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+}
+ul.options.open-on-top {
+  top: auto;
+  bottom: calc(100% + 6px);
+}
+button {
+  padding: 0;
+  margin: 0;
+  border: 0;
+  background-color: transparent;
+  height: auto;
+  width: auto;
+}
+button:hover {
+  background-color: transparent;
+}
+button:hover,
+button:active {
+  --color-icon-button: #2b8bfb;
+}
+.input-group {
+  display: flex;
+  align-items: stretch;
+  gap: 7px;
+  padding-inline: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.input-group:focus-within {
+  outline: #2b8bfb solid 2px;
+}
+.search-button {
+  flex-shrink: 0;
+}
+.clear-button-container {
+  display: flex;
+  display: none;
+  position: relative;
+  align-items: stretch;
+}
+.clear-button-container.displayable {
+  display: flex;
+  flex-shrink: 0;
+}
+:host(.maptiler-geocoder):not(:empty) {
+  box-shadow: none;
+}
+:host(.maptiler-geocoder) .input-group {
+  border: white solid 2px;
+}
+:host(.maptiler-geocoder) .input-group:focus-within {
+  border: #2b8bfb solid 2px;
+  outline: 0;
+  outline: none;
+}
+:host(.maptiler-geocoder) form.can-collapse {
+  max-width: 33px;
+}
+:host(.maptiler-geocoder) form,
+:host(.maptiler-geocoder) form:focus-within,
+:host(.maptiler-geocoder) form:hover {
+  width: 270px;
+  max-width: 270px;
+}
+:host(.leaflet-geocoder) .input-group {
+  border: white solid 1px;
+}
+:host(.leaflet-geocoder) form.can-collapse {
+  max-width: 30px;
+}

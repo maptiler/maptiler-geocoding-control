@@ -1,0 +1,17 @@
+images
+demos
+public
+src
+!dist/src
+test
+*.tgz
+.github
+.husky
+.vscode
+vite*
+.*
+tsconfig.json
+tsconfig.*.json
+eslint.config.js
+tmp
+check-version.js
