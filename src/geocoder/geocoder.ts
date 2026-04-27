@@ -1,6 +1,6 @@
 import { convert } from "geo-coordinates-parser";
 import { LitElement, css, html, nothing, unsafeCSS } from "lit";
-import { customElement, property, query, state } from "lit/decorators.js";
+import { customElement, property, queryAssignedElements, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { repeat } from "lit/directives/repeat.js";
 
@@ -18,6 +18,11 @@ import "./geocoder-feature-item";
 import type { MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "./geocoder-events";
 import type { MaptilerGeocoderOptions } from "./geocoder-options";
 import styles from "./geocoder.css?inline";
+
+type InputElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
+type ButtonElement = HTMLButtonElement | HTMLInputElement;
+const INPUT_SELECTOR = "input:not([type]), input[type=text], input[type=search], select, textarea";
+const BUTTON_SELECTOR = "button, input[type=button]";
 
 @customElement("maptiler-geocoder")
 export class MaptilerGeocoderElement extends LitElement implements MaptilerGeocoderOptions {
@@ -64,8 +69,18 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   @property({ type: Array }) types?: TypeRule[];
   @property({ type: String }) worldview?: Worldview;
 
-  /** Reference to the input element the user can type a query into */
-  @query("input") private input!: HTMLInputElement;
+  @queryAssignedElements({ slot: "content", flatten: false }) private contentSlotElements!: HTMLElement[];
+  @queryAssignedElements({ slot: "input", flatten: true, selector: INPUT_SELECTOR }) private inputSlotElements!: InputElement[];
+
+  @queryAssignedElements({ slot: "search-button", flatten: true, selector: BUTTON_SELECTOR }) private searchButtonElements!: ButtonElement[];
+  @queryAssignedElements({ slot: "clear-button", flatten: true, selector: BUTTON_SELECTOR }) private clearButtonElements!: ButtonElement[];
+  @queryAssignedElements({ slot: "reverse-button", flatten: true, selector: BUTTON_SELECTOR }) private reverseButtonElements!: ButtonElement[];
+  @queryAssignedElements({ slot: "clear-error-button", flatten: true, selector: BUTTON_SELECTOR }) private clearErrorButtonElements!: ButtonElement[];
+
+  @queryAssignedElements({ slot: "search-icon", flatten: true }) private searchIconElements!: HTMLElement[];
+  @queryAssignedElements({ slot: "clear-icon", flatten: true }) private clearIconElements!: HTMLElement[];
+  @queryAssignedElements({ slot: "reverse-icon", flatten: true }) private reverseIconElements!: HTMLElement[];
+  @queryAssignedElements({ slot: "clear-error-icon", flatten: true }) private clearErrorIconElements!: HTMLElement[];
 
   /** Value to search via geocoding */
   @state() private searchValue: string = "";
@@ -102,15 +117,27 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   get #selected(): Feature | undefined {
     return this.listFeatures?.[this.selectedItemIndex];
   }
-  get #isLoading(): boolean {
+  get isLoading(): boolean {
     return this.abortController !== undefined;
   }
   get #isSearchValueTooShort(): boolean {
     return this.searchValue.length < (this.minLength ?? 2);
   }
+  get input(): InputElement | undefined {
+    for (const element of this.contentSlotElements) {
+      if (this.#isInput(element)) return element;
+      const nestedElement = element.querySelector(INPUT_SELECTOR);
+      if (this.#isInput(nestedElement)) return nestedElement;
+    }
+    return this.inputSlotElements[0];
+  }
 
   protected firstUpdated() {
     this.#isInitialized = true;
+
+    if (this.input) {
+      this.input.value = this.searchValue;
+    }
   }
 
   /**
@@ -161,14 +188,14 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
    * @param options [FocusOptions](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/focus#options)
    */
   override focus(options?: FocusOptions) {
-    this.input.focus(options);
+    this.input?.focus(options);
   }
 
   /**
    * Blur the search input box.
    */
   override blur() {
-    this.input.blur();
+    this.input?.blur();
   }
 
   override addEventListener<E extends MaptilerGeocoderEventName>(
@@ -250,9 +277,13 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
 
   #focusInputAndSelectText() {
     setTimeout(() => {
-      this.input.focus();
+      this.input?.focus();
       this.focused = true;
-      this.input.select();
+      if (this.input instanceof HTMLSelectElement) {
+        this.input.showPicker();
+      } else {
+        this.input?.select();
+      }
     });
   }
 
@@ -469,7 +500,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
         }
 
         if (isReverse) {
-          this.input.focus();
+          this.input?.focus();
         }
       }
     } catch (e: unknown) {
@@ -495,6 +526,20 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     this.#focusInputAndSelectText();
   }
 
+  #handleClick(e: PointerEvent & { target: HTMLElement }) {
+    if (this.#isInput(e.target)) {
+      this.focused = true;
+    } else if (this.#isFromButton(e.target, this.searchButtonElements, this.searchIconElements, "search-button")) {
+      this.input?.focus();
+    } else if (this.#isFromButton(e.target, this.clearButtonElements, this.clearIconElements, "clear-button")) {
+      this.#handleClear();
+    } else if (this.#isFromButton(e.target, this.reverseButtonElements, this.reverseIconElements, "reverse-button")) {
+      this.reverseActive = !this.reverseActive;
+    } else if (this.#isFromButton(e.target, this.clearErrorButtonElements, this.clearErrorIconElements, "clear-error-button")) {
+      this.error = undefined;
+    }
+  }
+
   #handleKeyDown(e: KeyboardEvent) {
     if (!this.listFeatures) {
       return;
@@ -506,7 +551,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
       return;
     }
 
-    this.input.focus();
+    this.input?.focus();
 
     this.focused = true;
 
@@ -531,8 +576,28 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
   }
 
-  #handleInput(event: InputEvent & { target: HTMLInputElement }) {
-    this.#changeSearchValue(event.target.value);
+  #handleInput(e: InputEvent & { target: HTMLElement }) {
+    if (this.#isInput(e.target)) {
+      this.#changeSearchValue(e.target.value);
+    }
+  }
+
+  #handleChange(e: Event & { target: HTMLElement }) {
+    if (this.#isInput(e.target)) {
+      this.picked = undefined;
+    }
+  }
+
+  #handleFocusIn(e: FocusEvent & { target: HTMLElement }) {
+    if (this.#isInput(e.target)) {
+      this.focused = true;
+    }
+  }
+
+  #handleFocusOut(e: FocusEvent & { target: HTMLElement }) {
+    if (this.#isInput(e.target)) {
+      this.focused = false;
+    }
   }
 
   #pick(feature: Feature) {
@@ -570,7 +635,15 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     this.#dispatch("queryclear");
 
     this.picked = undefined;
-    this.input.focus();
+    this.input?.focus();
+  }
+
+  #isInput(element: EventTarget | null): element is InputElement {
+    return element instanceof HTMLElement && element.matches(INPUT_SELECTOR);
+  }
+
+  #isFromButton(element: EventTarget | null, buttonSlotElements: ButtonElement[], iconSlotElements: HTMLElement[], id: string): boolean {
+    return element instanceof HTMLElement && ([...buttonSlotElements, ...iconSlotElements].some((el) => el.contains(element)) || element.closest(`[data-${id}]`) !== null);
   }
 
   willUpdate(changedProperties: Map<string, unknown>) {
@@ -650,71 +723,91 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (["reverseActive"].some((prop) => changedProperties.has(prop))) {
       this.#dispatch("reversetoggle", { reverse: this.reverseActive });
     }
+
+    if (["searchValue"].some((prop) => changedProperties.has(prop)) && this.input) {
+      this.input.value = this.searchValue;
+    }
   }
 
   render() {
     /* eslint-disable @typescript-eslint/unbound-method */
     return html`
-      <form @submit=${this.#handleSubmit} class=${classMap({ "can-collapse": this.collapsed && this.searchValue === "" })}>
-        <div class="input-group">
-          <button
-            class="search-button"
-            type="button"
-            @click=${() => {
-              this.input.focus();
-            }}
-          >
-            <maptiler-geocode-search-icon></maptiler-geocode-search-icon>
-          </button>
+      <form
+        class=${classMap({ "can-collapse": this.collapsed && this.searchValue === "" })}
+        @submit=${this.#handleSubmit}
+        @focusin=${this.#handleFocusIn}
+        @focusout=${this.#handleFocusOut}
+        @click=${this.#handleClick}
+        @keydown=${this.#handleKeyDown}
+        @input=${this.#handleInput}
+        @change=${this.#handleChange}
+      >
+        <slot name="content">
+          <div class="input-group">
+            <slot name="start"></slot>
 
-          <input
-            .value=${this.searchValue}
-            @focus=${() => (this.focused = true)}
-            @blur=${() => (this.focused = false)}
-            @click=${() => (this.focused = true)}
-            @keydown=${this.#handleKeyDown}
-            @input=${this.#handleInput}
-            @change=${() => (this.picked = undefined)}
-            placeholder=${this.placeholder ?? "Search"}
-            aria-label=${this.placeholder ?? "Search"}
-          />
+            <slot name="search-button">
+              <button class="search-button" type="button">
+                <slot name="search-icon">
+                  <maptiler-geocode-search-icon></maptiler-geocode-search-icon>
+                </slot>
+              </button>
+            </slot>
 
-          <div class="clear-button-container ${classMap({ displayable: this.searchValue !== "" })}">
-            ${!this.#isLoading
+            <slot name="input">
+              <input placeholder=${this.placeholder ?? "Search"} aria-label=${this.placeholder ?? "Search"} />
+            </slot>
+
+            <div class="clear-button-container ${classMap({ displayable: this.searchValue !== "" })}">
+              ${!this.isLoading
+                ? html`
+                    <slot name="clear-button">
+                      <button type="button" title=${this.clearButtonTitle ?? "clear"}>
+                        <slot name="clear-icon">
+                          <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
+                        </slot>
+                      </button>
+                    </slot>
+                  `
+                : html`
+                    <slot name="loading-icon">
+                      <maptiler-geocode-loading-icon></maptiler-geocode-loading-icon>
+                    </slot>
+                  `}
+            </div>
+
+            ${this.enableReverse === "button"
               ? html`
-                  <button type="button" @click=${this.#handleClear} title=${this.clearButtonTitle ?? "clear"}>
-                    <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
-                  </button>
+                  <slot name="reverse-button">
+                    <button type="button" class=${classMap({ active: this.reverseActive })} title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}>
+                      <slot name="reverse-icon">
+                        <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
+                      </slot>
+                    </button>
+                  </slot>
                 `
-              : html`<maptiler-geocode-loading-icon></maptiler-geocode-loading-icon>`}
+              : nothing}
+
+            <slot name="end"></slot>
           </div>
-
-          ${this.enableReverse === "button"
-            ? html`
-                <button
-                  type="button"
-                  class=${classMap({ active: this.reverseActive })}
-                  title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}
-                  @click=${() => (this.reverseActive = !this.reverseActive)}
-                >
-                  <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
-                </button>
-              `
-            : nothing}
-
-          <!-- <slot /> -->
-        </div>
+        </slot>
 
         ${this.error
           ? html`
               <div class="error">
-                <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                <slot name="error-icon">
+                  <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                </slot>
 
                 <div>${this.errorMessage ?? "Something went wrong…"}</div>
 
-                <button @click=${() => (this.error = undefined)}>
-                  <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
-                </button>
+                <slot name="clear-error-button">
+                  <button>
+                    <slot name="clear-error-icon">
+                      <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
+                    </slot>
+                  </button>
+                </slot>
               </div>
             `
           : (!this.focused && !this.isFeatureListInteractedWith && !this.keepListOpen) || this.listFeatures === undefined
@@ -722,7 +815,9 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             : this.listFeatures.length === 0
               ? html`
                   <div class="no-results">
-                    <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                    <slot name="no-results-icon">
+                      <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                    </slot>
 
                     <div>
                       ${this.noResultsMessage ??

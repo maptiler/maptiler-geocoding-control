@@ -1,14 +1,12 @@
 form {
-  font-family: "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-family: var(--font-family, "Open Sans", "Ubuntu", "Helvetica Neue", Arial, Helvetica, sans-serif);
   position: relative;
-  background-color: #fff;
+  background-color: var(--color-bg, #fff);
   z-index: 10;
-  border-radius: 4px;
+  border-radius: var(--radius, 4px);
   margin: 0;
   transition: max-width 0.25s;
-  box-shadow: 0px 2px 5px rgba(51, 51, 89, 0.15);
-  --color-text: #444952;
-  --color-icon-button: #444952;
+  box-shadow: var(--shadow, 0px 2px 5px rgba(51, 51, 89, 0.15));
   pointer-events: all;
 }
 form,
@@ -18,20 +16,17 @@ form *:before {
   box-sizing: border-box;
 }
 form.can-collapse {
-  max-width: 29px;
+  max-width: var(--size-collapse-width, 29px);
 }
 form.can-collapse input::placeholder {
   transition: opacity 0.25s;
   opacity: 0;
 }
-form {
-  width: 270px;
-  max-width: 270px;
-}
-form:focus-within,
-form:hover {
-  width: 270px;
-  max-width: 270px;
+form,
+form.can-collapse:focus-within,
+form.can-collapse:hover {
+  width: var(--size-width, 270px);
+  max-width: var(--size-width, 270px);
 }
 form input::placeholder,
 form:focus-within input::placeholder,
@@ -40,11 +35,11 @@ form:hover input::placeholder {
 }
 input {
   font: inherit;
-  font-size: 14px;
+  font-size: var(--font-size-input, 14px);
   flex-grow: 1;
-  min-height: 29px;
+  min-height: var(--size-input-min-height, 29px);
   background-color: transparent;
-  color: #444952;
+  color: var(--color-input, #444952);
   white-space: nowrap;
   overflow: hidden;
   border: 0;
@@ -52,16 +47,15 @@ input {
   padding: 0;
 }
 input:focus {
-  color: #444952;
+  color: var(--color-input-focus, #444952);
   outline: 0;
-  outline: none;
   box-shadow: none;
 }
 ul,
 div.error,
 div.no-results {
-  background-color: #fff;
-  border-radius: 4px;
+  background-color: var(--color-bg-dropdown, #fff);
+  border-radius: var(--radius-dropdown, 4px);
   left: 0;
   list-style: none;
   margin: 0;
@@ -72,23 +66,23 @@ div.no-results {
   overflow: hidden;
 }
 ul {
-  font-size: 14px;
+  font-size: var(--font-size-items, 14px);
   line-height: 16px;
-  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+  box-shadow: var(--shadow-dropdown, 0px 5px 10px rgba(51, 51, 89, 0.15));
 }
 div.error,
 div.no-results {
   font: inherit;
   line-height: 18px;
-  font-size: 12px;
+  font-size: var(--font-size-error, 12px);
   display: flex;
   gap: 16px;
 }
 div.error {
   padding: 16px;
   font-weight: 600;
-  color: #e25041;
-  background-color: #fbeae8;
+  color: var(--color-error-text, #e25041);
+  background-color: var(--color-error-bg, #fbeae8);
 }
 div.error div {
   flex-grow: 1;
@@ -102,7 +96,7 @@ div.error button {
   flex-shrink: 0;
 }
 div.error button maptiler-geocode-clear-icon {
-  --color-icon-button: #e25041;
+  --color-icon-button: var(--color-error-icon, #e25041);
 }
 div.error button:hover maptiler-geocode-clear-icon,
 div.error button:active maptiler-geocode-clear-icon {
@@ -111,8 +105,8 @@ div.error button:active maptiler-geocode-clear-icon {
 div.no-results {
   padding: 14px 24px 14px 16px;
   font-weight: 400;
-  color: #6b7c93;
-  box-shadow: 0px 5px 10px rgba(51, 51, 89, 0.15);
+  color: var(--color-no-results-text, #6b7c93);
+  box-shadow: var(--shadow-dropdown, 0px 5px 10px rgba(51, 51, 89, 0.15));
 }
 div.no-results maptiler-geocode-fail-icon {
   margin-top: 4px;
@@ -137,24 +131,23 @@ button:hover {
 }
 button:hover,
 button:active {
-  --color-icon-button: #2b8bfb;
+  --color-icon-button: var(--color-icon-button-hover, #2b8bfb);
 }
 .input-group {
   display: flex;
   align-items: stretch;
-  gap: 7px;
-  padding-inline: 8px;
-  border-radius: 4px;
+  gap: var(--input-group-gap, 7px);
+  padding: var(--input-group-padding, 0 8px);
+  border-radius: var(--radius-input-group, 4px);
   overflow: hidden;
 }
 .input-group:focus-within {
-  outline: #2b8bfb solid 2px;
+  outline: var(--color-focus-outline, #2b8bfb) solid var(--size-focus-outline, 2px);
 }
 .search-button {
   flex-shrink: 0;
 }
 .clear-button-container {
-  display: flex;
   display: none;
   position: relative;
   align-items: stretch;
@@ -167,25 +160,27 @@ button:active {
   box-shadow: none;
 }
 :host(.maptiler-geocoder) .input-group {
-  border: white solid 2px;
+  border: var(--color-input-group-border, white solid 2px);
 }
 :host(.maptiler-geocoder) .input-group:focus-within {
-  border: #2b8bfb solid 2px;
+  border: var(--color-input-group-border-focused, #2b8bfb solid 2px);
   outline: 0;
-  outline: none;
 }
 :host(.maptiler-geocoder) form.can-collapse {
-  max-width: 33px;
+  max-width: var(--size-collapse-width, 33px);
 }
 :host(.maptiler-geocoder) form,
-:host(.maptiler-geocoder) form:focus-within,
-:host(.maptiler-geocoder) form:hover {
-  width: 270px;
-  max-width: 270px;
+:host(.leaflet-geocoder) form,
+:host(.maptiler-geocoder) form.can-collapse:focus-within,
+:host(.leaflet-geocoder) form.can-collapse:focus-within,
+:host(.maptiler-geocoder) form.can-collapse:hover,
+:host(.leaflet-geocoder) form.can-collapse:hover {
+  width: var(--size-width, 270px);
+  max-width: var(--size-width, 270px);
 }
 :host(.leaflet-geocoder) .input-group {
-  border: white solid 1px;
+  border: var(--color-input-group-border, white solid 1px);
 }
 :host(.leaflet-geocoder) form.can-collapse {
-  max-width: 30px;
+  max-width: var(--size-collapse-width, 30px);
 }
