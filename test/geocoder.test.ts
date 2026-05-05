@@ -188,7 +188,7 @@ describe("standalone control", () => {
     await wait();
 
     element.shadowRoot!.querySelector("input")!.value = "svitavy";
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input"));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input", { bubbles: true }));
     element.shadowRoot!.querySelector("form")!.dispatchEvent(new Event("submit"));
     await wait();
 
@@ -202,7 +202,7 @@ describe("standalone control", () => {
     await wait();
 
     element.shadowRoot!.querySelector("input")!.value = "svitavy";
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input"));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input", { bubbles: true }));
 
     expect(fetch).not.toHaveBeenCalled();
 
@@ -234,7 +234,7 @@ describe("standalone control", () => {
     await wait();
 
     element.shadowRoot!.querySelector("input")!.value = "svitavy";
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input"));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input", { bubbles: true }));
 
     expect(fetch).not.toHaveBeenCalled();
 
@@ -266,13 +266,13 @@ describe("standalone control", () => {
     document.body.append(element as Node);
     await wait();
 
-    element.shadowRoot!.querySelector("maptiler-geocode-reverse-geocoding-icon")!.parentElement!.dispatchEvent(new Event("click"));
+    element.shadowRoot!.querySelector("maptiler-geocode-reverse-geocoding-icon")!.parentElement!.dispatchEvent(new Event("click", { bubbles: true }));
     await wait();
 
     expect(listener).toHaveBeenCalledOnce();
     expect(listener).toHaveBeenLastCalledWith(expect.objectContaining({ detail: { reverse: true } }));
 
-    element.shadowRoot!.querySelector("maptiler-geocode-reverse-geocoding-icon")!.parentElement!.dispatchEvent(new Event("click"));
+    element.shadowRoot!.querySelector("maptiler-geocode-reverse-geocoding-icon")!.parentElement!.dispatchEvent(new Event("click", { bubbles: true }));
     await wait();
 
     expect(listener).toHaveBeenCalledTimes(2);
@@ -299,7 +299,7 @@ describe("standalone control", () => {
     await wait();
 
     element.shadowRoot!.querySelector("input")!.value = "svitavy";
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input"));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new Event("input", { bubbles: true }));
 
     expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: { query: "svitavy", reverseCoords: false } }));
   });
@@ -311,7 +311,7 @@ describe("standalone control", () => {
     document.body.append(element as Node);
     await wait();
 
-    element.shadowRoot!.querySelector("maptiler-geocode-clear-icon")!.parentElement!.dispatchEvent(new Event("click"));
+    element.shadowRoot!.querySelector("maptiler-geocode-clear-icon")!.parentElement!.dispatchEvent(new Event("click", { bubbles: true }));
 
     expect(listener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ detail: null }));
   });
@@ -382,7 +382,7 @@ describe("standalone control", () => {
     element.setQuery("svitavy");
     await wait(200); // debounce
 
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     await wait();
 
     expect(listener).toHaveBeenCalledTimes(2);
@@ -415,7 +415,7 @@ describe("standalone control", () => {
     element.setQuery("svitavy");
     await wait(200); // debounce
 
-    element.shadowRoot!.querySelector("input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown" }));
+    element.shadowRoot!.querySelector("input")!.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
     element.shadowRoot!.querySelector("form")!.dispatchEvent(new Event("submit"));
     await wait();
 
@@ -499,6 +499,7 @@ describe("standalone control", () => {
     const element = document.createElement("maptiler-geocoder");
     element.addEventListener("focusout", listener);
     document.body.append(element as Node);
+    document.body.tabIndex = 1;
     await wait();
 
     element.focus();
