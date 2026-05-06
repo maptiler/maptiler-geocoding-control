@@ -1,8 +1,6 @@
 /* eslint-disable
-@typescript-eslint/no-unnecessary-condition,
+  @typescript-eslint/no-unnecessary-condition,
   @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-unsafe-call,
-  @typescript-eslint/no-unsafe-member-access,
   @typescript-eslint/no-unsafe-return,
   @typescript-eslint/restrict-template-expressions,
   @typescript-eslint/unbound-method,
@@ -39,14 +37,14 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
   @property({ attribute: false }) missingIconsCache: Set<string> = new Set<string>();
   @property({ type: String }) iconsBaseUrl: string = "";
 
-  get #categories() {
+  get #categories(): string[] | undefined {
     return this.feature?.properties?.categories;
   }
   get #isReverse() {
     return this.feature?.place_type[0] === "reverse";
   }
   get #placeType() {
-    return this.feature?.properties?.categories?.join(", ") ?? this.feature?.place_type_name?.[0] ?? this.feature?.place_type[0];
+    return this.#categories?.join(", ") ?? this.feature?.place_type_name?.[0] ?? this.feature?.place_type[0];
   }
 
   @state() private category: string | undefined;

@@ -106,7 +106,7 @@
     "@types/node": "ts5.8",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
-    "@vitest/web-worker": "^4.0.9",
+    "@vitest/browser-playwright": "^4.1.5",
     "dotenv": "^16.4.7",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
@@ -138,7 +138,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-externalize-deps": "^0.10.0",
     "vite-plugin-static-copy": "^3.1.4",
-    "vitest": "^4.0.8"
+    "vitest": "^4.1.5"
   },
   "peerDependencies": {
     "@maptiler/sdk": "3 - 4",

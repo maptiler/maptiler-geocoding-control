@@ -17,7 +17,7 @@ export class MaptilerGeocodeSearchIconElement extends LitElement {
 
     svg {
       display: block;
-      stroke: var(--color-icon-button);
+      stroke: var(--color-icon-button, #444952);
     }
   `;
 
