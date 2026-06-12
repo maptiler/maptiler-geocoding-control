@@ -615,9 +615,11 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (!this.selectFirst !== false || this.picked) {
       this.selectedItemIndex = -1;
     }
-    if (this.isFeatureListInteractedWith) {
-      this.isFeatureListInteractedWith = false;
-    }
+    setTimeout(() => {
+      if (this.isFeatureListInteractedWith) {
+        this.isFeatureListInteractedWith = false;
+      }
+    });
   }
 
   #handlePointerDown() {
