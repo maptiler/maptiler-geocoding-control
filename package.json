@@ -126,6 +126,7 @@
     "ol--v10.6": "npm:ol@10.6",
     "ol--v9.1": "npm:ol@9.1",
     "ol--v9.2": "npm:ol@9.2",
+    "playwright": "^1.60.0",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "react": "^19.2.0",
