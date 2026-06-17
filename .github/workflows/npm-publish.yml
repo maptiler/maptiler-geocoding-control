@@ -1,59 +1,52 @@
-# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
-# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
-
-name: Node.js Package
+name: NPM publish
 
 on:
   release:
     types: [created]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           ref: ${{ github.event.release.target_commitish }}
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: lts/*
           registry-url: https://registry.npmjs.org/
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Clear NPM cache
-        run: npm cache clean --force
-
-      - name: Install dependencies and build
+      - name: Install dependencies
         run: npm ci
 
       - name: Make release
         run: npm run make
-        id: makeRelease
 
-      - name: Fail job if makeRelease failed
-        if: steps.makeRelease.outcome == 'failure'
-        run: exit 1
-
-        id: check-build-status
       - name: Publish NPM package (regular)
         if: "!github.event.release.prerelease"
-        run: |
-          npm publish
+        run: npm publish
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
       - name: Publish NPM package (pre-release)
         if: "github.event.release.prerelease"
-        run: |
-          npm publish --tag next
+        run: npm publish --tag next
         env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
+          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
-      - name: Get Package version
-        id: version
+      - name: Get package version
         run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-      - name: Publish to CDN Cloudflar R2
+
+      - name: Publish to CDN Cloudflare R2
         uses: ryand56/r2-upload-action@v1.4
         with:
           r2-account-id: ${{ secrets.CDN_MAPTILER_ACCOUNT_ID }}
