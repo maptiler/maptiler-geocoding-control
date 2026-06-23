@@ -1,5 +1,9 @@
 name: NPM publish
 
+permissions:
+  id-token: write  # Required for NPM trusted publishing
+  contents: read
+
 on:
   release:
     types: [created]
@@ -14,7 +18,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.release.target_commitish }}
 
@@ -34,14 +38,10 @@ jobs:
       - name: Publish NPM package (regular)
         if: "!github.event.release.prerelease"
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
       - name: Publish NPM package (pre-release)
         if: "github.event.release.prerelease"
         run: npm publish --tag next
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
 
       - name: Get package version
         run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
