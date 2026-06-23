@@ -1,31 +1,44 @@
-name: Node.js Package
+name: Lint and typecheck
 
 on:
   pull_request:
-    types: [opened]
+    types: [opened, synchronize]
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "eslint.config.js"
+      - "tsconfig.json"
+      - "vite.config-test.ts"
+      - "vitest-setup-tests.ts"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  build-and-lint:
-    runs-on: ubuntu-latest
+  lint-and-test:
+    runs-on: ubuntu-slim
+    timeout-minutes: 15
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
+
+      - uses: actions/setup-node@v6
         with:
-          ref: ${{ github.event.release.target_commitish }}
+          node-version: lts/*
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          registry-url: https://registry.npmjs.org/
-
-      - name: Clear NPM cache
-        run: npm cache clean --force
-
-      - name: Install dependencies and build
+      - name: Install dependencies
         run: npm ci
-
-      - name: Build
-        run: npm run build
 
       - name: Lint
         run: npm run lint
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Test
+        run: npm test

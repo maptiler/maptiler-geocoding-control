@@ -1,0 +1,49 @@
+name: Publish dry run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "check-version.js"
+  pull_request:
+    paths:
+      - "src/**"
+      - "test/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.config.ts"
+      - "check-version.js"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test-build-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org/
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Make release
+        run: npm run make
+
+      - name: Pack NPM package (dry run)
+        run: npm pack --dry-run
