@@ -5,15 +5,23 @@ import { customElement } from "lit/decorators.js";
 export class MaptilerGeocodeLoadingIconElement extends LitElement {
   /** @internal */
   static styles = css`
+    :host {
+      display: flex;
+      align-items: center;
+      /* The host is wider than its container on purpose — it must not be squashed to fit. */
+      flex-shrink: 0;
+    }
+
     div {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
       pointer-events: none;
 
       display: flex;
       align-items: center;
+    }
+
+    svg {
+      display: block;
+      fill: var(--color-icon-button, #444952);
     }
 
     .loading-icon {
@@ -36,7 +44,7 @@ export class MaptilerGeocodeLoadingIconElement extends LitElement {
     return html`
       <div>
         <svg viewBox="0 0 18 18" width="24" height="24" class="loading-icon">
-          <path fill="#333" d="M4.4 4.4l.8.8c2.1-2.1 5.5-2.1 7.6 0l.8-.8c-2.5-2.5-6.7-2.5-9.2 0z" />
+          <path d="M4.4 4.4l.8.8c2.1-2.1 5.5-2.1 7.6 0l.8-.8c-2.5-2.5-6.7-2.5-9.2 0z" />
           <path opacity=".1" d="M12.8 12.9c-2.1 2.1-5.5 2.1-7.6 0-2.1-2.1-2.1-5.5 0-7.7l-.8-.8c-2.5 2.5-2.5 6.7 0 9.2s6.6 2.5 9.2 0 2.5-6.6 0-9.2l-.8.8c2.2 2.1 2.2 5.6 0 7.7z" />
         </svg>
       </div>
