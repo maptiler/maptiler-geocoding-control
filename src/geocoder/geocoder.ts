@@ -735,6 +735,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     /* eslint-disable @typescript-eslint/unbound-method */
     return html`
       <form
+        part="container ${this.collapsed && this.searchValue === "" ? "can-collapse" : ""}"
         class=${classMap({ "can-collapse": this.collapsed && this.searchValue === "" })}
         @submit=${this.#handleSubmit}
         @focusin=${this.#handleFocusIn}
@@ -745,11 +746,11 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
         @change=${this.#handleChange}
       >
         <slot name="content">
-          <div class="input-group">
+          <div part="input-group" class="input-group">
             <slot name="start"></slot>
 
             <slot name="search-button">
-              <button class="search-button" type="button">
+              <button part="search-button" class="search-button" type="button">
                 <slot name="search-icon">
                   <maptiler-geocode-search-icon></maptiler-geocode-search-icon>
                 </slot>
@@ -757,14 +758,14 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             </slot>
 
             <slot name="input">
-              <input placeholder=${this.placeholder ?? "Search"} aria-label=${this.placeholder ?? "Search"} />
+              <input part="input" placeholder=${this.placeholder ?? "Search"} aria-label=${this.placeholder ?? "Search"} />
             </slot>
 
             <div class="clear-button-container ${classMap({ displayable: this.searchValue !== "" })}">
               ${!this.isLoading
                 ? html`
                     <slot name="clear-button">
-                      <button type="button" title=${this.clearButtonTitle ?? "clear"}>
+                      <button part="clear-button" type="button" title=${this.clearButtonTitle ?? "clear"}>
                         <slot name="clear-icon">
                           <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
                         </slot>
@@ -781,7 +782,12 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             ${this.enableReverse === "button"
               ? html`
                   <slot name="reverse-button">
-                    <button type="button" class=${classMap({ active: this.reverseActive })} title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}>
+                    <button
+                      type="button"
+                      part="reverse-button ${this.reverseActive ? "active" : ""})}"
+                      class=${classMap({ active: this.reverseActive })}
+                      title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}
+                    >
                       <slot name="reverse-icon">
                         <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
                       </slot>
@@ -804,7 +810,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                 <div>${this.errorMessage ?? "Something went wrong…"}</div>
 
                 <slot name="clear-error-button">
-                  <button>
+                  <button part="clear-error-button">
                     <slot name="clear-error-icon">
                       <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
                     </slot>
@@ -829,6 +835,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                 `
               : html`
                   <ul
+                    part="feature-list ${this.openListOnTop ? "open-on-top" : ""}"
                     class="options ${classMap({ "open-on-top": this.openListOnTop })}"
                     @pointerleave=${this.#handlePointerLeave}
                     @pointerdown=${this.#handlePointerDown}
@@ -841,6 +848,17 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                       (feature) => feature.id + (feature.address ? "," + feature.address : ""),
                       (feature, i) => html`
                         <maptiler-geocoder-feature-item
+                          exportparts="
+                            container:feature-item,
+                            icon:feature-item__icon,
+                            texts:feature-item__texts,
+                            text-line-1:feature-item__text-line-1,
+                            text-primary:feature-item__text-primary,
+                            text-secondary:feature-item__text-secondary,
+                            text-line-2:feature-item__text-line-2,
+                            selected, picked, default,
+                            sprite, category, address, road, street, postal-code, poi, reverse, area
+                          "
                           .feature=${feature}
                           .showPlaceType=${this.showPlaceType ?? "if-needed"}
                           itemStyle=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}

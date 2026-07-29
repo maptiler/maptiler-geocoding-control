@@ -86,10 +86,10 @@ li > img {
     transform: translateX(0);
   }
   45% {
-    transform: translateX(calc(-100% + 270px));
+    transform: translateX(calc(-100% + var(--feature-item-animate-width, var(--size-width, 270px))));
   }
   55% {
-    transform: translateX(calc(-100% + 270px));
+    transform: translateX(calc(-100% + var(--feature-item-animate-width, var(--size-width, 270px))));
   }
   90% {
     transform: translateX(0);
