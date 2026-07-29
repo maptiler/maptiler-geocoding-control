@@ -151,6 +151,8 @@ button:active {
   display: none;
   position: relative;
   align-items: stretch;
+  width: var(--size-clear-button-container, 13px);
+  justify-content: center;
 }
 .clear-button-container.displayable {
   display: flex;
