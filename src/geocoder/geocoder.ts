@@ -750,7 +750,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             <slot name="start"></slot>
 
             <slot name="search-button">
-              <button part="search-button" class="search-button" type="button">
+              <button part="search-button" class="search-button" type="button" tabindex="-1">
                 <slot name="search-icon">
                   <maptiler-geocode-search-icon></maptiler-geocode-search-icon>
                 </slot>
