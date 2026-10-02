@@ -1,7 +1,7 @@
 name: NPM publish
 
 permissions:
-  id-token: write  # Required for NPM trusted publishing
+  id-token: write # Required for NPM trusted publishing
   contents: read
 
 on:

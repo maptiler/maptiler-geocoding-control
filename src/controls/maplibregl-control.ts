@@ -33,6 +33,7 @@ export class MaplibreglGeocodingControl extends maplibregl.Evented implements IC
   #options: MaplibreglGeocodingControlOptions = {};
   #map?: MLMap;
   #element?: MaptilerGeocoderElement;
+  #container?: HTMLDivElement;
 
   constructor(options: MaplibreglGeocodingControlOptions = {}) {
     super();
@@ -48,20 +49,24 @@ export class MaplibreglGeocodingControl extends maplibregl.Evented implements IC
     this.#setElementOptions();
     this.#addEventListeners();
 
-    const div = map._container.ownerDocument.createElement("div");
-    div.classList.add("maplibregl-ctrl-geocoder", "maplibregl-ctrl", "maplibregl-ctrl-group");
-    div.style.position = "relative";
-    div.style.zIndex = "3";
-    div.appendChild(this.#element as Node);
-    setTimeout(() => this.#element?.setOptions({ openListOnTop: div.matches(".maplibregl-ctrl-bottom-left *, .maplibregl-ctrl-bottom-right *") }));
-    return div;
+    this.#container = map._container.ownerDocument.createElement("div");
+    this.#container.classList.add("maplibregl-ctrl-geocoder", "maplibregl-ctrl", "maplibregl-ctrl-group");
+    this.#container.style.position = "relative";
+    this.#container.style.zIndex = "3";
+    this.#container.appendChild(this.#element as HTMLElement);
+    setTimeout(() => this.#element?.setOptions({ openListOnTop: this.#container?.matches(".maplibregl-ctrl-bottom-left *, .maplibregl-ctrl-bottom-right *") }));
+    return this.#container;
   }
 
   /** @internal Not to be called directly */
   onRemove(): void {
     this.#removeEventListeners();
+    this.#element?.remove();
+    this.#container?.remove();
+
     this.#map = undefined;
     this.#element = undefined;
+    this.#container = undefined;
   }
 
   getOptions(): MaplibreglGeocodingControlOptions {

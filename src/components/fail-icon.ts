@@ -7,7 +7,7 @@ export class MaptilerGeocodeFailIconElement extends LitElement {
   static styles = css`
     svg {
       display: block;
-      fill: #e15042;
+      fill: var(--color-fail-icon, #e15042);
     }
   `;
 

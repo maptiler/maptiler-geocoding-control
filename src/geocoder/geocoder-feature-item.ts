@@ -1,8 +1,6 @@
 /* eslint-disable
-@typescript-eslint/no-unnecessary-condition,
+  @typescript-eslint/no-unnecessary-condition,
   @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-unsafe-call,
-  @typescript-eslint/no-unsafe-member-access,
   @typescript-eslint/no-unsafe-return,
   @typescript-eslint/restrict-template-expressions,
   @typescript-eslint/unbound-method,
@@ -39,14 +37,14 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
   @property({ attribute: false }) missingIconsCache: Set<string> = new Set<string>();
   @property({ type: String }) iconsBaseUrl: string = "";
 
-  get #categories() {
+  get #categories(): string[] | undefined {
     return this.feature?.properties?.categories;
   }
   get #isReverse() {
     return this.feature?.place_type[0] === "reverse";
   }
   get #placeType() {
-    return this.feature?.properties?.categories?.join(", ") ?? this.feature?.place_type_name?.[0] ?? this.feature?.place_type[0];
+    return this.#categories?.join(", ") ?? this.feature?.place_type_name?.[0] ?? this.feature?.place_type[0];
   }
 
   @state() private category: string | undefined;
@@ -111,6 +109,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
   render() {
     return html`
       <li
+        part="container ${this.itemStyle}"
         tabindex="-1"
         role="option"
         aria-selected=${this.itemStyle === "selected"}
@@ -121,6 +120,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
         ${sprites && this.spriteIcon
           ? html`
               <div
+                part="icon sprite ${this.itemStyle}"
                 class="sprite-icon"
                 style=${styleMap({
                   width: `${this.spriteIcon.width / scaleFactor}px`,
@@ -133,24 +133,24 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
               />
             `
           : this.imageUrl
-            ? html` <img src=${this.imageUrl} alt=${this.category} title=${this.#placeType} @error=${this.#handleImgError} />`
+            ? html` <img part="icon category ${this.itemStyle}" src=${this.imageUrl} alt=${this.category} title=${this.#placeType} @error=${this.#handleImgError} />`
             : this.feature?.address
-              ? html` <img src=${this.iconsBaseUrl + "housenumber.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+              ? html` <img part="icon address ${this.itemStyle}" src=${this.iconsBaseUrl + "housenumber.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
               : this.feature?.id.startsWith("road.")
-                ? html` <img src=${this.iconsBaseUrl + "road.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                ? html` <img part="icon road ${this.itemStyle}" src=${this.iconsBaseUrl + "road.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
                 : this.feature?.id.startsWith("address.")
-                  ? html` <img src=${this.iconsBaseUrl + "street.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                  ? html` <img part="icon street ${this.itemStyle}" src=${this.iconsBaseUrl + "street.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
                   : this.feature?.id.startsWith("postal_code.")
-                    ? html` <img src=${this.iconsBaseUrl + "postal_code.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                    ? html` <img part="icon postal-code ${this.itemStyle}" src=${this.iconsBaseUrl + "postal_code.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
                     : this.feature?.id.startsWith("poi.")
-                      ? html` <img src=${this.iconsBaseUrl + "poi.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                      ? html` <img part="icon poi ${this.itemStyle}" src=${this.iconsBaseUrl + "poi.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
                       : this.#isReverse
-                        ? html` <img src=${this.iconsBaseUrl + "reverse.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                        : html` <img src=${this.iconsBaseUrl + "area.svg"} alt=${this.#placeType} title=${this.#placeType} /> `}
+                        ? html` <img part="icon reverse ${this.itemStyle}" src=${this.iconsBaseUrl + "reverse.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                        : html` <img part="icon area ${this.itemStyle}" src=${this.iconsBaseUrl + "area.svg"} alt=${this.#placeType} title=${this.#placeType} /> `}
 
-        <span class="texts">
-          <span>
-            <span class="primary"> ${this.#isReverse ? this.feature?.place_name : this.feature?.place_name.replace(/,.*/, "")} </span>
+        <span part="texts ${this.itemStyle}" class="texts">
+          <span part="text-line-1 ${this.itemStyle}">
+            <span part="text-primary ${this.itemStyle}" class="primary"> ${this.#isReverse ? this.feature?.place_name : this.feature?.place_name.replace(/,.*/, "")} </span>
 
             ${this.showPlaceType === "always" ||
             (this.showPlaceType !== "never" &&
@@ -160,11 +160,11 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
               !this.feature?.id.startsWith("postal_code.") &&
               (!this.feature?.id.startsWith("poi.") || !this.imageUrl) &&
               !this.#isReverse)
-              ? html` <span class="secondary"> ${this.#placeType} </span> `
+              ? html` <span part="text-secondary ${this.itemStyle}" class="secondary"> ${this.#placeType} </span> `
               : nothing}
           </span>
 
-          <span class="line2"> ${this.#isReverse ? this.feature?.text : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>
+          <span part="text-line-2 ${this.itemStyle}" class="line2"> ${this.#isReverse ? this.feature?.text : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>
         </span>
       </li>
     `;

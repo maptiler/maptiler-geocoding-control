@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "3.0.0",
+  "version": "3.1.0",
   "description": "The Javascript & TypeScript Map Control component for MapTiler Geocoding service. Easy to be integrated into any JavaScript mapping application.",
   "type": "module",
   "author": {
@@ -106,7 +106,7 @@
     "@types/node": "ts5.8",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
-    "@vitest/web-worker": "^4.0.9",
+    "@vitest/browser-playwright": "^4.1.5",
     "dotenv": "^16.4.7",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
@@ -126,6 +126,7 @@
     "ol--v10.6": "npm:ol@10.6",
     "ol--v9.1": "npm:ol@9.1",
     "ol--v9.2": "npm:ol@9.2",
+    "playwright": "^1.60.0",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "react": "^19.2.0",
@@ -138,7 +139,7 @@
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-externalize-deps": "^0.10.0",
     "vite-plugin-static-copy": "^3.1.4",
-    "vitest": "^4.0.8"
+    "vitest": "^4.1.5"
   },
   "peerDependencies": {
     "@maptiler/sdk": "3 - 4",

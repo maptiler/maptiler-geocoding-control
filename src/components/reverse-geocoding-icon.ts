@@ -7,7 +7,7 @@ export class MaptilerGeocodeReverseGeocodingIconElement extends LitElement {
   static styles = css`
     svg {
       display: block;
-      fill: var(--color-icon-button);
+      fill: var(--color-icon-button, #444952);
     }
   `;
 
