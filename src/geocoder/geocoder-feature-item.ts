@@ -10,6 +10,7 @@ import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
 import type { Feature, ShowPlaceType } from "../types";
+import { getPlaceNameParts } from "../utils/place-name";
 import styles from "./geocoder-feature-item.css?inline";
 
 type SpriteIcon = { width: number; height: number; x: number; y: number };
@@ -45,6 +46,9 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
   }
   get #placeType() {
     return this.#categories?.join(", ") ?? this.feature?.place_type_name?.[0] ?? this.feature?.place_type[0];
+  }
+  get #placeNameParts() {
+    return this.feature && getPlaceNameParts(this.feature);
   }
 
   @state() private category: string | undefined;
@@ -150,7 +154,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
 
         <span part="texts ${this.itemStyle}" class="texts">
           <span part="text-line-1 ${this.itemStyle}">
-            <span part="text-primary ${this.itemStyle}" class="primary"> ${this.#isReverse ? this.feature?.place_name : this.feature?.place_name.replace(/,.*/, "")} </span>
+            <span part="text-primary ${this.itemStyle}" class="primary"> ${this.#isReverse ? this.feature?.place_name : this.#placeNameParts?.primary} </span>
 
             ${this.showPlaceType === "always" ||
             (this.showPlaceType !== "never" &&
@@ -164,7 +168,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
               : nothing}
           </span>
 
-          <span part="text-line-2 ${this.itemStyle}" class="line2"> ${this.#isReverse ? this.feature?.text : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>
+          <span part="text-line-2 ${this.itemStyle}" class="line2"> ${this.#isReverse ? this.feature?.text : this.#placeNameParts?.rest} </span>
         </span>
       </li>
     `;

@@ -7,6 +7,7 @@ import maplibregl from "maplibre-gl";
 import type { BBox, Feature, Position } from "../types";
 import { unwrapBbox } from "../utils/geo-utils";
 import { getMask } from "../utils/mask";
+import { getPlaceNameParts } from "../utils/place-name";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
@@ -435,7 +436,7 @@ export class MaplibreglGeocodingControl extends maplibregl.Evented implements IC
                 closeButton: false,
                 closeOnMove: true,
                 className: "maptiler-gc-popup",
-              }).setText(feature.place_type[0] === "reverse" ? feature.place_name : feature.place_name.replace(/,.*/, "")),
+              }).setText(feature.place_type[0] === "reverse" ? feature.place_name : getPlaceNameParts(feature).primary),
             )
             .addTo(this.#map);
 

@@ -253,7 +253,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     if (this.selectedItemIndex > -1 && this.listFeatures) {
       this.picked = this.listFeatures[this.selectedItemIndex];
 
-      this.searchValue = this.picked.place_type[0] === "reverse" ? this.picked.place_name : this.picked.place_name.replace(/,.*/, "");
+      this.searchValue = this.picked.place_name;
 
       this.error = undefined;
 

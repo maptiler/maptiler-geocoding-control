@@ -22,6 +22,7 @@ import VectorSource from "ol/source/Vector";
 import type { BBox, Feature, Position } from "../types";
 import { unwrapBbox } from "../utils/geo-utils";
 import { getMask } from "../utils/mask";
+import { getPlaceNameParts } from "../utils/place-name";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
@@ -475,7 +476,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
         marker.setId(feature.id);
         marker.setProperties({
           fuzzy: !!feature.matching_text,
-          tooltip: feature.place_type[0] === "reverse" ? feature.place_name : feature.place_name.replace(/,.*/, ""),
+          tooltip: feature.place_type[0] === "reverse" ? feature.place_name : getPlaceNameParts(feature).primary,
         });
         this.#resultSource.addFeature(marker);
 

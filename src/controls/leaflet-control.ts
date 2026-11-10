@@ -23,6 +23,7 @@ import {
 import type { BBox, Feature } from "../types";
 import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils";
 import { getMask } from "../utils/mask";
+import { getPlaceNameParts } from "../utils/place-name";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
@@ -448,7 +449,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
                 closeButton: false,
                 closeOnMove: true,
                 className: "maptiler-gc-popup",
-              } as PopupOptions).setContent(feature.place_type[0] === "reverse" ? feature.place_name : feature.place_name.replace(/,.*/, "")),
+              } as PopupOptions).setContent(feature.place_type[0] === "reverse" ? feature.place_name : getPlaceNameParts(feature).primary),
             )
             .addTo(this.#map);
 
