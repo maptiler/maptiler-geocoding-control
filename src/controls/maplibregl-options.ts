@@ -1,7 +1,7 @@
 import type { FillLayerSpecification, FitBoundsOptions, FlyToOptions, LineLayerSpecification, Marker, MarkerOptions, Map as MLMap } from "maplibre-gl";
 
-import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
-import type { Feature, FlyToFeatures, PickedResultStyle } from "../types";
+import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options.js";
+import type { Feature, FlyToFeatures, PickedResultStyle } from "../types.js";
 
 export type MaplibreglGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "apiKey" | "fetchFullGeometryOnPick"> & {
   /**

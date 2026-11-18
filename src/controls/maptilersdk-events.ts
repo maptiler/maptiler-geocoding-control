@@ -1,7 +1,7 @@
 import type { Marker } from "@maptiler/sdk";
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { MaptilerGeocodingControl } from "./maptilersdk-control";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { MaptilerGeocodingControl } from "./maptilersdk-control.js";
 
 type BaseEvent = { readonly type: string; target: MaptilerGeocodingControl };
 

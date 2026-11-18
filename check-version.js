@@ -26,13 +26,13 @@ const checks = {
   "leaflet@2.0-beta.3": { entrypoint: "src/leaflet.public.ts", paths: { leaflet: ["../node_modules/leaflet--v2.0-beta.3/dist/types/index.d.ts"] } },
   "leaflet@2.0-beta": { entrypoint: "src/leaflet.public.ts", paths: { leaflet: ["../node_modules/leaflet--v2.0-beta/dist/types/index.d.ts"] } },
   ol: { entrypoint: "src/openlayers.public.ts" },
-  "ol@v9.1": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v9.1/index.d.ts"], "ol/*": ["../node_modules/ol--v9.1/*.d.ts"] } },
-  "ol@v9.2": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v9.2/index.d.ts"], "ol/*": ["../node_modules/ol--v9.2/*.d.ts"] } },
-  "ol@v10.0": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.0/index.d.ts"], "ol/*": ["../node_modules/ol--v10.0/*.d.ts"] } },
-  "ol@v10.3": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.3/index.d.ts"], "ol/*": ["../node_modules/ol--v10.3/*.d.ts"] } },
-  "ol@v10.6": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.6/index.d.ts"], "ol/*": ["../node_modules/ol--v10.6/*.d.ts"] } },
-  "ol@v10.9": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.9/index.d.ts"], "ol/*": ["../node_modules/ol--v10.9/*.d.ts"] } },
-  "ol@v10.11": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.11/index.d.ts"], "ol/*": ["../node_modules/ol--v10.11/*.d.ts"] } },
+  "ol@v9.1": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v9.1/index.d.ts"], "ol/*": ["../node_modules/ol--v9.1/*"] } },
+  "ol@v9.2": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v9.2/index.d.ts"], "ol/*": ["../node_modules/ol--v9.2/*"] } },
+  "ol@v10.0": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.0/index.d.ts"], "ol/*": ["../node_modules/ol--v10.0/*"] } },
+  "ol@v10.3": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.3/index.d.ts"], "ol/*": ["../node_modules/ol--v10.3/*"] } },
+  "ol@v10.6": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.6/index.d.ts"], "ol/*": ["../node_modules/ol--v10.6/*"] } },
+  "ol@v10.9": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.9/index.d.ts"], "ol/*": ["../node_modules/ol--v10.9/*"] } },
+  "ol@v10.11": { entrypoint: "src/openlayers.public.ts", paths: { ol: ["../node_modules/ol--v10.11/index.d.ts"], "ol/*": ["../node_modules/ol--v10.11/*"] } },
 };
 
 for (const [pkg, { entrypoint, paths = {} }] of Object.entries(checks)) {

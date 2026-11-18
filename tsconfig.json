@@ -1,12 +1,12 @@
 {
   "compilerOptions": {
     "baseUrl": "src",
-    "moduleResolution": "Node",
-    "target": "es2021",
+    "moduleResolution": "bundler",
+    "target": "es2022",
     "experimentalDecorators": true,
     "useDefineForClassFields": false,
     "module": "ESNext",
-    "lib": ["es2021", "DOM", "DOM.Iterable"],
+    "lib": ["es2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "jsx": "react-jsx",
     /* Bundler mode */

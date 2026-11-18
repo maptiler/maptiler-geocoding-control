@@ -1,4 +1,4 @@
-import type { ProximityRule } from "../types";
+import type { ProximityRule } from "../types.js";
 
 let cachedLocation: { time: number; coords: undefined | string } | undefined;
 

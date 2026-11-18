@@ -1,8 +1,8 @@
 import type { LeafletEvent, Marker } from "leaflet";
 
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { LeafletGeocodingControl } from "./leaflet-control";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { LeafletGeocodingControl } from "./leaflet-control.js";
 
 type BaseEvent = Pick<LeafletEvent, "type" | "target"> & { target: LeafletGeocodingControl };
 

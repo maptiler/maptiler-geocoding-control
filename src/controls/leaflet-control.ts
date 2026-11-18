@@ -21,20 +21,20 @@ import {
   type PopupOptions,
 } from "leaflet";
 
-import type { BBox, Feature } from "../types";
-import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils";
-import { getMask } from "../utils/mask";
-import { mixinEvented } from "../utils/mixin-evented";
+import type { BBox, Feature } from "../types.js";
+import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils.js";
+import { getMask } from "../utils/mask.js";
+import { mixinEvented } from "../utils/mixin-evented.js";
 
-import "../geocoder/geocoder";
-import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
-import type { GeocodingControlBase } from "./base-control";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events.js";
+import "../geocoder/geocoder.js";
+import type { MaptilerGeocoderElement } from "../geocoder/geocoder.js";
+import type { GeocodingControlBase } from "./base-control.js";
 
-import "../components/marker";
+import "../components/marker.js";
 
-import type { LeafletGeocodingControlEventName, LeafletGeocodingControlEventNameMap } from "./leaflet-events";
-import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAULTS } from "./leaflet-options";
+import type { LeafletGeocodingControlEventName, LeafletGeocodingControlEventNameMap } from "./leaflet-events.js";
+import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAULTS } from "./leaflet-options.js";
 
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 /** Base class for Control needs to extend both Control and Evented */

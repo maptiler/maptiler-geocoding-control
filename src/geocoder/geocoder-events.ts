@@ -1,5 +1,5 @@
 import type { convert } from "geo-coordinates-parser";
-import type { Feature, FeatureCollection } from "../types";
+import type { Feature, FeatureCollection } from "../types.js";
 
 export namespace MaptilerGeocoderEvent {
   export type ReverseToggleEvent = CustomEvent<{ reverse: boolean }>;

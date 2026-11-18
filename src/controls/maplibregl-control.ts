@@ -1,9 +1,9 @@
 import { Evented, Marker, type MarkerOptions, type Map as MLMap, Popup, type PopupOptions } from "maplibre-gl";
 
-import { mixinEvented } from "../utils/mixin-evented";
-import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base";
-import type { MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events";
-import type { MaplibreglGeocodingControlOptions } from "./maplibregl-options";
+import { mixinEvented } from "../utils/mixin-evented.js";
+import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base.js";
+import type { MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events.js";
+import type { MaplibreglGeocodingControlOptions } from "./maplibregl-options.js";
 
 export class MaplibreglGeocodingControl extends MaplibreglGeocodingControlBase<
   MaplibreglGeocodingControlOptions,

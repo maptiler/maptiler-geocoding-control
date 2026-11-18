@@ -1,10 +1,10 @@
 import type { Feature as OlFeature } from "ol";
-import type OLEvent from "ol/events/Event";
-import type { Point as OlPoint } from "ol/geom";
+import type OLEvent from "ol/events/Event.js";
+import type { Point as OlPoint } from "ol/geom.js";
 
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { OpenLayersGeocodingControl } from "./openlayers-control";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { OpenLayersGeocodingControl } from "./openlayers-control.js";
 
 type BaseEvent = OLEvent & { target: OpenLayersGeocodingControl };
 

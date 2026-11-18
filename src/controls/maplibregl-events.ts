@@ -1,7 +1,7 @@
 import type { Marker } from "maplibre-gl";
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { MaplibreglGeocodingControl } from "./maplibregl-control";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { MaplibreglGeocodingControl } from "./maplibregl-control.js";
 
 type BaseEvent = { readonly type: string; target: MaplibreglGeocodingControl };
 
