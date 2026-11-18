@@ -1,34 +1,37 @@
-import { config, type Map as SDKMap, type Subscription } from "@maptiler/sdk";
+import { config, Evented, type MapTilerMarkerElementOptions, type MapTilerMarkerSVGOptions, Marker, Popup, type PopupOptions, type Map as SDKMap } from "@maptiler/sdk";
 import { name, version } from "../../package.json";
+import { mixinEvented } from "../utils/mixin-evented";
 import type { GeocodingControlBase } from "./base-control";
-import { MaplibreglGeocodingControl } from "./maplibregl-control";
-import type { MaptilerGeocodingControlEventName, MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events";
+import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base";
+import type { MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events";
 import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
 
-type EventHandlingMethod<Return> = <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void) => Return;
-interface EventOnceHandlingMethod<Return> {
-  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void): Return;
-  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocodingControlEventNameMap[Type]>;
-}
-
-export class MaptilerGeocodingControl extends MaplibreglGeocodingControl implements GeocodingControlBase<MaptilerGeocodingControlOptions> {
+export class MaptilerGeocodingControl
+  extends MaplibreglGeocodingControlBase<
+    MaptilerGeocodingControlOptions,
+    MaptilerGeocodingControlEventNameMap,
+    SDKMap,
+    Marker,
+    MapTilerMarkerElementOptions | MapTilerMarkerSVGOptions
+  >
+  implements GeocodingControlBase<MaptilerGeocodingControlOptions>
+{
   #map?: SDKMap;
 
-  /** Options the control overrides, as originally provided by the user */
-  readonly #userOptions: Pick<MaptilerGeocodingControlOptions, "adjustUrl"> = {};
-
-  readonly #adjustUrlWithSession = (url: URL) => {
-    this.#userOptions.adjustUrl?.(url);
-
-    const { session, apiUrl } = this.getOptions();
-    if ((config.session ? session !== false : session === true) && this.#map && (!apiUrl || new URL(apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)) {
-      url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
-    }
-  };
-
   constructor(options: MaptilerGeocodingControlOptions = {}) {
-    super();
-    this.setOptions(options);
+    super(options);
+  }
+
+  protected createMarker(options: MapTilerMarkerElementOptions | MapTilerMarkerSVGOptions): Marker {
+    return options.element ? new Marker(options) : new Marker(options);
+  }
+
+  protected addMarker(map: SDKMap, marker: Marker): void {
+    map.addMarker(marker);
+  }
+
+  protected setMarkerPopup(marker: Marker, options: PopupOptions, text: string): void {
+    marker.setPopup(new Popup(options).setText(text));
   }
 
   /** @internal Not to be called directly */
@@ -63,20 +66,14 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
     this.#map = undefined;
   }
 
-  override getOptions(): MaptilerGeocodingControlOptions {
-    const options = super.getOptions();
-    delete options.adjustUrl;
-    return Object.assign(options, this.#userOptions);
-  }
+  /** Adds the MapTiler session ID to geocoding requests, unless disabled by the `session` option (see also `session` of the SDK config) */
+  protected override adjustRequestUrl(url: URL): void {
+    const { session, apiUrl } = this.getOptions();
 
-  override setOptions(options: MaptilerGeocodingControlOptions) {
-    if ("adjustUrl" in options) {
-      this.#userOptions.adjustUrl = options.adjustUrl;
+    if ((config.session ? session !== false : session === true) && this.#map && (!apiUrl || new URL(apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)) {
+      url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
     }
-    super.setOptions({ ...options, adjustUrl: this.#adjustUrlWithSession });
   }
-
-  declare on: EventHandlingMethod<Subscription>;
-  declare off: EventHandlingMethod<this>;
-  declare once: EventOnceHandlingMethod<this>;
 }
+
+mixinEvented(MaptilerGeocodingControl, Evented);
