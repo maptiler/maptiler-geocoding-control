@@ -147,7 +147,7 @@
   },
   "peerDependencies": {
     "@maptiler/sdk": "3 - 4",
-    "leaflet": "1.5 - 2",
+    "leaflet": ">=1.5 <2.0.0-beta",
     "maplibre-gl": "5",
     "ol": "9.1 - 10"
   },

@@ -204,7 +204,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     },
   };
   #mapEventListeners = {
-    render: () => {
+    moveend: () => {
       const zoom = this.#map?.getZoom();
       const center = this.#map?.getCenter();
       this.#element?.handleMapChange(zoom && center ? [zoom, center.lng, center.lat] : undefined);
@@ -230,6 +230,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     }
 
     this.#map.on(this.#mapEventListeners);
+    this.#map.whenReady(this.#mapEventListeners.moveend);
   }
 
   #removeEventListeners() {
