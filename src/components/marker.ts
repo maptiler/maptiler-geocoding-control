@@ -1,4 +1,4 @@
-import { LitElement, css, svg, unsafeCSS } from "lit";
+import { LitElement, css, svg, unsafeCSS, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 
 import styles from "./marker.css?inline";
@@ -10,7 +10,7 @@ export class MaptilerGeocodeMarkerElement extends LitElement {
     ${unsafeCSS(styles)}
   `;
 
-  render() {
+  render(): TemplateResult | symbol {
     return svg`
       <svg
         viewBox="0 0 70 85"

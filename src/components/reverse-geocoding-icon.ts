@@ -1,4 +1,4 @@
-import { LitElement, css, svg } from "lit";
+import { LitElement, css, svg, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-reverse-geocoding-icon")
@@ -11,7 +11,7 @@ export class MaptilerGeocodeReverseGeocodingIconElement extends LitElement {
     }
   `;
 
-  render() {
+  render(): TemplateResult | symbol {
     return svg`
       <svg viewBox="0 0 60.006 21.412" width="14" height="20">
         <path

@@ -1,5 +1,5 @@
 import { convert } from "geo-coordinates-parser";
-import { LitElement, css, html, nothing, unsafeCSS } from "lit";
+import { LitElement, css, html, nothing, unsafeCSS, type TemplateResult } from "lit";
 import { customElement, property, queryAssignedElements, state } from "lit/decorators.js";
 import { classMap } from "lit/directives/class-map.js";
 import { repeat } from "lit/directives/repeat.js";
@@ -203,6 +203,12 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     listener: (this: HTMLElement, e: MaptilerGeocoderEventNameMap[E]) => unknown,
     options?: boolean | AddEventListenerOptions,
   ): void;
+  override addEventListener<K extends keyof HTMLElementEventMap>(
+    type: K,
+    listener: (this: HTMLElement, e: HTMLElementEventMap[K]) => unknown,
+    options?: boolean | AddEventListenerOptions,
+  ): void;
+  override addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void;
   override addEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | AddEventListenerOptions): void {
     super.addEventListener(type, listener, options);
   }
@@ -212,6 +218,12 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     listener: (this: HTMLElement, e: MaptilerGeocoderEventNameMap[E]) => unknown,
     options?: boolean | EventListenerOptions,
   ): void;
+  override removeEventListener<K extends keyof HTMLElementEventMap>(
+    type: K,
+    listener: (this: HTMLElement, e: HTMLElementEventMap[K]) => unknown,
+    options?: boolean | EventListenerOptions,
+  ): void;
+  override removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void;
   override removeEventListener(type: string, listener: EventListenerOrEventListenerObject, options?: boolean | EventListenerOptions): void {
     super.removeEventListener(type, listener, options);
   }
@@ -731,7 +743,7 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
     }
   }
 
-  render() {
+  render(): TemplateResult | symbol {
     /* eslint-disable @typescript-eslint/unbound-method */
     return html`
       <form

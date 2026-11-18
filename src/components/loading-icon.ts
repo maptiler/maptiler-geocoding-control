@@ -1,4 +1,4 @@
-import { LitElement, css, html } from "lit";
+import { LitElement, css, html, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-loading-icon")
@@ -40,7 +40,7 @@ export class MaptilerGeocodeLoadingIconElement extends LitElement {
     }
   `;
 
-  render() {
+  render(): TemplateResult | symbol {
     return html`
       <div>
         <svg viewBox="0 0 18 18" width="24" height="24" class="loading-icon">
