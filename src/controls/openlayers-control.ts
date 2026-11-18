@@ -238,7 +238,10 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
         return olFeature.getId() ? (olFeature as OlFeature<OlPoint>) : undefined;
       });
 
-      this.#map.getTargetElement().style.cursor = enteredOlFeature ? "pointer" : this.#indicatingReverse ? "crosshair" : "";
+      const mapElement = this.#map.getTargetElement();
+      if (mapElement) {
+        mapElement.style.cursor = enteredOlFeature ? "pointer" : this.#indicatingReverse ? "crosshair" : "";
+      }
 
       const id = enteredOlFeature?.getId() as string | undefined;
       if (this.#prevHoveredId === id) return;
