@@ -128,8 +128,8 @@ export const ZOOM_DEFAULTS: Record<string, number> = {
 };
 
 export const DEFAULT_GEOMETRY_STYLE: StyleFunction = (feature) => {
-  const type = feature?.geometry.type;
-  const isMask = (feature?.properties as { isMask?: boolean } | undefined)?.isMask;
+  const type = feature.geometry.type;
+  const isMask = (feature.properties as { isMask?: boolean } | undefined)?.isMask;
   const weight = isMask ? 0 : type === "LineString" || type === "MultiLineString" ? 3 : 2;
 
   return {
