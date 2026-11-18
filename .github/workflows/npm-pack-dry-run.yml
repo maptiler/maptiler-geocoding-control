@@ -1,0 +1,36 @@
+name: Node.js Package Dry-run
+
+on:
+  pull_request:
+    branches: [main, next, "v[0-9]+"]
+    types: [opened, synchronize]
+
+jobs:
+  test-build-and-pack:
+    runs-on: ubuntu-slim
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: lts/*
+          registry-url: https://registry.npmjs.org/
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Make release
+        run: npm run make
+        id: makeRelease
+
+      - name: Fail job if makeRelease failed
+        if: steps.makeRelease.outcome == 'failure'
+        run: exit 1
+        id: check-build-status
+
+      - name: Pack NPM package
+        run: |
+          npm pack --dry-run

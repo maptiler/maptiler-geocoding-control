@@ -1,4 +1,7 @@
-name: NPM publish
+# This workflow will run tests using node and then publish a package to GitHub Packages when a release is created
+# For more information see: https://docs.github.com/en/actions/publishing-packages/publishing-nodejs-packages
+
+name: Node.js Package
 
 permissions:
   id-token: write # Required for NPM trusted publishing
@@ -7,10 +10,6 @@ permissions:
 on:
   release:
     types: [created]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   build-and-publish:
@@ -32,8 +31,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Update NPM version
+        run: npm version ${{ github.event.release.tag_name }} --no-git-tag-version
+
       - name: Make release
         run: npm run make
+        id: makeRelease
+
+      - name: Fail job if makeRelease failed
+        if: steps.makeRelease.outcome == 'failure'
+        run: exit 1
+        id: check-build-status
 
       - name: Publish NPM package (regular)
         if: "!github.event.release.prerelease"
@@ -43,9 +51,6 @@ jobs:
         if: "github.event.release.prerelease"
         run: npm publish --tag next
 
-      - name: Get package version
-        run: echo "PACKAGE_VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
-
       - name: Publish to CDN Cloudflare R2
         uses: ryand56/r2-upload-action@v1.4
         with:
@@ -54,4 +59,4 @@ jobs:
           r2-secret-access-key: ${{ secrets.CDN_MAPTILER_SECRET_ACCESS_KEY }}
           r2-bucket: cdn-storage
           source-dir: dist
-          destination-dir: maptiler-geocoding-control/v${{ env.PACKAGE_VERSION }}/
+          destination-dir: maptiler-geocoding-control/${{ github.event.release.tag_name }}/
