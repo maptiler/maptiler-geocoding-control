@@ -415,7 +415,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       return;
     }
 
-    this.#resultSource.removeFeatures([...this.#markers.values()]);
+    this.#resultSource.removeFeatures(this.#resultSource.getFeatures().filter((feature) => feature !== this.#reverseMarker));
     this.#markers = new Map();
 
     const addMarker = () => {
