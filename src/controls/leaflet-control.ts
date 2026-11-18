@@ -4,6 +4,7 @@ import union from "@turf/union";
 import type { GeometryCollection, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
 import {
   Control,
+  type ControlDefaults,
   type ControlOptions,
   DivIcon,
   DomEvent,
@@ -12,7 +13,7 @@ import {
   type LatLng,
   type LatLngLiteral,
   type LeafletEvent,
-  type LeafletMouseEvent,
+  type LeafletPointerEvent,
   type Map as LMap,
   Marker,
   type MarkerOptions,
@@ -23,6 +24,7 @@ import {
 import type { BBox, Feature } from "../types";
 import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils";
 import { getMask } from "../utils/mask";
+import { mixinEvented } from "../utils/mixin-evented";
 
 import "../geocoder/geocoder";
 import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
@@ -37,11 +39,11 @@ import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAU
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 /** Base class for Control needs to extend both Control and Evented */
 abstract class EventedControl<Options extends ControlOptions> extends Control {
-  override options!: Options;
+  override options!: Options & ControlDefaults;
 }
-Object.assign(EventedControl.prototype, Evented.prototype);
-interface EventedControl<Options extends ControlOptions> extends Control, Evented {
-  options: Options;
+mixinEvented(EventedControl, Evented);
+interface EventedControl<Options extends ControlOptions> extends Control<Options>, Evented<Options, MaptilerGeocoderEventNameMap> {
+  options: Options & ControlDefaults;
 }
 /* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
@@ -209,7 +211,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
       const center = this.#map?.getCenter();
       this.#element?.handleMapChange(zoom && center ? [zoom, center.lng, center.lat] : undefined);
     },
-    click: (e: LeafletMouseEvent) => {
+    click: (e: LeafletPointerEvent) => {
       this.#element?.handleMapClick([e.latlng.lng, e.latlng.lat]);
     },
   };
