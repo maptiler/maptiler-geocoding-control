@@ -13,5 +13,4 @@ vite*
 tsconfig.json
 tsconfig.*.json
 eslint.config.js
-tmp
 check-version.js
