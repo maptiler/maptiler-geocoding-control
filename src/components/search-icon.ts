@@ -1,4 +1,4 @@
-import { LitElement, css, svg } from "lit";
+import { LitElement, css, svg, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-search-icon")
@@ -21,7 +21,7 @@ export class MaptilerGeocodeSearchIconElement extends LitElement {
     }
   `;
 
-  render() {
+  protected render(): TemplateResult | symbol {
     return svg`
       <svg
         xmlns="http://www.w3.org/2000/svg"

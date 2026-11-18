@@ -1,4 +1,4 @@
-import { LitElement, css, svg } from "lit";
+import { LitElement, css, svg, type TemplateResult } from "lit";
 import { customElement } from "lit/decorators.js";
 
 @customElement("maptiler-geocode-clear-icon")
@@ -11,7 +11,7 @@ export class MaptilerGeocodeClearIconElement extends LitElement {
     }
   `;
 
-  render() {
+  protected render(): TemplateResult | symbol {
     return svg`
       <svg viewBox="0 0 14 14" width="13" height="13">
         <path

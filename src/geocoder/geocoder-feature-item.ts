@@ -5,7 +5,7 @@
   @typescript-eslint/restrict-template-expressions,
   @typescript-eslint/unbound-method,
 */
-import { LitElement, css, html, nothing, unsafeCSS } from "lit";
+import { LitElement, css, html, nothing, unsafeCSS, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
@@ -106,7 +106,7 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
     }
   }
 
-  render() {
+  protected render(): TemplateResult | symbol {
     return html`
       <li
         part="container ${this.itemStyle}"
