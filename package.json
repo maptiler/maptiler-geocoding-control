@@ -31,13 +31,13 @@
   "scripts": {
     "dev": "vite -c vite.config-dev.ts",
     "make": "npm run clean && npm run build && npm run check-version",
-    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maplibregl && npm run build:maplibregl:umd && npm run build:leaflet && npm run build:leaflet:umd && npm run build:openlayers && npm run build:openlayers:umd",
+    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maptilersdk:esm-cdn && npm run build:maplibregl && npm run build:leaflet && npm run build:leaflet:umd && npm run build:openlayers && npm run build:openlayers:umd",
     "build:index": "FLAVOUR=index vite build",
     "build:index:umd": "FLAVOUR=index MODE=umd vite build",
     "build:maptilersdk": "FLAVOUR=maptilersdk vite build",
     "build:maptilersdk:umd": "FLAVOUR=maptilersdk MODE=umd vite build",
+    "build:maptilersdk:esm-cdn": "FLAVOUR=maptilersdk MODE=esm-cdn vite build",
     "build:maplibregl": "FLAVOUR=maplibregl vite build",
-    "build:maplibregl:umd": "FLAVOUR=maplibregl MODE=umd vite build",
     "build:leaflet": "FLAVOUR=leaflet vite build",
     "build:leaflet:umd": "FLAVOUR=leaflet MODE=umd vite build",
     "build:openlayers": "FLAVOUR=openlayers vite build",
@@ -57,29 +57,25 @@
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.js"
+      "default": "./dist/index.js"
     },
     "./maplibregl": {
       "types": "./dist/src/maplibregl.public.d.ts",
-      "import": "./dist/maplibregl.js",
-      "require": "./dist/maplibregl.umd.js"
+      "default": "./dist/maplibregl.js"
     },
     "./maptilersdk": {
       "types": "./dist/src/maptilersdk.public.d.ts",
-      "import": "./dist/maptilersdk.js",
-      "require": "./dist/maptilersdk.umd.js"
+      "default": "./dist/maptilersdk.js"
     },
     "./leaflet": {
       "types": "./dist/src/leaflet.public.d.ts",
-      "import": "./dist/leaflet.js",
-      "require": "./dist/leaflet.umd.js"
+      "default": "./dist/leaflet.js"
     },
     "./openlayers": {
       "types": "./dist/src/openlayers.public.d.ts",
-      "import": "./dist/openlayers.js",
-      "require": "./dist/openlayers.umd.js"
-    }
+      "default": "./dist/openlayers.js"
+    },
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@turf/bbox": "^7.2.0",
@@ -133,7 +129,6 @@
     "tslib": "^2.8.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.46.2",
-    "unplugin-replace": "^0.6.3",
     "vite": "^7.1.12",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-externalize-deps": "^0.10.0",
