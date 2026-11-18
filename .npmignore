@@ -1,6 +1,6 @@
 images
 demos
-public
+dist/icons
 src
 !dist/src
 test
