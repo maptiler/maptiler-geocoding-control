@@ -1,65 +1,11 @@
-/* eslint-disable
-  @typescript-eslint/no-empty-function,
-  @typescript-eslint/no-explicit-any,
-  @typescript-eslint/no-non-null-assertion,
-  @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-unsafe-return,
-*/
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-globalThis.WebGL2RenderingContext = class WebGL2RenderingContextMock {
-  activeTexture = () => {};
-  attachShader = () => {};
-  bindAttribLocation = () => {};
-  bindBuffer = () => {};
-  bindFramebuffer = () => {};
-  blendColor = () => {};
-  blendEquation = () => {};
-  blendFunc = () => {};
-  bufferData = () => {};
-  clear = () => {};
-  clearColor = () => {};
-  clearDepth = () => {};
-  clearStencil = () => {};
-  colorMask = () => {};
-  compileShader = () => {};
-  createBuffer = () => {};
-  createProgram = () => {};
-  createShader = () => {};
-  cullFace = () => {};
-  deleteShader = () => {};
-  depthFunc = () => {};
-  depthMask = () => {};
-  depthRange = () => {};
-  disable = () => {};
-  drawElements = () => {};
-  enable = () => {};
-  enableVertexAttribArray = () => {};
-  frontFace = () => {};
-  getExtension = () => {};
-  getParameter = () => {};
-  getProgramParameter = () => true;
-  getShaderParameter = () => true;
-  getUniformLocation = () => {};
-  isContextLost = () => {};
-  linkProgram = () => {};
-  pixelStorei = () => {};
-  shaderSource = () => {};
-  stencilFunc = () => {};
-  stencilMask = () => {};
-  stencilOp = () => {};
-  uniform1f = () => {};
-  uniform2f = () => {};
-  uniform4f = () => {};
-  uniformMatrix4fv = () => {};
-  useProgram = () => {};
-  vertexAttribPointer = () => {};
-  viewport = () => {};
-} as any;
-globalThis.HTMLCanvasElement.prototype.getContext = () => new WebGL2RenderingContext() as any;
+import "./mock-webgl";
 
 import { Map as SDKMap } from "@maptiler/sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { MaplibreglGeocodingControl, type MaplibreglGeocodingControlOptions } from "../src/maplibregl.public";
+import { MaptilerGeocodingControl, type MaptilerGeocodingControlOptions } from "../src/maptilersdk.public";
 
 const wait = (ms = 0) => new Promise((res) => setTimeout(res, ms));
 
@@ -172,5 +118,119 @@ describe("MaplibreglGeocodingControl", () => {
 
     element.dispatchEvent(new CustomEvent("featureslisted", { detail: { features: [] } }));
     expect(featureslistedListener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ features: [] }));
+  });
+});
+
+describe("MaptilerGeocodingControl", () => {
+  function createMapHelper(controlOptions?: MaptilerGeocodingControlOptions) {
+    const container = document.createElement("div");
+    document.body.appendChild(container);
+    const map = new SDKMap({
+      container,
+      apiKey: "map-api-key",
+      style: {
+        version: 8,
+        sources: {},
+        layers: [],
+      },
+    });
+    const control = new MaptilerGeocodingControl(controlOptions);
+    map.addControl(control);
+    const element = container.querySelector("maptiler-geocoder")!;
+    const getAdjustedUrl = () => {
+      const url = new URL("https://api.maptiler.com/geocoding/svitavy.json");
+      element.adjustUrl?.(url);
+      return url;
+    };
+    return {
+      container,
+      map,
+      control,
+      element,
+      getAdjustedUrl,
+    };
+  }
+
+  afterEach(() => {
+    document.body.replaceChildren();
+  });
+
+  it("should take the API key from the map", () => {
+    const { control, element } = createMapHelper();
+
+    expect(control.getOptions().apiKey).toBe("map-api-key");
+    expect(element.apiKey).toBe("map-api-key");
+  });
+
+  it("should add session ID to the URL by default", () => {
+    const { map, getAdjustedUrl } = createMapHelper();
+
+    expect(getAdjustedUrl().searchParams.getAll("mtsid")).toEqual([map.getMaptilerSessionId()]);
+  });
+
+  it("should keep user's adjustUrl and session: false when API key comes from the map", () => {
+    const adjustUrl = vi.fn((url: URL) => {
+      url.searchParams.set("custom", "1");
+    });
+    const { getAdjustedUrl } = createMapHelper({ adjustUrl, session: false });
+
+    const url = getAdjustedUrl();
+
+    expect(adjustUrl).toHaveBeenCalledOnce();
+    expect(url.searchParams.get("custom")).toBe("1");
+    expect(url.searchParams.has("mtsid")).toBe(false);
+  });
+
+  it("should keep user's adjustUrl and session when unrelated options are set", () => {
+    const adjustUrl = vi.fn();
+    const { control, getAdjustedUrl } = createMapHelper({ adjustUrl, session: false });
+
+    control.setReverseMode(true);
+    control.setOptions({ limit: 3 });
+    const url = getAdjustedUrl();
+
+    expect(adjustUrl).toHaveBeenCalledOnce();
+    expect(url.searchParams.has("mtsid")).toBe(false);
+  });
+
+  it("should apply session option changed after creation", () => {
+    const { control, map, getAdjustedUrl } = createMapHelper({ session: false });
+
+    control.setOptions({ session: true });
+
+    expect(getAdjustedUrl().searchParams.getAll("mtsid")).toEqual([map.getMaptilerSessionId()]);
+  });
+
+  it("should return user's adjustUrl from getOptions and not duplicate session ID when options are re-applied", () => {
+    const adjustUrl = vi.fn();
+    const { control, getAdjustedUrl } = createMapHelper({ adjustUrl });
+
+    expect(control.getOptions().adjustUrl).toBe(adjustUrl);
+
+    control.setOptions(control.getOptions());
+    const url = getAdjustedUrl();
+
+    expect(adjustUrl).toHaveBeenCalledOnce();
+    expect(url.searchParams.getAll("mtsid")).toHaveLength(1);
+  });
+
+  it("should not return adjustUrl from getOptions when it was never set, like other options", () => {
+    const { control } = createMapHelper();
+
+    expect(control.getOptions()).not.toHaveProperty("adjustUrl");
+    expect(control.getOptions()).not.toHaveProperty("limit");
+  });
+
+  it("should unset user's adjustUrl like other options when explicitly set to undefined", () => {
+    const adjustUrl = vi.fn();
+    const { control, getAdjustedUrl } = createMapHelper({ adjustUrl, limit: 3 });
+
+    control.setOptions({ adjustUrl: undefined, limit: undefined });
+    const url = getAdjustedUrl();
+
+    expect(control.getOptions()).toHaveProperty("adjustUrl", undefined);
+    expect(control.getOptions()).toHaveProperty("limit", undefined);
+    expect(adjustUrl).not.toHaveBeenCalled();
+    expect(url.searchParams.getAll("mtsid")).toHaveLength(1);
   });
 });

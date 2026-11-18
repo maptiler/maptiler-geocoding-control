@@ -14,8 +14,21 @@ interface EventOnceHandlingMethod<Return> {
 export class MaptilerGeocodingControl extends MaplibreglGeocodingControl implements GeocodingControlBase<MaptilerGeocodingControlOptions> {
   #map?: SDKMap;
 
+  /** Options the control overrides, as originally provided by the user */
+  readonly #userOptions: Pick<MaptilerGeocodingControlOptions, "adjustUrl"> = {};
+
+  readonly #adjustUrlWithSession = (url: URL) => {
+    this.#userOptions.adjustUrl?.(url);
+
+    const { session, apiUrl } = this.getOptions();
+    if ((config.session ? session !== false : session === true) && this.#map && (!apiUrl || new URL(apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)) {
+      url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
+    }
+  };
+
   constructor(options: MaptilerGeocodingControlOptions = {}) {
-    super(options);
+    super();
+    this.setOptions(options);
   }
 
   /** @internal Not to be called directly */
@@ -50,24 +63,17 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
     this.#map = undefined;
   }
 
-  declare getOptions: () => MaptilerGeocodingControlOptions;
+  override getOptions(): MaptilerGeocodingControlOptions {
+    const options = super.getOptions();
+    delete options.adjustUrl;
+    return Object.assign(options, this.#userOptions);
+  }
 
   override setOptions(options: MaptilerGeocodingControlOptions) {
-    const originalAdjustUrl = options.adjustUrl;
-    super.setOptions({
-      ...options,
-      adjustUrl: (url: URL) => {
-        originalAdjustUrl?.(url);
-        const opts = this.getOptions();
-        if (
-          (config.session ? options.session !== false : options.session === true) &&
-          this.#map &&
-          (!opts.apiUrl || new URL(opts.apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)
-        ) {
-          url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
-        }
-      },
-    });
+    if ("adjustUrl" in options) {
+      this.#userOptions.adjustUrl = options.adjustUrl;
+    }
+    super.setOptions({ ...options, adjustUrl: this.#adjustUrlWithSession });
   }
 
   declare on: EventHandlingMethod<Subscription>;

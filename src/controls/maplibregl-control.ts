@@ -37,7 +37,7 @@ export class MaplibreglGeocodingControl extends maplibregl.Evented implements IC
 
   constructor(options: MaplibreglGeocodingControlOptions = {}) {
     super();
-    this.setOptions(options);
+    Object.assign(this.#options, options);
   }
 
   /** @internal Not to be called directly */
