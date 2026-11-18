@@ -50,7 +50,7 @@ export default defineConfig({
   },
   plugins: [
     viteStaticCopy({
-      targets: [{ src: "../public/icons", dest: "assets" }],
+      targets: [{ src: "../icons", dest: "assets" }],
     }),
     {
       name: "url-override",

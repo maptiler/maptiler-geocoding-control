@@ -3,6 +3,7 @@ import { type GlobalsOption } from "rollup";
 import { defineConfig, type LibraryOptions, transformWithEsbuild } from "vite";
 import dts from "vite-plugin-dts";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
 const mode = process.env.MODE;
 if (mode !== undefined && mode !== "umd" && mode !== "esm-cdn") throw new Error(`Mode "${mode}" is not valid for build!`);
@@ -58,6 +59,7 @@ if (umd && flavour.umd === false) throw new Error(`Flavour "${process.env.FLAVOU
 export default defineConfig({
   plugins: [
     externalizeDeps({ deps: !bundled }),
+    viteStaticCopy({ targets: [{ src: "icons", dest: "." }] }),
     !bundled && dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts", "check-version.js"] }),
     esmCdn && {
       name: "minify-esm-cdn",
