@@ -1,8 +1,7 @@
 /** @module @maptiler/geocoding-control/openlayers */
-export * from ".";
-export * from "./components/marker";
-export * from "./controls/openlayers-control";
-export { OpenLayersGeocodingControl as GeocodingControl } from "./controls/openlayers-control";
+export * from "./components/marker.js";
+export * from "./controls/openlayers-control.js";
+export { OpenLayersGeocodingControl as GeocodingControl } from "./controls/openlayers-control.js";
 export type {
   FeaturesClearEvent,
   FeaturesHideEvent,
@@ -26,6 +25,7 @@ export type {
   ResponseEvent,
   ReverseToggleEvent,
   SelectEvent,
-} from "./controls/openlayers-events";
-export * from "./controls/openlayers-options";
-export type { OpenLayersGeocodingControlOptions as GeocodingControlOptions } from "./controls/openlayers-options";
+} from "./controls/openlayers-events.js";
+export * from "./controls/openlayers-options.js";
+export type { OpenLayersGeocodingControlOptions as GeocodingControlOptions } from "./controls/openlayers-options.js";
+export * from "./index.js";

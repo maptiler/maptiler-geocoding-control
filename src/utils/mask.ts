@@ -4,8 +4,8 @@ import flatten from "@turf/flatten";
 import { featureCollection, polygon } from "@turf/helpers";
 import union from "@turf/union";
 import type { Feature, FeatureCollection, MultiPolygon, Polygon } from "geojson";
-import type { BBox } from "../types";
-import { unwrapBbox } from "./geo-utils";
+import type { BBox } from "../types.js";
+import { unwrapBbox } from "./geo-utils.js";
 
 export function getMask(picked: Feature<Polygon | MultiPolygon>): FeatureCollection<Polygon | MultiPolygon> | undefined {
   const diff = difference(

@@ -1,10 +1,10 @@
 import { config, Evented, type MapTilerMarkerElementOptions, type MapTilerMarkerSVGOptions, Marker, Popup, type PopupOptions, type Map as SDKMap } from "@maptiler/sdk";
 import { name, version } from "../../package.json";
-import { mixinEvented } from "../utils/mixin-evented";
-import type { GeocodingControlBase } from "./base-control";
-import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base";
-import type { MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events";
-import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
+import { mixinEvented } from "../utils/mixin-evented.js";
+import type { GeocodingControlBase } from "./base-control.js";
+import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base.js";
+import type { MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events.js";
+import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options.js";
 
 export class MaptilerGeocodingControl
   extends MaplibreglGeocodingControlBase<

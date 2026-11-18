@@ -4,19 +4,19 @@ import { customElement, property, queryAssignedElements, state } from "lit/decor
 import { classMap } from "lit/directives/class-map.js";
 import { repeat } from "lit/directives/repeat.js";
 
-import type { BBox, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types";
-import { wrapNum } from "../utils/geo-utils";
-import { getProximity } from "../utils/proximity";
+import type { BBox, EnableReverse, Feature, FeatureCollection, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types.js";
+import { wrapNum } from "../utils/geo-utils.js";
+import { getProximity } from "../utils/proximity.js";
 
-import "../components/clear-icon";
-import "../components/fail-icon";
-import "../components/loading-icon";
-import "../components/reverse-geocoding-icon";
-import "../components/search-icon";
-import "./geocoder-feature-item";
+import "../components/clear-icon.js";
+import "../components/fail-icon.js";
+import "../components/loading-icon.js";
+import "../components/reverse-geocoding-icon.js";
+import "../components/search-icon.js";
+import "./geocoder-feature-item.js";
 
-import type { MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "./geocoder-events";
-import type { MaptilerGeocoderOptions } from "./geocoder-options";
+import type { MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "./geocoder-events.js";
+import type { MaptilerGeocoderOptions } from "./geocoder-options.js";
 import styles from "./geocoder.css?inline";
 
 type InputElement = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -744,7 +744,6 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
   }
 
   protected render(): TemplateResult | symbol {
-    /* eslint-disable @typescript-eslint/unbound-method */
     return html`
       <form
         part="container ${this.collapsed && this.searchValue === "" ? "can-collapse" : ""}"
@@ -774,93 +773,100 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
             </slot>
 
             <div class="clear-button-container ${classMap({ displayable: this.searchValue !== "" })}">
-              ${!this.isLoading
+              ${
+                !this.isLoading
+                  ? html`
+                      <slot name="clear-button">
+                        <button part="clear-button" type="button" title=${this.clearButtonTitle ?? "clear"}>
+                          <slot name="clear-icon">
+                            <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
+                          </slot>
+                        </button>
+                      </slot>
+                    `
+                  : html`
+                      <slot name="loading-icon">
+                        <maptiler-geocode-loading-icon></maptiler-geocode-loading-icon>
+                      </slot>
+                    `
+              }
+            </div>
+
+            ${
+              this.enableReverse === "button"
                 ? html`
-                    <slot name="clear-button">
-                      <button part="clear-button" type="button" title=${this.clearButtonTitle ?? "clear"}>
-                        <slot name="clear-icon">
-                          <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
+                    <slot name="reverse-button">
+                      <button
+                        type="button"
+                        part="reverse-button ${this.reverseActive ? "active" : ""})}"
+                        class=${classMap({ active: this.reverseActive })}
+                        title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}
+                      >
+                        <slot name="reverse-icon">
+                          <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
                         </slot>
                       </button>
                     </slot>
                   `
-                : html`
-                    <slot name="loading-icon">
-                      <maptiler-geocode-loading-icon></maptiler-geocode-loading-icon>
-                    </slot>
-                  `}
-            </div>
-
-            ${this.enableReverse === "button"
-              ? html`
-                  <slot name="reverse-button">
-                    <button
-                      type="button"
-                      part="reverse-button ${this.reverseActive ? "active" : ""})}"
-                      class=${classMap({ active: this.reverseActive })}
-                      title=${this.reverseButtonTitle ?? "toggle reverse geocoding"}
-                    >
-                      <slot name="reverse-icon">
-                        <maptiler-geocode-reverse-geocoding-icon></maptiler-geocode-reverse-geocoding-icon>
-                      </slot>
-                    </button>
-                  </slot>
-                `
-              : nothing}
+                : nothing
+            }
 
             <slot name="end"></slot>
           </div>
         </slot>
 
-        ${this.error
-          ? html`
-              <div class="error">
-                <slot name="error-icon">
-                  <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
-                </slot>
+        ${
+          this.error
+            ? html`
+                <div class="error">
+                  <slot name="error-icon">
+                    <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                  </slot>
 
-                <div>${this.errorMessage ?? "Something went wrong…"}</div>
+                  <div>${this.errorMessage ?? "Something went wrong…"}</div>
 
-                <slot name="clear-error-button">
-                  <button part="clear-error-button">
-                    <slot name="clear-error-icon">
-                      <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
-                    </slot>
-                  </button>
-                </slot>
-              </div>
-            `
-          : (!this.focused && !this.isFeatureListInteractedWith && !this.keepListOpen) || this.listFeatures === undefined
-            ? nothing
-            : this.listFeatures.length === 0
-              ? html`
-                  <div class="no-results">
-                    <slot name="no-results-icon">
-                      <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
-                    </slot>
+                  <slot name="clear-error-button">
+                    <button part="clear-error-button">
+                      <slot name="clear-error-icon">
+                        <maptiler-geocode-clear-icon></maptiler-geocode-clear-icon>
+                      </slot>
+                    </button>
+                  </slot>
+                </div>
+              `
+            : (!this.focused && !this.isFeatureListInteractedWith && !this.keepListOpen) || this.listFeatures === undefined
+              ? nothing
+              : this.listFeatures.length === 0
+                ? html`
+                    <div class="no-results">
+                      <slot name="no-results-icon">
+                        <maptiler-geocode-fail-icon></maptiler-geocode-fail-icon>
+                      </slot>
 
-                    <div>
-                      ${this.noResultsMessage ??
-                      "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"}
+                      <div>
+                        ${
+                          this.noResultsMessage ??
+                          "Oops! Looks like you're trying to predict something that's not quite right. We can't seem to find what you're looking for. Maybe try double-checking your spelling or try a different search term. Keep on typing - we'll do our best to get you where you need to go!"
+                        }
+                      </div>
                     </div>
-                  </div>
-                `
-              : html`
-                  <ul
-                    part="feature-list ${this.openListOnTop ? "open-on-top" : ""}"
-                    class="options ${classMap({ "open-on-top": this.openListOnTop })}"
-                    @pointerleave=${this.#handlePointerLeave}
-                    @pointerdown=${this.#handlePointerDown}
-                    @pointerup=${this.#handlePointerUp}
-                    @keydown=${this.#handleKeyDown}
-                    role="listbox"
-                  >
-                    ${repeat(
-                      this.listFeatures,
-                      (feature) => feature.id + (feature.address ? "," + feature.address : ""),
-                      (feature, i) => html`
-                        <maptiler-geocoder-feature-item
-                          exportparts="
+                  `
+                : html`
+                    <ul
+                      part="feature-list ${this.openListOnTop ? "open-on-top" : ""}"
+                      class="options ${classMap({ "open-on-top": this.openListOnTop })}"
+                      @pointerleave=${this.#handlePointerLeave}
+                      @pointerdown=${this.#handlePointerDown}
+                      @pointerup=${this.#handlePointerUp}
+                      @keydown=${this.#handleKeyDown}
+                      role="listbox"
+                    >
+                      ${repeat(
+                        this.listFeatures,
+                        (feature) => feature.id + (feature.address ? "," + feature.address : ""),
+                        (feature, i) => html`
+                          <maptiler-geocoder-feature-item
+                            exportparts="
                             container:feature-item,
                             icon:feature-item__icon,
                             texts:feature-item__texts,
@@ -871,25 +877,25 @@ export class MaptilerGeocoderElement extends LitElement implements MaptilerGeoco
                             selected, picked, default,
                             sprite, category, address, road, street, postal-code, poi, reverse, area
                           "
-                          .feature=${feature}
-                          .showPlaceType=${this.showPlaceType ?? "if-needed"}
-                          itemStyle=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
-                          @pointerenter=${() => {
-                            this.#handlePointerEnter(i);
-                          }}
-                          @select=${() => {
-                            this.#pick(feature);
-                          }}
-                          .missingIconsCache=${this.#missingIconsCache}
-                          .iconsBaseUrl=${this.iconsBaseUrl ?? `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`}
-                        />
-                      `,
-                    )}
-                  </ul>
-                `}
+                            .feature=${feature}
+                            .showPlaceType=${this.showPlaceType ?? "if-needed"}
+                            itemStyle=${this.selectedItemIndex === i ? "selected" : this.picked?.id === feature.id ? "picked" : "default"}
+                            @pointerenter=${() => {
+                              this.#handlePointerEnter(i);
+                            }}
+                            @select=${() => {
+                              this.#pick(feature);
+                            }}
+                            .missingIconsCache=${this.#missingIconsCache}
+                            .iconsBaseUrl=${this.iconsBaseUrl ?? `https://cdn.maptiler.com/maptiler-geocoding-control/v${import.meta.env.VITE_LIB_VERSION}/icons/`}
+                          />
+                        `,
+                      )}
+                    </ul>
+                  `
+        }
       </form>
     `;
-    /* eslint-enable @typescript-eslint/unbound-method */
   }
 }
 

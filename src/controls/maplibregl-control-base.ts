@@ -3,19 +3,19 @@ import union from "@turf/union";
 import type { GeoJSON, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
 import type { Evented, GeoJSONSource, IControl, MapEventType, MapMouseEvent, Map as MLMap, PopupOptions } from "maplibre-gl";
 
-import type { BBox, Feature, Position } from "../types";
-import { unwrapBbox } from "../utils/geo-utils";
-import { getMask } from "../utils/mask";
+import type { BBox, Feature, Position } from "../types.js";
+import { unwrapBbox } from "../utils/geo-utils.js";
+import { getMask } from "../utils/mask.js";
 
-import "../geocoder/geocoder";
-import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
-import type { GeocodingControlBase } from "./base-control";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events.js";
+import "../geocoder/geocoder.js";
+import type { MaptilerGeocoderElement } from "../geocoder/geocoder.js";
+import type { GeocodingControlBase } from "./base-control.js";
 
-import "../components/marker";
+import "../components/marker.js";
 
-import type { MaplibreglGeocodingControlEventName, MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events";
-import { DEFAULT_GEOMETRY_STYLE, type MaplibreglGeocodingControlOptions, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS } from "./maplibregl-options";
+import type { MaplibreglGeocodingControlEventName, MaplibreglGeocodingControlEventNameMap } from "./maplibregl-events.js";
+import { DEFAULT_GEOMETRY_STYLE, type MaplibreglGeocodingControlOptions, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS } from "./maplibregl-options.js";
 
 /** Part of the `Marker` API of MapLibre GL JS / MapTiler SDK used by the control */
 export type MarkerLike = {

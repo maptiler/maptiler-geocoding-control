@@ -1,4 +1,4 @@
-import type { BBox, EnableReverse, Feature, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types";
+import type { BBox, EnableReverse, Feature, ProximityRule, ShowPlaceType, TypeRule, Worldview } from "../types.js";
 
 export type MaptilerGeocoderOptions = {
   /**

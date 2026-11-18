@@ -3,13 +3,12 @@
   @typescript-eslint/no-unsafe-assignment,
   @typescript-eslint/no-unsafe-return,
   @typescript-eslint/restrict-template-expressions,
-  @typescript-eslint/unbound-method,
 */
 import { LitElement, css, html, nothing, unsafeCSS, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { styleMap } from "lit/directives/style-map.js";
 
-import type { Feature, ShowPlaceType } from "../types";
+import type { Feature, ShowPlaceType } from "../types.js";
 import styles from "./geocoder-feature-item.css?inline";
 
 type SpriteIcon = { width: number; height: number; x: number; y: number };
@@ -117,51 +116,55 @@ export class MaptilerGeocoderFeatureItemElement extends LitElement {
         class=${this.itemStyle}
         @click=${() => this.dispatchEvent(new CustomEvent("select"))}
       >
-        ${sprites && this.spriteIcon
-          ? html`
-              <div
-                part="icon sprite ${this.itemStyle}"
-                class="sprite-icon"
-                style=${styleMap({
-                  width: `${this.spriteIcon.width / scaleFactor}px`,
-                  height: `${this.spriteIcon.height / scaleFactor}px`,
-                  backgroundImage: `url(${this.iconsBaseUrl}sprite${scaleUrl}.png)`,
-                  backgroundPosition: `-${this.spriteIcon.x / scaleFactor}px -${this.spriteIcon.y / scaleFactor}px`,
-                  backgroundSize: `${sprites.width / scaleFactor}px ${sprites.height / scaleFactor}px`,
-                })}
-                title=${this.#placeType}
-              />
-            `
-          : this.imageUrl
-            ? html` <img part="icon category ${this.itemStyle}" src=${this.imageUrl} alt=${this.category} title=${this.#placeType} @error=${this.#handleImgError} />`
-            : this.feature?.address
-              ? html` <img part="icon address ${this.itemStyle}" src=${this.iconsBaseUrl + "housenumber.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-              : this.feature?.id.startsWith("road.")
-                ? html` <img part="icon road ${this.itemStyle}" src=${this.iconsBaseUrl + "road.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                : this.feature?.id.startsWith("address.")
-                  ? html` <img part="icon street ${this.itemStyle}" src=${this.iconsBaseUrl + "street.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                  : this.feature?.id.startsWith("postal_code.")
-                    ? html` <img part="icon postal-code ${this.itemStyle}" src=${this.iconsBaseUrl + "postal_code.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                    : this.feature?.id.startsWith("poi.")
-                      ? html` <img part="icon poi ${this.itemStyle}" src=${this.iconsBaseUrl + "poi.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                      : this.#isReverse
-                        ? html` <img part="icon reverse ${this.itemStyle}" src=${this.iconsBaseUrl + "reverse.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
-                        : html` <img part="icon area ${this.itemStyle}" src=${this.iconsBaseUrl + "area.svg"} alt=${this.#placeType} title=${this.#placeType} /> `}
+        ${
+          sprites && this.spriteIcon
+            ? html`
+                <div
+                  part="icon sprite ${this.itemStyle}"
+                  class="sprite-icon"
+                  style=${styleMap({
+                    width: `${this.spriteIcon.width / scaleFactor}px`,
+                    height: `${this.spriteIcon.height / scaleFactor}px`,
+                    backgroundImage: `url(${this.iconsBaseUrl}sprite${scaleUrl}.png)`,
+                    backgroundPosition: `-${this.spriteIcon.x / scaleFactor}px -${this.spriteIcon.y / scaleFactor}px`,
+                    backgroundSize: `${sprites.width / scaleFactor}px ${sprites.height / scaleFactor}px`,
+                  })}
+                  title=${this.#placeType}
+                />
+              `
+            : this.imageUrl
+              ? html` <img part="icon category ${this.itemStyle}" src=${this.imageUrl} alt=${this.category} title=${this.#placeType} @error=${this.#handleImgError} />`
+              : this.feature?.address
+                ? html` <img part="icon address ${this.itemStyle}" src=${this.iconsBaseUrl + "housenumber.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                : this.feature?.id.startsWith("road.")
+                  ? html` <img part="icon road ${this.itemStyle}" src=${this.iconsBaseUrl + "road.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                  : this.feature?.id.startsWith("address.")
+                    ? html` <img part="icon street ${this.itemStyle}" src=${this.iconsBaseUrl + "street.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                    : this.feature?.id.startsWith("postal_code.")
+                      ? html` <img part="icon postal-code ${this.itemStyle}" src=${this.iconsBaseUrl + "postal_code.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                      : this.feature?.id.startsWith("poi.")
+                        ? html` <img part="icon poi ${this.itemStyle}" src=${this.iconsBaseUrl + "poi.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                        : this.#isReverse
+                          ? html` <img part="icon reverse ${this.itemStyle}" src=${this.iconsBaseUrl + "reverse.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+                          : html` <img part="icon area ${this.itemStyle}" src=${this.iconsBaseUrl + "area.svg"} alt=${this.#placeType} title=${this.#placeType} /> `
+        }
 
         <span part="texts ${this.itemStyle}" class="texts">
           <span part="text-line-1 ${this.itemStyle}">
             <span part="text-primary ${this.itemStyle}" class="primary"> ${this.#isReverse ? this.feature?.place_name : this.feature?.place_name.replace(/,.*/, "")} </span>
 
-            ${this.showPlaceType === "always" ||
-            (this.showPlaceType !== "never" &&
-              !this.feature?.address &&
-              !this.feature?.id.startsWith("road.") &&
-              !this.feature?.id.startsWith("address.") &&
-              !this.feature?.id.startsWith("postal_code.") &&
-              (!this.feature?.id.startsWith("poi.") || !this.imageUrl) &&
-              !this.#isReverse)
-              ? html` <span part="text-secondary ${this.itemStyle}" class="secondary"> ${this.#placeType} </span> `
-              : nothing}
+            ${
+              this.showPlaceType === "always" ||
+              (this.showPlaceType !== "never" &&
+                !this.feature?.address &&
+                !this.feature?.id.startsWith("road.") &&
+                !this.feature?.id.startsWith("address.") &&
+                !this.feature?.id.startsWith("postal_code.") &&
+                (!this.feature?.id.startsWith("poi.") || !this.imageUrl) &&
+                !this.#isReverse)
+                ? html` <span part="text-secondary ${this.itemStyle}" class="secondary"> ${this.#placeType} </span> `
+                : nothing
+            }
           </span>
 
           <span part="text-line-2 ${this.itemStyle}" class="line2"> ${this.#isReverse ? this.feature?.text : this.feature?.place_name.replace(/[^,]*,?s*/, "")} </span>

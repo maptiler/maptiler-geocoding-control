@@ -1,7 +1,7 @@
 import type { MapTilerMarkerElementOptions, MapTilerMarkerSVGOptions, Marker, Map as SDKMap } from "@maptiler/sdk";
 
-import type { Feature } from "../types";
-import type { MaplibreglGeocodingControlOptions } from "./maplibregl-options";
+import type { Feature } from "../types.js";
+import type { MaplibreglGeocodingControlOptions } from "./maplibregl-options.js";
 
 export type MaptilerGeocodingControlOptions = Omit<MaplibreglGeocodingControlOptions, "apiKey" | "marker" | "showResultMarkers"> & {
   /**
@@ -50,4 +50,4 @@ export type MaptilerGeocodingControlOptions = Omit<MaplibreglGeocodingControlOpt
   session?: boolean;
 };
 
-export { DEFAULT_GEOMETRY_STYLE, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS, type FullGeometryStyle } from "./maplibregl-options";
+export { DEFAULT_GEOMETRY_STYLE, RESULT_LAYER_FILL, RESULT_LAYER_LINE, RESULT_SOURCE, ZOOM_DEFAULTS, type FullGeometryStyle } from "./maplibregl-options.js";

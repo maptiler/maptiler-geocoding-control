@@ -1,8 +1,7 @@
 /** @module @maptiler/geocoding-control/maplibregl */
-export * from ".";
-export * from "./components/marker";
-export * from "./controls/maplibregl-control";
-export { MaplibreglGeocodingControl as GeocodingControl } from "./controls/maplibregl-control";
+export * from "./components/marker.js";
+export * from "./controls/maplibregl-control.js";
+export { MaplibreglGeocodingControl as GeocodingControl } from "./controls/maplibregl-control.js";
 export type {
   FeaturesClearEvent,
   FeaturesHideEvent,
@@ -26,6 +25,7 @@ export type {
   ResponseEvent,
   ReverseToggleEvent,
   SelectEvent,
-} from "./controls/maplibregl-events";
-export * from "./controls/maplibregl-options";
-export type { MaplibreglGeocodingControlOptions as GeocodingControlOptions } from "./controls/maplibregl-options";
+} from "./controls/maplibregl-events.js";
+export * from "./controls/maplibregl-options.js";
+export type { MaplibreglGeocodingControlOptions as GeocodingControlOptions } from "./controls/maplibregl-options.js";
+export * from "./index.js";

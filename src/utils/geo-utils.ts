@@ -1,7 +1,7 @@
 import clone from "@turf/clone";
 import type { FeatureCollection, MultiPolygon, Polygon, Position } from "geojson";
 
-import type { BBox } from "../types";
+import type { BBox } from "../types.js";
 
 // taken from Leaflet
 export function wrapNum(x: number, range: [number, number], includeMax: boolean) {
