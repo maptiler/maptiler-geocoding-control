@@ -64,6 +64,31 @@ const gc = new GeocodingControl();
 map.addControl(gc);
 ```
 
+### Without a bundler
+
+With MapTiler SDK JS, you can load both libraries from MapTiler's CDN as ES modules. The [import map](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/script/type/importmap) tells the browser where to load `@maptiler/sdk` from, so your page and the Geocoding control share the same SDK:
+
+```html
+<link rel="stylesheet" href="https://cdn.maptiler.com/maptiler-sdk-js/v5.0.0/maptiler-sdk.css" />
+
+<script type="importmap">
+  { "imports": { "@maptiler/sdk": "https://cdn.maptiler.com/maptiler-sdk-js/v5.0.0/maptiler-sdk.min.mjs" } }
+</script>
+
+<script type="module">
+  import * as maptilersdk from "@maptiler/sdk";
+  import { GeocodingControl } from "https://cdn.maptiler.com/maptiler-geocoding-control/v4.0.0/maptilersdk.cdn.mjs";
+
+  maptilersdk.config.apiKey = "YOUR_MAPTILER_API_KEY_HERE";
+
+  const map = new maptilersdk.Map({ container: "map" });
+
+  map.addControl(new GeocodingControl());
+</script>
+```
+
+Prefer classic `<script>` tags? Use the UMD builds: load the SDK's `maptiler-sdk.umd.min.js` first, then the control's `maptilersdk.umd.js`, which provides the global `maptilerGeocoder.GeocodingControl`.
+
 <br>
 
 ## 💡 Related Examples
@@ -89,6 +114,50 @@ For detailed guides, API reference, and advanced examples, visit our comprehensi
 [Geocoding service API documentation](https://docs.maptiler.com/cloud/api/geocoding/)
 
 [UMD global variables](https://docs.maptiler.com/sdk-js/modules/geocoding/#umd-global-variables)
+
+<br>
+
+## Migration Guide
+
+### Upgrading from v3 to v4
+
+Version 4 supports the new major versions of the map libraries. The `GeocodingControl` API and its options stay the same, except for the marker options with MapTiler SDK JS.
+
+| Map library     | Geocoding control v3 | Geocoding control v4 |
+| --------------- | -------------------- | -------------------- |
+| MapTiler SDK JS | 3 – 4                | 5                    |
+| MapLibre GL JS  | 5                    | 6                    |
+| Leaflet         | 1.5 – 1.9            | 2                    |
+| OpenLayers      | 9.1 – 10             | 9.1 – 10 (no change) |
+
+Upgrade your map library first (see its own migration guide), then the Geocoding control. If you need to stay on an older version of your map library, keep using v3 of the Geocoding control.
+
+#### MapTiler SDK JS
+
+- The control's markers are now the MapTiler SDK's own `Marker`, which has different options than the MapLibre GL JS one. If you pass marker options in `marker` or `showResultMarkers`, use the [MapTiler SDK Marker options](https://docs.maptiler.com/sdk-js/api/markers/#marker), e.g. `outerColor` instead of `color` and `scale` as `[x, y]` instead of a number. The control's default markers look the same as before.
+- Functions in `marker` and `showResultMarkers` get the MapTiler SDK `Map` and return the MapTiler SDK `Marker`. Add the marker to the map with `map.addMarker(marker)`, because MapTiler SDK JS 5 deprecates `marker.addTo(map)`.
+
+#### MapLibre GL JS
+
+- MapLibre GL JS 6 is published only as an ES module and has no default export. Replace `import maplibregl from "maplibre-gl"` with `import * as maplibregl from "maplibre-gl"` or with named imports such as `import { Map, Marker } from "maplibre-gl"`.
+- The control's UMD build `maplibregl.umd.js` was removed, because MapLibre GL JS 6 no longer provides the global `maplibregl` it needs. Use the ES module build with a bundler instead, or switch to MapTiler SDK JS, which still has a UMD build (see below).
+- MapLibre GL JS 6 loads its web worker from a file next to its own module. Once a bundler moves MapLibre into your app's bundle, the map fails with `Worker failed to load. Check that the worker URL is correct.` With Vite, let Vite bundle the worker and pass its URL to MapLibre before creating the map:
+
+  ```js
+  import { setWorkerUrl } from "maplibre-gl";
+  import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
+
+  setWorkerUrl(workerUrl);
+  ```
+
+  With other bundlers, serve `maplibre-gl-worker.mjs` together with `maplibre-gl-shared.mjs` (which it imports) from `node_modules/maplibre-gl/dist/` and pass the worker's URL to `setWorkerUrl()`.
+
+If upgrading to MapLibre GL JS 6 is difficult, or you need a UMD build for classic `<script>` tags, consider switching to [MapTiler SDK JS](https://docs.maptiler.com/sdk-js/) and the control's `maptilersdk` build. The SDK is built on MapLibre GL JS, is available on MapTiler's CDN as both a UMD and an ES module build (see [Without a bundler](#without-a-bundler)), and loads its web worker on its own, so none of the setup above is needed.
+
+#### Leaflet
+
+- Leaflet 2 removed the factory functions such as `L.map()` or `L.tileLayer()`. Create objects with `new` instead, e.g. `new Map(...)` and `new TileLayer(...)`. The Geocoding control is added the same way as before: `map.addControl(new GeocodingControl({ ... }))`.
+- When using the control's UMD build `leaflet.umd.js` with classic `<script>` tags, load Leaflet's `leaflet-global.js` (it defines the global `L`) before it.
 
 <br>
 

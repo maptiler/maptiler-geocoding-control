@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import type { MultiPolygon, Polygon } from "geojson";
 import { Feature as OlFeature, type MapBrowserEvent, type Map as OLMap } from "ol";
-import type { Types as ObjectEventTypes } from "ol/ObjectEventType";
-import type { EventTypes } from "ol/Observable";
-import { Control } from "ol/control";
-import type { Coordinate } from "ol/coordinate";
-import type { EventsKey, ListenerFunction } from "ol/events";
-import OLEvent from "ol/events/Event";
+import type { Types as ObjectEventTypes } from "ol/ObjectEventType.js";
+import type { EventTypes } from "ol/Observable.js";
+import { Control } from "ol/control.js";
+import type { Coordinate } from "ol/coordinate.js";
+import type { EventsKey, ListenerFunction } from "ol/events.js";
+import OLEvent from "ol/events/Event.js";
 import {
   GeometryCollection as OlGeometryCollection,
   LineString as OlLineString,
@@ -14,24 +14,24 @@ import {
   MultiPolygon as OlMultiPolygon,
   Point as OlPoint,
   Polygon as OlPolygon,
-} from "ol/geom";
-import VectorLayer from "ol/layer/Vector";
-import { fromLonLat, getUserProjection, toLonLat, transformExtent, type Projection } from "ol/proj";
-import VectorSource from "ol/source/Vector";
+} from "ol/geom.js";
+import VectorLayer from "ol/layer/Vector.js";
+import { fromLonLat, getUserProjection, toLonLat, transformExtent, type Projection } from "ol/proj.js";
+import VectorSource from "ol/source/Vector.js";
 
-import type { BBox, Feature, Position } from "../types";
-import { unwrapBbox } from "../utils/geo-utils";
-import { getMask } from "../utils/mask";
+import type { BBox, Feature, Position } from "../types.js";
+import { unwrapBbox } from "../utils/geo-utils.js";
+import { getMask } from "../utils/mask.js";
 
-import "../geocoder/geocoder";
-import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
-import type { GeocodingControlBase } from "./base-control";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events.js";
+import "../geocoder/geocoder.js";
+import type { MaptilerGeocoderElement } from "../geocoder/geocoder.js";
+import type { GeocodingControlBase } from "./base-control.js";
 
-import "../components/marker";
+import "../components/marker.js";
 
-import type { OpenLayersGeocodingControlEventName, OpenLayersGeocodingControlEventNameMap } from "./openlayers-events";
-import { DEFAULT_GEOMETRY_STYLE, ZOOM_DEFAULTS, type OpenLayersGeocodingControlOptions } from "./openlayers-options";
+import type { OpenLayersGeocodingControlEventName, OpenLayersGeocodingControlEventNameMap } from "./openlayers-events.js";
+import { DEFAULT_GEOMETRY_STYLE, ZOOM_DEFAULTS, type OpenLayersGeocodingControlOptions } from "./openlayers-options.js";
 
 type TypedBaseEvent<Type extends OpenLayersGeocodingControlEventName> = OLEvent & { type: Type } & OpenLayersGeocodingControlEventNameMap[Type];
 
@@ -238,7 +238,10 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
         return olFeature.getId() ? (olFeature as OlFeature<OlPoint>) : undefined;
       });
 
-      this.#map.getTargetElement().style.cursor = enteredOlFeature ? "pointer" : this.#indicatingReverse ? "crosshair" : "";
+      const mapElement = this.#map.getTargetElement();
+      if (mapElement) {
+        mapElement.style.cursor = enteredOlFeature ? "pointer" : this.#indicatingReverse ? "crosshair" : "";
+      }
 
       const id = enteredOlFeature?.getId() as string | undefined;
       if (this.#prevHoveredId === id) return;
@@ -412,7 +415,7 @@ export class OpenLayersGeocodingControl extends Control implements GeocodingCont
       return;
     }
 
-    this.#resultSource.removeFeatures([...this.#markers.values()]);
+    this.#resultSource.removeFeatures(this.#resultSource.getFeatures().filter((feature) => feature !== this.#reverseMarker));
     this.#markers = new Map();
 
     const addMarker = () => {

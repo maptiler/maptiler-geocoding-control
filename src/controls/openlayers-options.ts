@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import type { AnimationOptions, FitOptions } from "ol/View";
-import type { Options } from "ol/control/Control";
-import Fill from "ol/style/Fill";
-import Icon from "ol/style/Icon";
-import Stroke from "ol/style/Stroke";
-import Style, { type StyleFunction, type StyleLike } from "ol/style/Style";
-import Text from "ol/style/Text";
-import type { FlatStyleLike } from "ol/style/flat";
+import type { AnimationOptions, FitOptions } from "ol/View.js";
+import type { Options } from "ol/control/Control.js";
+import Fill from "ol/style/Fill.js";
+import Icon from "ol/style/Icon.js";
+import Stroke from "ol/style/Stroke.js";
+import Style, { type StyleFunction, type StyleLike } from "ol/style/Style.js";
+import Text from "ol/style/Text.js";
+import type { FlatStyleLike } from "ol/style/flat.js";
 
-import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options";
-import type { FlyToFeatures, PickedResultStyle } from "../types";
+import type { MaptilerGeocoderOptions } from "../geocoder/geocoder-options.js";
+import type { FlyToFeatures, PickedResultStyle } from "../types.js";
 
 export type OpenLayersGeocodingControlOptions = Omit<MaptilerGeocoderOptions, "fetchFullGeometryOnPick"> & {
   /**

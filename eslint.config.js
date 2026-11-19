@@ -3,7 +3,7 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-  globalIgnores(["dist/", "vite.config*.ts", "**/eslint.config.js", "tmp/"]),
+  globalIgnores(["dist/", "vite.config*.ts", "**/eslint.config.js"]),
   // https://typescript-eslint.io/getting-started/typed-linting/
   tseslint.configs.strictTypeChecked,
   tseslint.configs.stylisticTypeChecked,
@@ -13,7 +13,7 @@ export default defineConfig(
     plugins: {
       import: {
         rules: {
-          "default-imports-only": {
+          "no-default-imports": {
             meta: {
               type: "suggestion",
               docs: {},
@@ -48,7 +48,7 @@ export default defineConfig(
 
                         if (bannedLocationRegex.test(filePath)) {
                           node.specifiers.forEach((specifier) => {
-                            if (specifier.type !== "ImportDefaultSpecifier") {
+                            if (specifier.type === "ImportDefaultSpecifier") {
                               context.report({
                                 // @ts-expect-error `message` seems to work with this...
                                 message: config.message ?? `Importing from '${bannedImport}' is banned in '${fp}'`,
@@ -69,12 +69,12 @@ export default defineConfig(
     },
     rules: {
       "@typescript-eslint/no-namespace": "off",
-      "import/default-imports-only": [
+      "import/no-default-imports": [
         "error",
         {
           "maplibre-gl$": {
             locations: ["^(?!.*\.d\.ts$).*\.((ts|js))$"],
-            message: `Maplibre-gl uses CJS modules, only default imports are supported, named imports may fail on some setups.`,
+            message: `Maplibre-gl v6+ is ESM-only and has no default export, use \`import * as maplibregl from "maplibre-gl"\` or named imports.`,
             ignoreTypeImports: true,
           },
         },

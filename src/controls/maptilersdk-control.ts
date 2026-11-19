@@ -1,21 +1,37 @@
-import { config, type Map as SDKMap, type Subscription } from "@maptiler/sdk";
+import { config, Evented, type MapTilerMarkerElementOptions, type MapTilerMarkerSVGOptions, Marker, Popup, type PopupOptions, type Map as SDKMap } from "@maptiler/sdk";
 import { name, version } from "../../package.json";
-import type { GeocodingControlBase } from "./base-control";
-import { MaplibreglGeocodingControl } from "./maplibregl-control";
-import type { MaptilerGeocodingControlEventName, MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events";
-import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options";
+import { mixinEvented } from "../utils/mixin-evented.js";
+import type { GeocodingControlBase } from "./base-control.js";
+import { MaplibreglGeocodingControlBase } from "./maplibregl-control-base.js";
+import type { MaptilerGeocodingControlEventNameMap } from "./maptilersdk-events.js";
+import type { MaptilerGeocodingControlOptions } from "./maptilersdk-options.js";
 
-type EventHandlingMethod<Return> = <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void) => Return;
-interface EventOnceHandlingMethod<Return> {
-  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener: (event: MaptilerGeocodingControlEventNameMap[Type]) => void): Return;
-  <Type extends MaptilerGeocodingControlEventName>(type: Type, listener?: undefined): Promise<MaptilerGeocodingControlEventNameMap[Type]>;
-}
-
-export class MaptilerGeocodingControl extends MaplibreglGeocodingControl implements GeocodingControlBase<MaptilerGeocodingControlOptions> {
+export class MaptilerGeocodingControl
+  extends MaplibreglGeocodingControlBase<
+    MaptilerGeocodingControlOptions,
+    MaptilerGeocodingControlEventNameMap,
+    SDKMap,
+    Marker,
+    MapTilerMarkerElementOptions | MapTilerMarkerSVGOptions
+  >
+  implements GeocodingControlBase<MaptilerGeocodingControlOptions>
+{
   #map?: SDKMap;
 
   constructor(options: MaptilerGeocodingControlOptions = {}) {
     super(options);
+  }
+
+  protected createMarker(options: MapTilerMarkerElementOptions | MapTilerMarkerSVGOptions): Marker {
+    return options.element ? new Marker(options) : new Marker(options);
+  }
+
+  protected addMarker(map: SDKMap, marker: Marker): void {
+    map.addMarker(marker);
+  }
+
+  protected setMarkerPopup(marker: Marker, options: PopupOptions, text: string): void {
+    marker.setPopup(new Popup(options).setText(text));
   }
 
   /** @internal Not to be called directly */
@@ -50,27 +66,14 @@ export class MaptilerGeocodingControl extends MaplibreglGeocodingControl impleme
     this.#map = undefined;
   }
 
-  declare getOptions: () => MaptilerGeocodingControlOptions;
+  /** Adds the MapTiler session ID to geocoding requests, unless disabled by the `session` option (see also `session` of the SDK config) */
+  protected override adjustRequestUrl(url: URL): void {
+    const { session, apiUrl } = this.getOptions();
 
-  override setOptions(options: MaptilerGeocodingControlOptions) {
-    const originalAdjustUrl = options.adjustUrl;
-    super.setOptions({
-      ...options,
-      adjustUrl: (url: URL) => {
-        originalAdjustUrl?.(url);
-        const opts = this.getOptions();
-        if (
-          (config.session ? options.session !== false : options.session === true) &&
-          this.#map &&
-          (!opts.apiUrl || new URL(opts.apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)
-        ) {
-          url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
-        }
-      },
-    });
+    if ((config.session ? session !== false : session === true) && this.#map && (!apiUrl || new URL(apiUrl).host === new URL(import.meta.env.VITE_API_URL).host)) {
+      url.searchParams.append("mtsid", this.#map.getMaptilerSessionId());
+    }
   }
-
-  declare on: EventHandlingMethod<Subscription>;
-  declare off: EventHandlingMethod<this>;
-  declare once: EventOnceHandlingMethod<this>;
 }
+
+mixinEvented(MaptilerGeocodingControl, Evented);

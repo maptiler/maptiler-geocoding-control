@@ -1,11 +1,9 @@
-import type { Marker, Map as SDKMap } from "@maptiler/sdk";
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { MaptilerGeocodingControl } from "./maptilersdk-control";
+import type { Marker } from "@maptiler/sdk";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { MaptilerGeocodingControl } from "./maptilersdk-control.js";
 
-type SDKEvent = Extract<Parameters<SDKMap["fire"]>[0], object>;
-
-type BaseEvent = SDKEvent & { target: MaptilerGeocodingControl };
+type BaseEvent = { readonly type: string; target: MaptilerGeocodingControl };
 
 export namespace MaptilerGeocodingControlEvent {
   export type ReverseToggleEvent = BaseEvent & MaptilerGeocoderEvent.ReverseToggleEvent["detail"];

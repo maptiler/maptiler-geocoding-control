@@ -1,8 +1,7 @@
 /** @module @maptiler/geocoding-control/leaflet */
-export * from ".";
-export * from "./components/marker";
-export * from "./controls/leaflet-control";
-export { LeafletGeocodingControl as GeocodingControl } from "./controls/leaflet-control";
+export * from "./components/marker.js";
+export * from "./controls/leaflet-control.js";
+export { LeafletGeocodingControl as GeocodingControl } from "./controls/leaflet-control.js";
 export type {
   FeaturesClearEvent,
   FeaturesHideEvent,
@@ -26,6 +25,7 @@ export type {
   ResponseEvent,
   ReverseToggleEvent,
   SelectEvent,
-} from "./controls/leaflet-events";
-export * from "./controls/leaflet-options";
-export type { LeafletGeocodingControlOptions as GeocodingControlOptions } from "./controls/leaflet-options";
+} from "./controls/leaflet-events.js";
+export * from "./controls/leaflet-options.js";
+export type { LeafletGeocodingControlOptions as GeocodingControlOptions } from "./controls/leaflet-options.js";
+export * from "./index.js";
