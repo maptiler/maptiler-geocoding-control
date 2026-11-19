@@ -1,11 +1,9 @@
-import type { Evented, Marker } from "maplibre-gl";
-import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events";
-import type { Feature } from "../types";
-import type { MaplibreglGeocodingControl } from "./maplibregl-control";
+import type { Marker } from "maplibre-gl";
+import type { MaptilerGeocoderEvent } from "../geocoder/geocoder-events.js";
+import type { Feature } from "../types.js";
+import type { MaplibreglGeocodingControl } from "./maplibregl-control.js";
 
-type MLEvent = Extract<Parameters<Evented["fire"]>[0], object>;
-
-type BaseEvent = MLEvent & { target: MaplibreglGeocodingControl };
+type BaseEvent = { readonly type: string; target: MaplibreglGeocodingControl };
 
 export namespace MaplibreglGeocodingControlEvent {
   export type ReverseToggleEvent = BaseEvent & MaptilerGeocoderEvent.ReverseToggleEvent["detail"];

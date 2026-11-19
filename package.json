@@ -1,6 +1,6 @@
 {
   "name": "@maptiler/geocoding-control",
-  "version": "3.1.0",
+  "version": "0.0.0-PLACEHOLDER",
   "description": "The Javascript & TypeScript Map Control component for MapTiler Geocoding service. Easy to be integrated into any JavaScript mapping application.",
   "type": "module",
   "author": {
@@ -31,13 +31,13 @@
   "scripts": {
     "dev": "vite -c vite.config-dev.ts",
     "make": "npm run clean && npm run build && npm run check-version",
-    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maplibregl && npm run build:maplibregl:umd && npm run build:leaflet && npm run build:leaflet:umd && npm run build:openlayers && npm run build:openlayers:umd",
+    "build": "npm run build:index && npm run build:index:umd && npm run build:maptilersdk && npm run build:maptilersdk:umd && npm run build:maptilersdk:esm-cdn && npm run build:maplibregl && npm run build:leaflet && npm run build:leaflet:umd && npm run build:openlayers && npm run build:openlayers:umd",
     "build:index": "FLAVOUR=index vite build",
     "build:index:umd": "FLAVOUR=index MODE=umd vite build",
     "build:maptilersdk": "FLAVOUR=maptilersdk vite build",
     "build:maptilersdk:umd": "FLAVOUR=maptilersdk MODE=umd vite build",
+    "build:maptilersdk:esm-cdn": "FLAVOUR=maptilersdk MODE=esm-cdn vite build",
     "build:maplibregl": "FLAVOUR=maplibregl vite build",
-    "build:maplibregl:umd": "FLAVOUR=maplibregl MODE=umd vite build",
     "build:leaflet": "FLAVOUR=leaflet vite build",
     "build:leaflet:umd": "FLAVOUR=leaflet MODE=umd vite build",
     "build:openlayers": "FLAVOUR=openlayers vite build",
@@ -52,34 +52,30 @@
     "prepare": "husky"
   },
   "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "types": "dist/src/index.d.ts",
   "main": "dist/index.js",
   "exports": {
     ".": {
       "types": "./dist/src/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.umd.js"
+      "default": "./dist/index.js"
     },
     "./maplibregl": {
       "types": "./dist/src/maplibregl.public.d.ts",
-      "import": "./dist/maplibregl.js",
-      "require": "./dist/maplibregl.umd.js"
+      "default": "./dist/maplibregl.js"
     },
     "./maptilersdk": {
       "types": "./dist/src/maptilersdk.public.d.ts",
-      "import": "./dist/maptilersdk.js",
-      "require": "./dist/maptilersdk.umd.js"
+      "default": "./dist/maptilersdk.js"
     },
     "./leaflet": {
       "types": "./dist/src/leaflet.public.d.ts",
-      "import": "./dist/leaflet.js",
-      "require": "./dist/leaflet.umd.js"
+      "default": "./dist/leaflet.js"
     },
     "./openlayers": {
       "types": "./dist/src/openlayers.public.d.ts",
-      "import": "./dist/openlayers.js",
-      "require": "./dist/openlayers.umd.js"
-    }
+      "default": "./dist/openlayers.js"
+    },
+    "./package.json": "./package.json"
   },
   "dependencies": {
     "@turf/bbox": "^7.2.0",
@@ -94,15 +90,8 @@
   },
   "devDependencies": {
     "@canvas/image-data": "^1.1.0",
-    "@maptiler/sdk": "^4.0.0",
-    "@maptiler/sdk--v3.0": "npm:@maptiler/sdk@3.0",
-    "@maptiler/sdk--v3.11": "npm:@maptiler/sdk@3.11",
-    "@maptiler/sdk--v3.5": "npm:@maptiler/sdk@3.5",
-    "@maptiler/sdk--v4.0": "npm:@maptiler/sdk@4.0",
-    "@types/leaflet": "^1.9.21",
-    "@types/leaflet--v1.5": "npm:@types/leaflet@1.5",
-    "@types/leaflet--v1.7": "npm:@types/leaflet@1.7",
-    "@types/leaflet--v1.9": "npm:@types/leaflet@1.9",
+    "@maptiler/sdk": "^5.0.0",
+    "@maptiler/sdk--v5.0": "npm:@maptiler/sdk@5.0",
     "@types/node": "ts5.8",
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
@@ -113,20 +102,26 @@
     "eslint-plugin-prettier": "^5.5.4",
     "happy-dom": "^20.0.10",
     "husky": "^9.1.7",
-    "leaflet": "^1.9.4",
-    "maplibre-gl": "~5.21.1",
-    "maplibre-gl--v5.0": "npm:maplibre-gl@5.0",
-    "maplibre-gl--v5.10": "npm:maplibre-gl@5.10",
-    "maplibre-gl--v5.15": "npm:maplibre-gl@5.15",
-    "maplibre-gl--v5.20": "npm:maplibre-gl@5.20",
-    "maplibre-gl--v5.5": "npm:maplibre-gl@5.5",
-    "ol": "^10.6.1",
+    "leaflet": "^2.0.0-beta.4",
+    "leaflet--v2.0-beta": "npm:leaflet@>=2.0.0-beta <2.0.0",
+    "leaflet--v2.0-beta.1": "npm:leaflet@2.0.0-beta.1",
+    "leaflet--v2.0-beta.2": "npm:leaflet@2.0.0-beta.2",
+    "leaflet--v2.0-beta.3": "npm:leaflet@2.0.0-beta.3",
+    "maplibre-gl": "6.11.2",
+    "maplibre-gl--v6.0": "npm:maplibre-gl@6.0",
+    "maplibre-gl--v6.10": "npm:maplibre-gl@6.10",
+    "maplibre-gl--v6.15": "npm:maplibre-gl@6.15",
+    "maplibre-gl--v6.19": "npm:maplibre-gl@6.19",
+    "maplibre-gl--v6.5": "npm:maplibre-gl@6.5",
+    "ol": "^10.11.0",
     "ol--v10.0": "npm:ol@10.0",
+    "ol--v10.11": "npm:ol@10.11",
     "ol--v10.3": "npm:ol@10.3",
     "ol--v10.6": "npm:ol@10.6",
+    "ol--v10.9": "npm:ol@10.9",
     "ol--v9.1": "npm:ol@9.1",
     "ol--v9.2": "npm:ol@9.2",
-    "playwright": "^1.60.0",
+    "playwright": "^1.64.1",
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.3.0",
     "react": "^19.2.0",
@@ -134,7 +129,6 @@
     "tslib": "^2.8.1",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.46.2",
-    "unplugin-replace": "^0.6.3",
     "vite": "^7.1.12",
     "vite-plugin-dts": "^4.5.4",
     "vite-plugin-externalize-deps": "^0.10.0",
@@ -142,9 +136,9 @@
     "vitest": "^4.1.5"
   },
   "peerDependencies": {
-    "@maptiler/sdk": "3 - 4",
-    "leaflet": "1.5 - 2",
-    "maplibre-gl": "5",
+    "@maptiler/sdk": "5",
+    "leaflet": "^2.0.0-beta",
+    "maplibre-gl": "6",
     "ol": "9.1 - 10"
   },
   "peerDependenciesMeta": {

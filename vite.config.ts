@@ -1,14 +1,20 @@
 import process from "node:process";
 import { type GlobalsOption } from "rollup";
-import { type Options as ReplaceOptions } from "unplugin-replace";
-import replace from "unplugin-replace/vite";
-import { defineConfig, type LibraryOptions } from "vite";
+import { defineConfig, type LibraryOptions, transformWithEsbuild } from "vite";
 import dts from "vite-plugin-dts";
 import { externalizeDeps } from "vite-plugin-externalize-deps";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 
-const umd = process.env.MODE === "umd";
+const mode = process.env.MODE;
+if (mode !== undefined && mode !== "umd" && mode !== "esm-cdn") throw new Error(`Mode "${mode}" is not valid for build!`);
 
-const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { replace?: ReplaceOptions["values"] }> = {
+const umd = mode === "umd";
+/** ES module for loading from a CDN: everything is bundled except the map library, which the page provides via an import map */
+const esmCdn = mode === "esm-cdn";
+/** Dependencies are bundled, only the map library stays external */
+const bundled = umd || esmCdn;
+
+const flavours: Record<string, LibraryOptions & ({ globals: GlobalsOption; umd?: never } | { globals?: never; umd: false })> = {
   index: {
     fileName: "index",
     entry: { index: "src/index.ts" },
@@ -27,18 +33,12 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
     fileName: "maplibregl",
     entry: { maplibregl: "src/maplibregl.public.ts" },
     name: "maptilerGeocoder",
-    globals: {
-      "maplibre-gl": "maplibregl",
-    },
+    umd: false, // MapLibre GL JS 6+ is ESM-only
   },
   maptilersdk: {
     fileName: "maptilersdk",
     entry: { maptilersdk: "src/maptilersdk.public.ts" },
     name: "maptilerGeocoder",
-    replace: [
-      // replace MapLibre with MapTiler SDK
-      { find: /from "maplibre-gl"/g, replacement: 'from "@maptiler/sdk"' },
-    ],
     globals: {
       "@maptiler/sdk": "maptilersdk",
     },
@@ -47,20 +47,32 @@ const flavours: Record<string, LibraryOptions & { globals: GlobalsOption } & { r
     fileName: "openlayers",
     entry: { openlayers: "src/openlayers.public.ts" },
     name: "maptilerGeocoder",
-    globals: (name) => (name.startsWith("ol") ? name.replaceAll("/", ".") : ""),
+    globals: (name) => (name.startsWith("ol") ? name.replace(/\.js$/, "").replaceAll("/", ".") : ""),
   },
 };
 
 const flavour = flavours[process.env.FLAVOUR!];
 if (!process.env.FLAVOUR) throw new Error("No flavour specified for build!");
 if (!flavour) throw new Error(`Flavour "${process.env.FLAVOUR}" is not valid for build!`);
+if (umd && flavour.umd === false) throw new Error(`Flavour "${process.env.FLAVOUR}" has no UMD build!`);
 
 export default defineConfig({
   plugins: [
-    externalizeDeps({ deps: !umd }),
-    umd ? replace({ values: flavour.replace ?? [] }) : dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts", "check-version.js"] }),
+    externalizeDeps({ deps: !bundled }),
+    viteStaticCopy({ targets: [{ src: "icons", dest: "." }] }),
+    !bundled && dts({ exclude: ["demos", "test", "vite.config*", "vitest-setup-tests.ts", "check-version.js"] }),
+    esmCdn && {
+      name: "minify-esm-cdn",
+      renderChunk: {
+        order: "post",
+        async handler(code, chunk) {
+          const result = await transformWithEsbuild(code, chunk.fileName, { minify: true, format: "esm", sourcemap: true });
+          return { code: result.code, map: result.map };
+        },
+      },
+    },
   ],
-  publicDir: "public",
+  publicDir: false,
   build: {
     sourcemap: true,
     emptyOutDir: false,
@@ -80,8 +92,8 @@ export default defineConfig({
             }
           : {
               format: "es",
-              entryFileNames: "[name].js",
-              chunkFileNames: "[name].js",
+              entryFileNames: esmCdn ? "[name].cdn.mjs" : "[name].js",
+              chunkFileNames: esmCdn ? "[name].cdn.mjs" : "[name].js",
               assetFileNames: "[name].[ext]",
             },
       ],

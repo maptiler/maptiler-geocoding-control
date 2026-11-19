@@ -151,6 +151,18 @@ describe("standalone control", () => {
     expect(customElements.get("maptiler-geocoder")).toBeTruthy();
   });
 
+  it("should be typed as a DOM element and accept any event listener (type check)", () => {
+    const element = document.createElement("maptiler-geocoder");
+    const node: Node = element;
+    const listener = vi.fn();
+
+    element.addEventListener("click", (event) => listener(event.clientX));
+    node.addEventListener("custom-event", null);
+    element.dispatchEvent(new MouseEvent("click", { clientX: 10 }));
+
+    expect(listener).toHaveBeenCalledExactlyOnceWith(10);
+  });
+
   it("should have custom methods", () => {
     const element = document.createElement("maptiler-geocoder");
 

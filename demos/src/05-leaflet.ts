@@ -1,17 +1,17 @@
-import { control, map as LMap, Marker, Popup, tileLayer } from "leaflet";
+import { Map as LMap, Marker, Popup, TileLayer, ZoomControl } from "leaflet";
 import "leaflet/dist/leaflet.css";
 
 import { GeocodingControl } from "../../src/leaflet.public";
 
 import { getApiKey } from "./demo-utils";
 
-const map = LMap("map", {
+const map = new LMap("map", {
   center: [0, 0],
   zoom: 2,
   zoomControl: false,
 });
 
-tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${getApiKey()}`, {
+new TileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${getApiKey()}`, {
   tileSize: 512,
   zoomOffset: -1,
   minZoom: 1,
@@ -92,4 +92,4 @@ map.addControl(
   }),
 );
 
-map.addControl(control.zoom({ position: "topright" }));
+map.addControl(new ZoomControl({ position: "topright" }));

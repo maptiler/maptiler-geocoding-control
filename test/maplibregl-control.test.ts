@@ -1,61 +1,6 @@
-/* eslint-disable
-  @typescript-eslint/no-empty-function,
-  @typescript-eslint/no-explicit-any,
-  @typescript-eslint/no-non-null-assertion,
-  @typescript-eslint/no-unsafe-assignment,
-  @typescript-eslint/no-unsafe-return,
-*/
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-globalThis.WebGL2RenderingContext = class WebGL2RenderingContextMock {
-  activeTexture = () => {};
-  attachShader = () => {};
-  bindAttribLocation = () => {};
-  bindBuffer = () => {};
-  bindFramebuffer = () => {};
-  blendColor = () => {};
-  blendEquation = () => {};
-  blendFunc = () => {};
-  bufferData = () => {};
-  clear = () => {};
-  clearColor = () => {};
-  clearDepth = () => {};
-  clearStencil = () => {};
-  colorMask = () => {};
-  compileShader = () => {};
-  createBuffer = () => {};
-  createProgram = () => {};
-  createShader = () => {};
-  cullFace = () => {};
-  deleteShader = () => {};
-  depthFunc = () => {};
-  depthMask = () => {};
-  depthRange = () => {};
-  disable = () => {};
-  drawElements = () => {};
-  enable = () => {};
-  enableVertexAttribArray = () => {};
-  frontFace = () => {};
-  getExtension = () => {};
-  getParameter = () => {};
-  getProgramParameter = () => true;
-  getShaderParameter = () => true;
-  getUniformLocation = () => {};
-  isContextLost = () => {};
-  linkProgram = () => {};
-  pixelStorei = () => {};
-  shaderSource = () => {};
-  stencilFunc = () => {};
-  stencilMask = () => {};
-  stencilOp = () => {};
-  uniform1f = () => {};
-  uniform2f = () => {};
-  uniform4f = () => {};
-  uniformMatrix4fv = () => {};
-  useProgram = () => {};
-  vertexAttribPointer = () => {};
-  viewport = () => {};
-} as any;
-globalThis.HTMLCanvasElement.prototype.getContext = () => new WebGL2RenderingContext() as any;
+import "./mock-webgl";
 
 import { Map as SDKMap } from "@maptiler/sdk";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
@@ -98,6 +43,21 @@ describe("MaplibreglGeocodingControl", () => {
     expect(() => {
       new MaplibreglGeocodingControl();
     }).not.toThrow();
+  });
+
+  it("should not call overridable methods from the constructor, before fields of subclasses are initialized", () => {
+    class CustomControl extends MaplibreglGeocodingControl {
+      #calls: string[] = [];
+
+      override setOptions(options: MaplibreglGeocodingControlOptions) {
+        this.#calls.push("setOptions");
+        super.setOptions(options);
+      }
+    }
+
+    const control = new CustomControl({ limit: 7 });
+
+    expect(control.getOptions().limit).toBe(7);
   });
 
   it("should move the element into the map DOM", () => {
@@ -172,5 +132,31 @@ describe("MaplibreglGeocodingControl", () => {
 
     element.dispatchEvent(new CustomEvent("featureslisted", { detail: { features: [] } }));
     expect(featureslistedListener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ features: [] }));
+  });
+
+  it("should support on, once, off and listens of the MapLibre GL JS Evented", async () => {
+    const { control, element } = createMapHelper();
+    const onListener = vi.fn();
+    const onceListener = vi.fn();
+    const offListener = vi.fn();
+
+    const subscription = control.on("querychange", onListener);
+    control.once("querychange", onceListener);
+    control.on("querychange", offListener);
+    control.off("querychange", offListener);
+    const oncePromise = control.once("querychange");
+
+    expect(control.listens("querychange")).toBe(true);
+
+    element.dispatchEvent(new CustomEvent("querychange", { detail: { query: "svitavy" } }));
+    await expect(oncePromise).resolves.toEqual(expect.objectContaining({ type: "querychange", query: "svitavy", target: control }));
+
+    subscription.unsubscribe();
+    element.dispatchEvent(new CustomEvent("querychange", { detail: { query: "brno" } }));
+
+    expect(onListener).toHaveBeenCalledExactlyOnceWith(expect.objectContaining({ type: "querychange", query: "svitavy", target: control }));
+    expect(onceListener).toHaveBeenCalledOnce();
+    expect(offListener).not.toHaveBeenCalled();
+    expect(control.listens("querychange")).toBeFalsy();
   });
 });

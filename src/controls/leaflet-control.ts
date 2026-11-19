@@ -4,6 +4,7 @@ import union from "@turf/union";
 import type { GeometryCollection, LineString, MultiLineString, MultiPolygon, Polygon } from "geojson";
 import {
   Control,
+  type ControlDefaults,
   type ControlOptions,
   DivIcon,
   DomEvent,
@@ -12,7 +13,7 @@ import {
   type LatLng,
   type LatLngLiteral,
   type LeafletEvent,
-  type LeafletMouseEvent,
+  type LeafletPointerEvent,
   type Map as LMap,
   Marker,
   type MarkerOptions,
@@ -20,28 +21,29 @@ import {
   type PopupOptions,
 } from "leaflet";
 
-import type { BBox, Feature } from "../types";
-import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils";
-import { getMask } from "../utils/mask";
+import type { BBox, Feature } from "../types.js";
+import { shiftPolyCollection, unwrapBbox } from "../utils/geo-utils.js";
+import { getMask } from "../utils/mask.js";
+import { mixinEvented } from "../utils/mixin-evented.js";
 
-import "../geocoder/geocoder";
-import type { MaptilerGeocoderElement } from "../geocoder/geocoder";
-import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events";
-import type { GeocodingControlBase } from "./base-control";
+import type { MaptilerGeocoderEvent, MaptilerGeocoderEventName, MaptilerGeocoderEventNameMap } from "../geocoder/geocoder-events.js";
+import "../geocoder/geocoder.js";
+import type { MaptilerGeocoderElement } from "../geocoder/geocoder.js";
+import type { GeocodingControlBase } from "./base-control.js";
 
-import "../components/marker";
+import "../components/marker.js";
 
-import type { LeafletGeocodingControlEventName, LeafletGeocodingControlEventNameMap } from "./leaflet-events";
-import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAULTS } from "./leaflet-options";
+import type { LeafletGeocodingControlEventName, LeafletGeocodingControlEventNameMap } from "./leaflet-events.js";
+import { DEFAULT_GEOMETRY_STYLE, type LeafletGeocodingControlOptions, ZOOM_DEFAULTS } from "./leaflet-options.js";
 
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 /** Base class for Control needs to extend both Control and Evented */
 abstract class EventedControl<Options extends ControlOptions> extends Control {
-  override options!: Options;
+  override options!: Options & ControlDefaults;
 }
-Object.assign(EventedControl.prototype, Evented.prototype);
-interface EventedControl<Options extends ControlOptions> extends Control, Evented {
-  options: Options;
+mixinEvented(EventedControl, Evented);
+interface EventedControl<Options extends ControlOptions> extends Control<Options>, Evented<Options, MaptilerGeocoderEventNameMap> {
+  options: Options & ControlDefaults;
 }
 /* eslint-enable @typescript-eslint/no-unsafe-declaration-merging */
 
@@ -204,12 +206,12 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     },
   };
   #mapEventListeners = {
-    render: () => {
+    moveend: () => {
       const zoom = this.#map?.getZoom();
       const center = this.#map?.getCenter();
       this.#element?.handleMapChange(zoom && center ? [zoom, center.lng, center.lat] : undefined);
     },
-    click: (e: LeafletMouseEvent) => {
+    click: (e: LeafletPointerEvent) => {
       this.#element?.handleMapClick([e.latlng.lng, e.latlng.lat]);
     },
   };
@@ -230,6 +232,7 @@ export class LeafletGeocodingControl extends EventedControl<LeafletGeocodingCont
     }
 
     this.#map.on(this.#mapEventListeners);
+    this.#map.whenReady(this.#mapEventListeners.moveend);
   }
 
   #removeEventListeners() {

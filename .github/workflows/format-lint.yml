@@ -1,0 +1,30 @@
+name: Format, Lint and Typecheck
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main, next, "v[0-9]+"]
+
+jobs:
+  format-and-lint:
+    timeout-minutes: 10
+    concurrency:
+      group: ${{ github.workflow }}-${{ github.ref }}
+      cancel-in-progress: true
+    runs-on: ubuntu-slim
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          cache: "npm"
+          cache-dependency-path: ./package-lock.json
+          node-version: lts/*
+
+      - name: Install Node.js dependencies
+        run: npm ci
+
+      - name: Formatting, linting and TypeScript Type Check
+        run: npm run lint

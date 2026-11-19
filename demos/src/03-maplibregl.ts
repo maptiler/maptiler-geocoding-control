@@ -1,11 +1,14 @@
-import maplibregl from "maplibre-gl";
+import { Map, Marker, NavigationControl, Popup, setWorkerUrl } from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import "maplibre-gl/dist/maplibre-gl.css";
 
 import { GeocodingControl } from "../../src/maplibregl.public";
 
 import { getApiKey } from "./demo-utils";
 
-const map = new maplibregl.Map({
+setWorkerUrl(workerUrl);
+
+const map = new Map({
   container: "map",
   style: `https://api.maptiler.com/maps/streets/style.json?key=${getApiKey()}`,
   hash: true,
@@ -37,9 +40,9 @@ const geocodingControl = new GeocodingControl({
       return;
     }
 
-    const marker = new maplibregl.Marker()
+    const marker = new Marker()
       .setLngLat(feature.center)
-      .setPopup(new maplibregl.Popup({ closeButton: false }).setText(feature.text))
+      .setPopup(new Popup({ closeButton: false }).setText(feature.text))
       .addTo(map)
       .togglePopup();
 
@@ -55,9 +58,9 @@ const geocodingControl = new GeocodingControl({
     return marker;
   },
   showResultMarkers(map, feature) {
-    return new maplibregl.Marker()
+    return new Marker()
       .setLngLat(feature.center)
-      .setPopup(new maplibregl.Popup({ closeButton: false }).setText(feature.text))
+      .setPopup(new Popup({ closeButton: false }).setText(feature.text))
       .addTo(map)
       .togglePopup();
   },
@@ -69,7 +72,7 @@ geocodingControl.on("featureslisted", (e) => {
   console.log(e);
 });
 
-map.addControl(new maplibregl.NavigationControl());
+map.addControl(new NavigationControl());
 
 map.addControl(
   new GeocodingControl({
