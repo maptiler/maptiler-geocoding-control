@@ -7,11 +7,11 @@ const TSCONFIG = "./tsconfig.check-version.json";
 /** @type {Record<string, {entrypoint: string, paths?: Record<string, string[]>}>} */
 const checks = {
   "@maptiler/sdk": { entrypoint: "src/maptilersdk.ts" },
-  "@maptiler/sdk@5.0-rc": {
+  "@maptiler/sdk@5.0": {
     entrypoint: "src/maptilersdk.ts",
     paths: {
-      "@maptiler/sdk": ["../node_modules/@maptiler/sdk--v5.0-rc/dist/maptiler-sdk.d.ts"],
-      "maplibre-gl": ["../node_modules/@maptiler/sdk--v5.0-rc/node_modules/maplibre-gl/dist/maplibre-gl.d.ts", "../node_modules/maplibre-gl/dist/maplibre-gl.d.ts"],
+      "@maptiler/sdk": ["../node_modules/@maptiler/sdk--v5.0/dist/maptiler-sdk.d.ts"],
+      "maplibre-gl": ["../node_modules/@maptiler/sdk--v5.0/node_modules/maplibre-gl/dist/maplibre-gl.d.ts", "../node_modules/maplibre-gl/dist/maplibre-gl.d.ts"],
     },
   },
   "maplibre-gl": { entrypoint: "src/maplibregl.ts" },
