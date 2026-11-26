@@ -115,6 +115,7 @@ export type FullGeometryStyle = {
 export const ZOOM_DEFAULTS: Record<string, number> = {
   continental_marine: 4,
   country: 4,
+  timezone: 4,
   major_landform: 8,
   region: 5,
   subregion: 6,
