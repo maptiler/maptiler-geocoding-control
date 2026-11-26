@@ -65,6 +65,7 @@ export type TypeRule = PlaceType | [minZoom: number | null | undefined, maxZoom:
 export type PlaceType =
   | "continental_marine"
   | "country"
+  | "timezone"
   | "major_landform"
   | "region"
   | "subregion"
