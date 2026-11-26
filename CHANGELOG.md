@@ -1,5 +1,11 @@
 # MapTiler Geocoding Control Changelog
 
+## Unreleased
+
+### ✨ Features and improvements
+
+- Adds `timezone` to the available Geocoding types
+
 ## 4.0.0
 
 ### ⚠️ Breaking changes
